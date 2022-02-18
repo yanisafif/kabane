@@ -12,8 +12,23 @@
 */
 
 Route::get('/', function () {
-    return view('app.kanban');
+    return view('welcome');
 });
-Route::get('/kanban', function () {
-    return view('app.kanban');
-});
+// Route::get('/kanban', function () {
+//     return view('app.kanban');
+// });
+// Route::get('/kanban/to-do', function () {
+//     return view('app.todo')->name('todo');
+// });
+
+Route::prefix('kanban')
+    ->as('kanban.')
+    ->group(function (){
+        Route::get('/', function () {
+            return view('app.kanban');
+        })->name('index');
+        Route::get('todo', function () {
+            return view('app.todo');
+        })->name('todo');
+
+    });

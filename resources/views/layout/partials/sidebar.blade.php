@@ -31,6 +31,7 @@
                             <li><a href="route('index')" class="routeActive('index')">Kanban</a></li>
                             <li><a href="route('dashboard-02')" class="routeActive('dashboard-02')">Chat & collab</a></li>
                             <li><a href="route('dashboard-02')" class="routeActive('dashboard-02')">Callendar</a></li>
+                            <li><a href="{{route('kanban.todo')}}" class="routeActive('dashboard-02')">To do</a></li>
                         </ul>
                     </li>
                     <li class="dropdown">
@@ -39,6 +40,7 @@
                             <li><a href="route('index')" class="routeActive('index')">Kanban</a></li>
                             <li><a href="route('dashboard-02')" class="routeActive('dashboard-02')">Chat & collab</a></li>
                             <li><a href="route('dashboard-02')" class="routeActive('dashboard-02')">Callendar</a></li>
+                            <li><a href="{{route('kanban.todo')}}" class="routeActive('dashboard-02')">To do</a></li>
                         </ul>
                     </li>
                     <li class="sidebar-main-title">
@@ -52,6 +54,7 @@
                             <li><a href="route('index')" class="routeActive('index')">Kanban</a></li>
                             <li><a href="route('dashboard-02')" class="routeActive('dashboard-02')">Chat & collab</a></li>
                             <li><a href="route('dashboard-02')" class="routeActive('dashboard-02')">Callendar</a></li>
+                            <li><a href="{{route('kanban.todo')}}" class="routeActive('dashboard-02')">To do</a></li>
                         </ul>
                     </li>
                 </ul>
