@@ -28,18 +28,18 @@
                     <li class="dropdown">
                         <a class="nav-link menu-title  prefixActive('/dashboard') " href="javascript:void(0)"><i data-feather="home"></i><span>My first Kanban</span></a>
                         <ul class="nav-submenu menu-content" style="display:  prefixBlock('/dashboard') ;">
-                            <li><a href="route('index')" class="routeActive('index')">Kanban</a></li>
-                            <li><a href="route('dashboard-02')" class="routeActive('dashboard-02')">Chat & collab</a></li>
-                            <li><a href="route('dashboard-02')" class="routeActive('dashboard-02')">Callendar</a></li>
+                            <li><a href="{{route('kanban.index')}}" class="routeActive('index')">Kanban</a></li>
+                            <li><a href="{{route('kanban.chat')}}" class="routeActive('dashboard-02')">Chat & collab</a></li>
+                            <li><a href="{{route('kanban.callendar')}}" class="routeActive('dashboard-02')">Callendar</a></li>
                             <li><a href="{{route('kanban.todo')}}" class="routeActive('dashboard-02')">To do</a></li>
                         </ul>
                     </li>
                     <li class="dropdown">
                         <a class="nav-link menu-title  prefixActive('/widgets') " href="javascript:void(0)"><i data-feather="airplay"></i><span>My second Kanban</span></a>
                         <ul class="nav-submenu menu-content"  style="display:  prefixBlock('/widgets') ;">
-                            <li><a href="route('index')" class="routeActive('index')">Kanban</a></li>
-                            <li><a href="route('dashboard-02')" class="routeActive('dashboard-02')">Chat & collab</a></li>
-                            <li><a href="route('dashboard-02')" class="routeActive('dashboard-02')">Callendar</a></li>
+                            <li><a href="{{route('kanban.index')}}" class="routeActive('index')">Kanban</a></li>
+                            <li><a href="{{route('kanban.chat')}}" class="routeActive('dashboard-02')">Chat & collab</a></li>
+                            <li><a href="{{route('kanban.callendar')}}" class="routeActive('dashboard-02')">Callendar</a></li>
                             <li><a href="{{route('kanban.todo')}}" class="routeActive('dashboard-02')">To do</a></li>
                         </ul>
                     </li>
@@ -51,9 +51,9 @@
                     <li class="dropdown">
                         <a class="nav-link menu-title  prefixActive('/ui-kits') " href="javascript:void(0)"><i data-feather="box"></i><span>Create new house</span></a>
                         <ul class="nav-submenu menu-content" style="display:  prefixBlock('/ui-kits') ;">
-                            <li><a href="route('index')" class="routeActive('index')">Kanban</a></li>
-                            <li><a href="route('dashboard-02')" class="routeActive('dashboard-02')">Chat & collab</a></li>
-                            <li><a href="route('dashboard-02')" class="routeActive('dashboard-02')">Callendar</a></li>
+                            <li><a href="{{route('kanban.index')}}" class="routeActive('index')">Kanban</a></li>
+                            <li><a href="{{route('kanban.chat')}}" class="routeActive('dashboard-02')">Chat & collab</a></li>
+                            <li><a href="{{route('kanban.callendar')}}" class="routeActive('dashboard-02')">Callendar</a></li>
                             <li><a href="{{route('kanban.todo')}}" class="routeActive('dashboard-02')">To do</a></li>
                         </ul>
                     </li>

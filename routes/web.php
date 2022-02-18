@@ -30,5 +30,11 @@ Route::prefix('kanban')
         Route::get('todo', function () {
             return view('app.todo');
         })->name('todo');
+        Route::get('callendar', function () {
+            return view('app.callendar');
+        })->name('callendar');
+        Route::get('chat', function () {
+            return view('app.chat');
+        })->name('chat');
 
     });
