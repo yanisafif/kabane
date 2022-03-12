@@ -17,7 +17,7 @@
                         <div class="mobile-back text-end"><span>Back</span><i class="fa fa-angle-right ps-2" aria-hidden="true"></i></div>
                     </li>
                     <li class="dropdown">
-                        <a class="nav-link menu-title link-nav" href="#"><i data-feather="plus-square"></i><span>Create a new Kanban</span></a>
+                        <a href="{{route('kanban.create')}}" class="nav-link menu-title link-nav" href="#"><i data-feather="plus-square"></i><span>Create a new Kanban</span></a>
                     </li>
                     <li class="sidebar-main-title">
                         <div>
