@@ -21,38 +21,39 @@
 	                        <div class="form-group">
 	                            <label>Name</label>
 								<div class="input-group">
-									<input class="form-control" name="name" type="text" required="" />
+									<input class="form-control" name="name" type="text" required />
 								</div>
 	                        </div>
-	                        <div class="form-group">
+	                        <div class="form-group mb-1">
 								<label>Columns</label>
                                 <div id="col-fields-container">
                                     <div class="small-group">
                                         <div class="input-group">
                                             <span class="input-group-text"> Name</span>
-                                            <input class="form-control" type="text" name="colname[0]" required="" />
+                                            <input class="form-control" type="text" name="colname[0]" required />
                                         </div>
-                                        <div class="input-group">
+                                        <div class="input-group m-r-20">
                                             <span class="input-group-text">Color</span>
-                                            <input class="form-control" type="text" name="colcolor[0]" required="" />
+                                            <input class="form-control" type="text" name="colcolor[0]" required />
                                         </div>
                                     </div>
                                     <div class="small-group mt-1">
                                         <div class="input-group">
                                             <span class="input-group-text">Name</span>
-                                            <input class="form-control" type="text" name="colname[1]" required="" />
+                                            <input class="form-control" type="text" name="colname[1]" required/>
                                         </div>
-                                        <div class="input-group">
+                                        <div class="input-group m-r-20">
                                             <span class="input-group-text">Color</span>
-                                            <input class="form-control" type="text" name="colcolor[1]" required="" />
+                                            <input class="form-control" type="text" name="colcolor[1]" required />
                                         </div>
                                     </div>
                                 </div>
-                                <div class="mb-4 pointer">
-                                    <a class="link" onclick="addCol()" > + Add a column</a>
-                                </div>
+
                             </div>
-	                        <div class="form-group">
+                            <div class=" pointer text-end mt-2" style="cursor: pointer">
+                                <a class="link text-underline" onclick="addCol()" > + Add a column</a>
+                            </div>
+	                        <div class="form-group mt-4">
 	                            <button class="btn btn-primary btn-block" type="submit">Create Kanban</button>
 	                        </div>
 	                    </form>
@@ -70,6 +71,7 @@
             function addCol() {
                 let element = document.createElement('div');
                 element.classList.add('small-group', 'mt-1');
+                element.id = 'col-' + n;
 
                 element.innerHTML =
                         '<div class="input-group">' +
@@ -79,10 +81,14 @@
                         '<div class="input-group">' +
                             '<span class="input-group-text">Color</span>' +
                             '<input class="form-control" type="text" name="colcolor['+ n +']" required="" />' +
-                        '</div>';
-
+                        '</div>' +
+                        '<img style="width: 20px; height: 20px" src="{{ asset('assets/svg/close.svg')  }}" onclick="deleteCol(' + n + ')">';
                 colContainer.appendChild(element);
                 n++;
+            }
+
+            function deleteCol(id) {
+                colContainer.removeChild(document.getElementById('col-' + id))
             }
         </script>
 
