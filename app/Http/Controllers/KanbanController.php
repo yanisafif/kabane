@@ -1,12 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
-
+namespace App\Http\Controllers;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use App\Models\Col;
+use App\Models\Kanban;
 
-class KanbanControllerController extends Controller
+class KanbanController extends Controller
 {
     /*
     |--------------------------------------------------------------------------
@@ -19,14 +21,14 @@ class KanbanControllerController extends Controller
     |
     */
 
-    use AuthenticatesUsers;
+    // use AuthenticatesUsers;
 
     /**
      * Where to redirect users after login.
      *
      * @var string
      */
-    protected $redirectTo = RouteServiceProvider::HOME;
+    // protected $redirectTo = RouteServiceProvider::HOME;
 
     /**
      * Create a new controller instance.
@@ -35,11 +37,30 @@ class KanbanControllerController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        // $this->middleware('auth');
     }
 
     public function store(Request $request)
     {
-        dd($request);
+        $data = $request->only('name', 'colname', 'colcolor');
+
+        $kanban = new Kanban;
+        $kanban->name = $data['name'];
+        $kanban->isActive = true;
+        $kanban->ownerUserId = 1;
+        $kanban->save();
+
+        $len = count($data['colname']);
+
+        for($i = 0; $i <  $len; $i++)
+        {
+            $currentCol = new Col;
+            $currentCol->name = $data['colname'][$i];
+            $currentCol->colorHexa = $data['colcolor'][$i];
+            $currentCol->colOrder = $i + 1;
+            $currentCol->kanbanId = $kanban->id;
+            $currentCol->save();
+        }
+        return redirect(route('kanban.index'));
     }
 }
