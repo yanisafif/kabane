@@ -70,11 +70,19 @@
             var colorFields = document.getElementsByClassName('color-field');
             for(const colorField of colorFields) {
 
+                createPicker(colorField);
+            }
+
+            function createPicker(colorField) {
                 const picker = new Picker(colorField);
                 picker.onChange = function(color) {
                     colorField.querySelector('input').value = color.hex;
                 };
             }
+            
+            function onAddColumn(element) {
+                createPicker(element.querySelector('div.color-field'));
+            }   
         </script>
         <script> 
             let n = 2;
@@ -96,6 +104,7 @@
                         '</div>' +
                         '<img style="width: 20px; height: 20px" src="{{ asset('assets/svg/close.svg')  }}" onclick="deleteCol(' + n + ')">';
                 colContainer.appendChild(element);
+                onAddColumn(element)
                 n++;
             }
 
