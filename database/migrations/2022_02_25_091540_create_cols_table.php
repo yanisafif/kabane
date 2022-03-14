@@ -16,7 +16,7 @@ class CreateColsTable extends Migration
         Schema::create('cols', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name', 15);
-            $table->string('colorHexa', 6);
+            $table->string('colorHexa', 9);
             $table->timestamps();
             $table->unsignedBigInteger('colOrder');
 

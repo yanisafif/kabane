@@ -1,0 +1,11 @@
+.create-kanban-card {
+  background-color: rgba(36, 105, 92, 0.1);
+  /* height: 100vh; */
+  /* min-height: 100%; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  padding: 30px 12px;
+}
+
