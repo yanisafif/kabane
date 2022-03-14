@@ -5,6 +5,7 @@
 @endsection
 
 @push('css')
+<link type="text/css" href=" {{ asset('assets/css/vanilla-picker.css') }} ">
 @endpush
 
 @section('content')
@@ -13,8 +14,8 @@
 	    <div class="container-fluid p-0" style="margin: 0 auto;">
 	        <div class="row m-0">
 	            {{-- <div class="col-xl-7 p-0"><img class="bg-img-cover bg-center" src="{{ asset('assets/images/login/1.jpg') }}" alt="looginpage" /></div> --}}
-	            <div class="col-xl-12 p-0">
-	                <div class="login-card">
+	            <div class=" p-0">
+	                <div class="create-kanban-card">
 	                    <form class="theme-form login-form" method="POST" action="{{ route('kanban.store')}}">
                             @csrf
 	                        <h4>Create a kanban</h4>
@@ -32,7 +33,7 @@
                                             <span class="input-group-text"> Name</span>
                                             <input class="form-control" type="text" name="colname[0]" required />
                                         </div>
-                                        <div class="input-group m-r-20">
+                                        <div class="input-group m-r-20 color-field">
                                             <span class="input-group-text">Color</span>
                                             <input class="form-control" type="text" name="colcolor[0]" required />
                                         </div>
@@ -42,7 +43,7 @@
                                             <span class="input-group-text">Name</span>
                                             <input class="form-control" type="text" name="colname[1]" required/>
                                         </div>
-                                        <div class="input-group m-r-20">
+                                        <div class="input-group m-r-20 color-field">
                                             <span class="input-group-text">Color</span>
                                             <input class="form-control" type="text" name="colcolor[1]" required />
                                         </div>
@@ -64,7 +65,22 @@
 	</section>
 
     @push('scripts')
+        <script src="https://unpkg.com/vanilla-picker@2"></script>
         <script>
+            var colorFields = document.getElementsByClassName('color-field');
+            // var pickers = new Array();
+            for(const colorField of colorFields) {
+
+                const picker = new Picker(colorField);
+                picker.onChange = function(color) {
+                    colorField.querySelector('input').value = color.hex;
+                    // parent.style.background = color.rgbaString;
+                };
+                // pickers.push(picker);
+        
+            }
+        </script>
+        <script> 
             let n = 2;
             let colContainer = document.getElementById("col-fields-container");
 
@@ -78,7 +94,7 @@
                             '<span class="input-group-text"> Name</span>' +
                             '<input class="form-control" type="text" name="colname['+ n +']" required="" />' +
                         '</div>' +
-                        '<div class="input-group">' +
+                        '<div class="input-group color-field">' +
                             '<span class="input-group-text">Color</span>' +
                             '<input class="form-control" type="text" name="colcolor['+ n +']" required="" />' +
                         '</div>' +
