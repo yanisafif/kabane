@@ -22,7 +22,7 @@
 	                        <div class="form-group">
 	                            <label>Name</label>
 								<div class="input-group">
-									<input class="form-control" name="name" type="text" required />
+									<input class="form-control" maxlength="50" name="name" type="text" required />
 								</div>
 	                        </div>
 	                        <div class="form-group mb-1">
@@ -31,7 +31,7 @@
                                     <div class="small-group">
                                         <div class="input-group">
                                             <span class="input-group-text"> Name</span>
-                                            <input class="form-control" type="text" name="colname[0]" required />
+                                            <input class="form-control" type="text" maxlength="50" name="colname[0]" required />
                                         </div>
                                         <div class="input-group m-r-20 color-field">
                                             <span class="input-group-text">Color</span>
@@ -41,7 +41,7 @@
                                     <div class="small-group mt-1">
                                         <div class="input-group">
                                             <span class="input-group-text">Name</span>
-                                            <input class="form-control" type="text" name="colname[1]" required/>
+                                            <input class="form-control" type="text" maxlength="50" name="colname[1]" required/>
                                         </div>
                                         <div class="input-group m-r-20 color-field">
                                             <span class="input-group-text">Color</span>
@@ -88,7 +88,7 @@
                 element.innerHTML =
                         '<div class="input-group">' +
                             '<span class="input-group-text"> Name</span>' +
-                            '<input class="form-control" type="text" name="colname['+ n +']" required="" />' +
+                            '<input class="form-control" type="text" maxlength="50" name="colname['+ n +']" required="" />' +
                         '</div>' +
                         '<div class="input-group color-field">' +
                             '<span class="input-group-text">Color</span>' +
