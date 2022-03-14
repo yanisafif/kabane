@@ -1,6 +1,6 @@
 @extends('layout.master')
 
-@section('title')Kanban Board
+@section('title')Create Kanban
 
 @endsection
 
@@ -35,7 +35,7 @@
                                         </div>
                                         <div class="input-group m-r-20 color-field">
                                             <span class="input-group-text">Color</span>
-                                            <input class="form-control" type="text" name="colcolor[0]" required />
+                                            <input class="form-control" type="text"maxlength="9"  name="colcolor[0]" required />
                                         </div>
                                     </div>
                                     <div class="small-group mt-1">
@@ -45,7 +45,7 @@
                                         </div>
                                         <div class="input-group m-r-20 color-field">
                                             <span class="input-group-text">Color</span>
-                                            <input class="form-control" type="text" name="colcolor[1]" required />
+                                            <input class="form-control" type="text" maxlength="9" name="colcolor[1]"  required />
                                         </div>
                                     </div>
                                 </div>
@@ -68,16 +68,12 @@
         <script src="https://unpkg.com/vanilla-picker@2"></script>
         <script>
             var colorFields = document.getElementsByClassName('color-field');
-            // var pickers = new Array();
             for(const colorField of colorFields) {
 
                 const picker = new Picker(colorField);
                 picker.onChange = function(color) {
                     colorField.querySelector('input').value = color.hex;
-                    // parent.style.background = color.rgbaString;
                 };
-                // pickers.push(picker);
-        
             }
         </script>
         <script> 
@@ -96,7 +92,7 @@
                         '</div>' +
                         '<div class="input-group color-field">' +
                             '<span class="input-group-text">Color</span>' +
-                            '<input class="form-control" type="text" name="colcolor['+ n +']" required="" />' +
+                            '<input class="form-control" type="text" maxlength="9" name="colcolor['+ n +']" required="" />' +
                         '</div>' +
                         '<img style="width: 20px; height: 20px" src="{{ asset('assets/svg/close.svg')  }}" onclick="deleteCol(' + n + ')">';
                 colContainer.appendChild(element);
@@ -107,7 +103,6 @@
                 colContainer.removeChild(document.getElementById('col-' + id))
             }
         </script>
-
     @endpush
 
 @endsection
