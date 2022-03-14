@@ -7,6 +7,7 @@ use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use App\Models\Col;
 use App\Models\Kanban;
+use App\Models\Invitation;
 
 class KanbanController extends Controller
 {
@@ -40,6 +41,17 @@ class KanbanController extends Controller
         // $this->middleware('auth');
     }
 
+    public function index()
+    {
+        $res = Kanban::query()
+            ->where(['ownerUserId', '=', 1])
+            ->orWhereIn(
+                'id',
+                Invitation::query()->where(['userId', "=", 1])
+            )->get();
+        dd($res);
+    }
+
     public function store(Request $request)
     {
         $data = $request->only('name', 'colname', 'colcolor');
@@ -49,7 +61,6 @@ class KanbanController extends Controller
         $kanban->isActive = true;
         $kanban->ownerUserId = 1;
         $kanban->save();
-
         $len = count($data['colname']);
 
         for($i = 0; $i <  $len; $i++)
