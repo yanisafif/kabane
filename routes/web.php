@@ -38,3 +38,15 @@ Route::prefix('kanban')
         })->name('chat');
 
     });
+
+Route::prefix('user')
+    ->as('user.')
+    ->group(function (){
+        Route::get('/login', function () {
+            return view('user.login');
+        })->name('login');
+        Route::get('/sign-up', function () {
+            return view('user.sign-up');
+        })->name('sign.up');
+
+    });
