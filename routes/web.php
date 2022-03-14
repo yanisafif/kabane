@@ -24,16 +24,15 @@ Route::get('/', function () {
 Route::prefix('kanban')
     ->as('kanban.')
     ->group(function (){
-        Route::get('/', function () {
-            return view('app.kanban');
-        })->name('index');
+        Route::get('/', 'KanbanController@index')
+            ->name('index');
 
         Route::get('create', function () {
             return view('app.create-kanban');
         })->name('create');
 
         Route::post('store', 'KanbanController@store')
-        ->name('store');
+            ->name('store');
 
         Route::get('todo', function () {
             return view('app.todo');

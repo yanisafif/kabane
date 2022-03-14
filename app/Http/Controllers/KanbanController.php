@@ -44,10 +44,13 @@ class KanbanController extends Controller
     public function index()
     {
         $res = Kanban::query()
-            ->where(['ownerUserId', '=', 1])
+            ->where('ownerUserId', '=', '1')
             ->orWhereIn(
                 'id',
-                Invitation::query()->where(['userId', "=", 1])
+                Invitation::query()
+                    ->where('userId', '=', '1')
+                    ->select('userId')
+                    ->get()
             )->get();
         dd($res);
     }
