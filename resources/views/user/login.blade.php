@@ -12,14 +12,15 @@
 	        <div class="col-xl-5"><img class="bg-img-cover bg-center" src="{{ asset('assets/images/login/3.jpg') }}" alt="looginpage" /></div>
 	        <div class="col-xl-7 p-0">
 	            <div class="login-card">
-	                <form class="theme-form login-form needs-validation" novalidate="">
+	                <form class="theme-form login-form needs-validation" novalidate="" method="POST" action="{{ route('user.login.post')}}">
+                        @csrf
 	                    <h4>Login</h4>
 	                    <h6>Welcome back to kabane! Log in to your account.</h6>
 	                    <div class="form-group">
 	                        <label>Email Address</label>
 	                        <div class="input-group">
 	                            <span class="input-group-text"><i class="icon-email"></i></span>
-	                            <input class="form-control" type="email" required="" placeholder="Exemple@gmail.com" />
+	                            <input class="form-control" type="email" name="email" required="" placeholder="Exemple@gmail.com" />
 	                            <div class="invalid-tooltip">Please enter proper email.</div>
 	                        </div>
 	                    </div>
@@ -27,7 +28,7 @@
 	                        <label>Password</label>
 	                        <div class="input-group">
 	                            <span class="input-group-text"><i class="icon-lock"></i></span>
-	                            <input class="form-control" type="password" name="login[password]" required="" placeholder="*********" />
+	                            <input class="form-control" type="password" name="password" required="" placeholder="*********" />
 	                            <div class="invalid-tooltip">Please enter password.</div>
 	                            <div class="show-hide"><span class="show"> </span></div>
 	                        </div>
