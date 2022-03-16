@@ -25,24 +25,17 @@
                         </div>
                     </li>
 
-                    <li class="dropdown">
-                        <a class="nav-link menu-title  prefixActive('/dashboard') " href="javascript:void(0)"><i data-feather="home"></i><span>My first Kanban</span></a>
-                        <ul class="nav-submenu menu-content" style="display:  prefixBlock('/dashboard') ;">
-                            <li><a href="{{route('kanban.index')}}" class="routeActive('index')">Kanban</a></li>
-                            <li><a href="{{route('kanban.chat')}}" class="routeActive('dashboard-02')">Chat & collab</a></li>
-                            <li><a href="{{route('kanban.callendar')}}" class="routeActive('dashboard-02')">Callendar</a></li>
-                            <li><a href="{{route('kanban.todo')}}" class="routeActive('dashboard-02')">To do</a></li>
-                        </ul>
-                    </li>
-                    <li class="dropdown">
-                        <a class="nav-link menu-title  prefixActive('/widgets') " href="javascript:void(0)"><i data-feather="airplay"></i><span>My second Kanban</span></a>
-                        <ul class="nav-submenu menu-content"  style="display:  prefixBlock('/widgets') ;">
-                            <li><a href="{{route('kanban.index')}}" class="routeActive('index')">Kanban</a></li>
-                            <li><a href="{{route('kanban.chat')}}" class="routeActive('dashboard-02')">Chat & collab</a></li>
-                            <li><a href="{{route('kanban.callendar')}}" class="routeActive('dashboard-02')">Callendar</a></li>
-                            <li><a href="{{route('kanban.todo')}}" class="routeActive('dashboard-02')">To do</a></li>
-                        </ul>
-                    </li>
+                    @foreach($kanbans as $kanban)
+                        <li class="dropdown">
+                            <a class="nav-link menu-title  prefixActive('/dashboard') " href="javascript:void(0)"><i data-feather="home"></i><span> {{$kanban['name']}} </span></a>
+                            <ul class="nav-submenu menu-content" style="display:  prefixBlock('/dashboard') ;">
+                                <li><a href="{{route('kanban.index') . '/' . $kanban['id']}}" class="routeActive('index')">Kanban</a></li>
+                                <li><a href="{{route('kanban.chat') . '/' . $kanban['id'] }}" class="routeActive('dashboard-02')">Chat & collab</a></li>
+                                <li><a href="{{route('kanban.callendar') . '/' . $kanban['id']}}" class="routeActive('dashboard-02')">Callendar</a></li>
+                                <li><a href="{{route('kanban.todo') . '/' . $kanban['id'] }}" class="routeActive('dashboard-02')">To do</a></li>
+                            </ul>
+                        </li>
+                    @endforeach
                     <li class="sidebar-main-title">
                         <div>
                             <h6>Collaborative Kanban</h6>

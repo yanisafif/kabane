@@ -1,8 +1,7 @@
-@extends('layout.master')
+
 
 @section('title')Create Kanban
 
-@endsection
 
 @push('css')
 <link type="text/css" href=" {{ asset('assets/css/vanilla-picker.css') }} ">
@@ -79,12 +78,12 @@
                     colorField.querySelector('input').value = color.hex;
                 };
             }
-            
+
             function onAddColumn(element) {
                 createPicker(element.querySelector('div.color-field'));
-            }   
+            }
         </script>
-        <script> 
+        <script>
             let n = 2;
             let colContainer = document.getElementById("col-fields-container");
 

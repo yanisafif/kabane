@@ -8,29 +8,13 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use App\Models\Col;
 use App\Models\Kanban;
 use App\Models\Invitation;
+use View;
 
 class KanbanController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Login Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles authenticating users for the application and
-    | redirecting them to your home screen. The controller uses a trait
-    | to conveniently provide its functionality to your applications.
-    |
-    */
+    protected  $tempCurrentUerId = '1';
 
-    // use AuthenticatesUsers;
-
-    /**
-     * Where to redirect users after login.
-     *
-     * @var string
-     */
-    // protected $redirectTo = RouteServiceProvider::HOME;
-
+    protected $layout = 'layout.master';
     /**
      * Create a new controller instance.
      *
@@ -41,18 +25,17 @@ class KanbanController extends Controller
         // $this->middleware('auth');
     }
 
-    public function index()
+    public function index($id = null)
     {
-        $res = Kanban::query()
-            ->where('ownerUserId', '=', '1')
-            ->orWhereIn(
-                'id',
-                Invitation::query()
-                    ->where('userId', '=', '1')
-                    ->select('userId')
-                    ->get()
-            )->get();
-        dd($res);
+        $data = [ 'kanbanSelected' => true ];
+
+        if(is_null($id))
+        {
+            $data['kanbanSelected'] = false;
+        }
+
+        $kanbans = $this->setUpLayout();
+        return view('app.kanban', compact('kanbans', 'data'));
     }
 
     public function store(Request $request)
@@ -62,11 +45,11 @@ class KanbanController extends Controller
         $kanban = new Kanban;
         $kanban->name = $data['name'];
         $kanban->isActive = true;
-        $kanban->ownerUserId = 1;
+        $kanban->ownerUserId = $this->tempCurrentUerId;
         $kanban->save();
         $len = count($data['colname']);
 
-        for($i = 0; $i <  $len; $i++)
+        for($i = 0; $i < $len; $i++)
         {
             $currentCol = new Col;
             $currentCol->name = $data['colname'][$i];
@@ -76,5 +59,38 @@ class KanbanController extends Controller
             $currentCol->save();
         }
         return redirect(route('kanban.index'));
+    }
+
+    protected function setUpLayout()
+    {
+        if(!is_null($this->layout))
+        {
+            $data = Kanban::query()
+                ->where('ownerUserId', '=', $this->tempCurrentUerId)
+                ->orWhereIn(
+                    'id',
+                    Invitation::query()
+                        ->where('userId', '=', $this->tempCurrentUerId)
+                        ->select('userId')
+                        ->get()
+                )
+                ->select('id', 'name', 'isActive', 'ownerUserId')
+                ->get();
+
+            foreach ($data as $item)
+            {
+                if($item['ownerUserId'] == $this->tempCurrentUerId)
+                {
+                    $item['isOwner'] = true;
+                }
+                else
+                {
+                    $item['isOwner'] = false;
+                }
+            }
+            return $data;
+            // $this->layout = View::make($this->layout, $data);
+        }
+        return null;
     }
 }
