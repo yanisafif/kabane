@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\Item;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
@@ -27,14 +28,39 @@ class KanbanController extends Controller
 
     public function index($id = null)
     {
-        $data = [ 'kanbanSelected' => true ];
+        $data = [ 'kanbanNotSelected' => false ];
 
         if(is_null($id))
         {
-            $data['kanbanSelected'] = false;
+            $data['kanbanNotSelected'] = true;
         }
+        else
+        {
+           $data['kanban'] =  Kanban::query()
+               ->where('id', '=', $id)
+               ->first();
 
-        $kanbans = $this->setUpLayout();
+           if(!is_null($data['kanban']))
+           {
+               $cols = Col::query()
+                   ->where('kanbanId', '=', $id)
+                   ->orderBy('colOrder')
+                   ->select('id', 'name', 'colorHexa', 'colOrder')
+                   ->get();
+
+               foreach($cols as $col)
+               {
+                   $col['items'] = Item::query()
+                       ->where('colId', '=', $col['id'])
+                       ->orderBy('colId')
+                       ->select('id', 'name', 'created_at', 'updated_at')
+                       ->get();
+               }
+               $data['cols'] = $cols;
+           }
+
+        }
+        $kanbans = $this->getLayoutData();
         return view('app.kanban', compact('kanbans', 'data'));
     }
 
@@ -61,7 +87,7 @@ class KanbanController extends Controller
         return redirect(route('kanban.index'));
     }
 
-    protected function setUpLayout()
+    protected function getLayoutData()
     {
         if(!is_null($this->layout))
         {

@@ -9,7 +9,7 @@
 
 @section('content')
 
-    @if($data['kanbanSelected'])
+    @if(!$data['kanbanNotSelected'] && !is_null($data['kanban']))
         <div class="container-fluid jkanban-container">
             <div class="row">
                 <div class="col-12">
@@ -60,9 +60,13 @@
         <script src="{{asset('assets/js/jkanban/custom.js')}}"></script>
         @endpush
 
-    @else
+    @elseif($data['kanbanNotSelected'])
         <div class="text-center mt-5">
             <h1>Select a kanban or create one! </h1>
+        </div>
+    @elseif(is_null($data['kanban']))
+        <div class="text-center mt-5">
+            <h1>Sorry, this kanban couldn't be found. </h1>
         </div>
     @endif
 
