@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\Item;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
@@ -9,6 +8,7 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use App\Models\Col;
 use App\Models\Kanban;
 use App\Models\Invitation;
+use App\Models\Item;
 use View;
 
 class KanbanController extends Controller
@@ -26,7 +26,7 @@ class KanbanController extends Controller
         // $this->middleware('auth');
     }
 
-    public function index($id = null)
+    public function board($id = null)
     {
         $data = [ 'kanbanNotSelected' => false ];
 
@@ -64,6 +64,12 @@ class KanbanController extends Controller
         return view('app.kanban', compact('kanbans', 'data'));
     }
 
+    public function create()
+    {
+        $kanbans = $this->getLayoutData();
+        return view('app.create-kanban', compact('kanbans'));
+    }
+
     public function store(Request $request)
     {
         $data = $request->only('name', 'colname', 'colcolor');
@@ -84,7 +90,7 @@ class KanbanController extends Controller
             $currentCol->kanbanId = $kanban->id;
             $currentCol->save();
         }
-        return redirect(route('kanban.index'));
+        return redirect(route('kanban.board'));
     }
 
     protected function getLayoutData()

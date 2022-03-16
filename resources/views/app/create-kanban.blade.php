@@ -1,7 +1,7 @@
-
+@extends('layout.master',  ['kanbans' => $kanbans])
 
 @section('title')Create Kanban
-
+@endsection
 
 @push('css')
 <link type="text/css" href=" {{ asset('assets/css/vanilla-picker.css') }} ">

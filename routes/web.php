@@ -24,12 +24,11 @@ Route::get('/', function () {
 Route::prefix('kanban')
     ->as('kanban.')
     ->group(function (){
-        Route::get('/{id?}', 'KanbanController@index')
-            ->name('index');
+        Route::get('board/{id?}', 'KanbanController@board')
+            ->name('board');
 
-        Route::get('create', function () {
-            return view('app.create-kanban');
-        })->name('create');
+        Route::get('create', 'KanbanController@create')
+            ->name('create');
 
         Route::post('store', 'KanbanController@store')
             ->name('store');
