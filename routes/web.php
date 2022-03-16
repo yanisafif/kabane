@@ -29,6 +29,14 @@ Route::prefix('kanban')
         Route::get('/', function () {
             return view('app.kanban');
         })->name('index');
+
+        Route::get('create', function () {
+            return view('app.create-kanban');
+        })->name('create');
+
+        Route::post('store', 'KanbanController@store')
+        ->name('store');
+
         Route::get('todo', function () {
             return view('app.todo');
         })->name('todo');
