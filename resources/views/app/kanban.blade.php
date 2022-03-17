@@ -23,43 +23,71 @@
                             </div>
                         </div>
                         <div class="card-body kanban-block">
-                            <div class="kanban-block" id="demo2"></div>
+                            <div class="kanban-block" id="kabane"></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <div class="modal fade" name="creation-modal" id="creation-modal" role="dialog" aria-labelledby="creation-modal" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">New message</h5>
+                        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="mb-3">
+                                <label class="col-form-label" for="recipient-name">Recipient:</label>
+                                <input class="form-control" type="text" value="@getbootstrap">
+                            </div>
+                            <div class="mb-3">
+                                <label class="col-form-label" for="message-text">Message:</label>
+                                <textarea class="form-control"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
+                        <button class="btn btn-primary" type="button">Send message</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         @push('scripts')
         <script src="{{asset('assets/js/jkanban/jkanban.js')}}"></script>
         <script>
 
-            const boards =  new Array(); 
-            
+            const boards = new Array();
+
             (function() {
                 const data = JSON.parse('@json($data["cols"])');
                 const style = document.createElement('style');
-                let i = 1;
                 for(col of data)
                 {
                     style.innerHTML += `
-                        .col${i} {
+                        .col${col.id} {
                             background-color: ${col.colorHexa};
                             color: ${figureTextColor(col.colorHexa)};
-                        } 
+                        }
                     `
                     const board = {
-                        id: '_col' + i,
+                        id: '_col' + col.id,
                         title: col.name,
-                        class: 'col' + i, 
+                        class: 'col' + col.id,
                         item: new Array()
                     }
-    
+
                     for(item of col.items)
                     {
                         board.item.push({
                             title: createItem(item.name, item.created_at)
                         });
                     }
+
                     boards.push(board)
                     i++;
                 }
@@ -68,17 +96,26 @@
             })();
 
             var kanban = new jKanban({
-                element: '#demo2',
+                element: '#kabane',
                 gutter: '15px',
                 click: function (el) {
-                    alert(el.innerHTML);
+                    el.class
                 },
-                boards: boards
+                boards: boards,
+                itemAddOptions: {
+                    enabled: true,                                              // add a button to board for easy item creation
+                    content: '+ Add item',                                                // text or html content of the board button
+                    class: 'kanban-title-button btn btn-default text-center w-100',         // default class of the button
+                    footer: true                                                // position the button on footer
+                }, 
+                buttonClick: (el, boardId) => {
+                    $("#creation-modal").modal('show');
+                    console.log(el, boardId);
+                }
             });
 
             function createItem(name, date) {
                 const dateDisplay = new Date(Date.parse(date)).toLocaleDateString('fr-FR', { year: 'numeric', month: 'numeric', day: 'numeric' });
-                console.log(dateDisplay);
                 return `
                     <a class="kanban-box" href="#"><span class="date">${dateDisplay}</span>
                         <h6>${name}</h6>
@@ -122,7 +159,7 @@
                 });
                 var L = (0.2126 * c[0]) + (0.7152 * c[1]) + (0.0722 * c[2]);
                 return (L > 0.179) ? '#000' : '#fff';
-            } 
+            }
         </script>
         @endpush
 
