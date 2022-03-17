@@ -13,3 +13,5 @@
 <!-- Theme js-->
 <script src="{{asset('assets/js/script.js')}}"></script>
 <!-- Plugin used-->
+<script src="{{asset('assets/js/notify/bootstrap-notify.min.js')}}"></script>
+<script src="{{asset('assets/js/notify/notify-script.js')}}"></script>

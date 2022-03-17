@@ -35,7 +35,7 @@
 	                    </div>
 	                    <div class="form-group">
 	                        <div class="checkbox">
-	                            <input id="checkbox1" type="checkbox" />
+	                            <input id="checkbox1" type="checkbox" name="remember_me"/>
 	                            <label class="text-muted" for="checkbox1">Remember password</label>
 	                        </div>
 
