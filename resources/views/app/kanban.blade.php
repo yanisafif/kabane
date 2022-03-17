@@ -30,7 +30,7 @@
             </div>
         </div>
 
-        <div class="modal-container">
+        <div id="modal-container">
 
         </div>
 
