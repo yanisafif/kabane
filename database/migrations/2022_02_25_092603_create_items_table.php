@@ -16,11 +16,18 @@ class CreateItemsTable extends Migration
         Schema::create('items', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name', 50);
+            $table->text('description');
             $table->timestamps();
             $table->unsignedBigInteger('itemOrder');
 
             $table->unsignedBigInteger('colId');
+            $table->unsignedBigInteger('assignedUserId')->nullable();
+            $table->unsignedBigInteger('ownerUserId');
+
             $table->foreign('colId')->references('id')->on('cols');
+            $table->foreign('assignedUserId')->references('id')->on('users');
+            $table->foreign('ownerUserId')->references('id')->on('users');
+
         });
     }
 
