@@ -22,9 +22,7 @@ let kanban;
 
         for(item of col.items)
         {
-            board.item.push({
-                title: createItem(item)
-            });
+            board.item.push(createItem(item));
         }
 
         boards.push(board)
@@ -74,7 +72,7 @@ function displayCreateModal(colId) {
                             <input class="form-control" name="assigned" type="text" value="">
                         </div>
                         <div class="mb-3">
-                            <label class="col-form-label" for="message-text">Message:</label>
+                            <label class="col-form-label" for="message-text">Description:</label>
                             <textarea class="form-control" name="description"></textarea>
                         </div>
                     </form>
@@ -93,8 +91,18 @@ function displayCreateModal(colId) {
     
     submitBtn.onclick = () => {
         const formData = $('#creation-form').serializeArray();
+
+
+        const name = formData[0].value;
+        const description = formData[2].value;
         
-        console.log(formData);
+        kanban.addElement(colId, 
+            createItem({
+                created_at: new Date().toDateString(), 
+                item_name: name, 
+                description,
+            })
+        );
 
     }
 
@@ -109,22 +117,22 @@ function displayCreateModal(colId) {
 
 function createItem(item) {
     const dateDisplay = new Date(Date.parse(item.created_at)).toLocaleDateString('fr-FR', { year: 'numeric', month: 'numeric', day: 'numeric' });
-    return `
-        <a class="kanban-box overflow-hidden" style="max-height: 150px" href="#">
+    return {
+        title: `<a class="kanban-box overflow-hidden" style="max-height: 150px" href="#">
             <div class="row">
                 <div class="col">
                     <span >${dateDisplay}</span>
                     <h6>${item.item_name}</h6>
                 </div>
                 <div class="col text-end">
-                    Assigned to: ${item.ownerUser_name} 
+                    ${item.ownerUser_name ? 'Assigned to: ' +item.ownerUser_name : 'Unassigned' } 
                 </div>
             </div>
             <div class="d-flex mt-2 overflow-hidden" stye>
                 ${item.description}
             </div>
-        </a>
-    `; 
+        </a>`
+    }; 
 }
 
 function figureTextColor(bgColor) {
