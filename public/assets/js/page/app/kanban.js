@@ -23,7 +23,7 @@ let kanban;
         for(item of col.items)
         {
             board.item.push({
-                title: createItem(item.item_name, item.created_at, item.description)
+                title: createItem(item)
             });
         }
 
@@ -107,13 +107,21 @@ function displayCreateModal(colId) {
 }
 
 
-function createItem(name, date, description) {
-    const dateDisplay = new Date(Date.parse(date)).toLocaleDateString('fr-FR', { year: 'numeric', month: 'numeric', day: 'numeric' });
+function createItem(item) {
+    const dateDisplay = new Date(Date.parse(item.created_at)).toLocaleDateString('fr-FR', { year: 'numeric', month: 'numeric', day: 'numeric' });
     return `
-        <a class="kanban-box overflow-hidden" style="max-height: 150px" href="#"><span class="date">${dateDisplay}</span>
-            <h6>${name}</h6>
-            <div class="d-flex mt-3 overflow-hidden" stye>
-                ${description}
+        <a class="kanban-box overflow-hidden" style="max-height: 150px" href="#">
+            <div class="row">
+                <div class="col">
+                    <span >${dateDisplay}</span>
+                    <h6>${item.item_name}</h6>
+                </div>
+                <div class="col text-end">
+                    Assigned to: ${item.ownerUser_name} 
+                </div>
+            </div>
+            <div class="d-flex mt-2 overflow-hidden" stye>
+                ${item.description}
             </div>
         </a>
     `; 
