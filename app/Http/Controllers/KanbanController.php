@@ -15,7 +15,6 @@ class KanbanController extends Controller
 {
     protected  $tempCurrentUerId = '1';
 
-    protected $layout = 'layout.master';
     /**
      * Create a new controller instance.
      *
@@ -95,34 +94,29 @@ class KanbanController extends Controller
 
     protected function getLayoutData()
     {
-        if(!is_null($this->layout))
-        {
-            $data = Kanban::query()
-                ->where('ownerUserId', '=', $this->tempCurrentUerId)
-                ->orWhereIn(
-                    'id',
-                    Invitation::query()
-                        ->where('userId', '=', $this->tempCurrentUerId)
-                        ->select('userId')
-                        ->get()
-                )
-                ->select('id', 'name', 'isActive', 'ownerUserId')
-                ->get();
+        $data = Kanban::query()
+            ->where('ownerUserId', '=', $this->tempCurrentUerId)
+            ->orWhereIn(
+                'id',
+                Invitation::query()
+                    ->where('userId', '=', $this->tempCurrentUerId)
+                    ->select('userId')
+                    ->get()
+            )
+            ->select('id', 'name', 'isActive', 'ownerUserId')
+            ->get();
 
-            foreach ($data as $item)
+        foreach ($data as $item)
+        {
+            if($item['ownerUserId'] == $this->tempCurrentUerId)
             {
-                if($item['ownerUserId'] == $this->tempCurrentUerId)
-                {
-                    $item['isOwner'] = true;
-                }
-                else
-                {
-                    $item['isOwner'] = false;
-                }
+                $item['isOwner'] = true;
             }
-            return $data;
-            // $this->layout = View::make($this->layout, $data);
+            else
+            {
+                $item['isOwner'] = false;
+            }
         }
-        return null;
+        return $data;
     }
 }
