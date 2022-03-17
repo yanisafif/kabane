@@ -3,7 +3,6 @@
 <script src="{{asset('assets/js/icons/feather-icon/feather.min.js')}}"></script>
 <script src="{{asset('assets/js/icons/feather-icon/feather-icon.js')}}"></script>
 <!-- Sidebar jquery-->
-<script src="{{asset('assets/js/sidebar-menu.js')}}"></script>
 <script src="{{asset('assets/js/config.js')}}"></script>
 <!-- Bootstrap js-->
 <script src="{{asset('assets/js/bootstrap/popper.min.js')}}"></script>
@@ -13,9 +12,6 @@
 <!-- Plugins JS Ends-->
 <!-- Theme js-->
 <script src="{{asset('assets/js/script.js')}}"></script>
-{{-- <script src="{{asset('assets/js/theme-customizer/customizer.js')}}"></script> --}}
 <!-- Plugin used-->
-
-
 <script src="{{asset('assets/js/notify/bootstrap-notify.min.js')}}"></script>
 <script src="{{asset('assets/js/notify/notify-script.js')}}"></script>

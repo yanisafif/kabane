@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\AuthController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,7 +15,7 @@
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('index.international');
 // Route::get('/kanban', function () {
 //     return view('app.kanban');
 // });
@@ -45,4 +47,23 @@ Route::prefix('kanban')
             return view('app.chat');
         })->name('chat');
 
+    });
+
+Route::prefix('user')
+    ->as('user.')
+    ->group(function (){
+
+        Route::get('/login', function () {
+            return view('user.login');
+        })->name('login');
+
+        Route::post('post-login', [AuthController::class, 'postLogin'])->name('login.post');
+
+        Route::get('/sign-up', function () {
+            return view('user.sign-up');
+        })->name('sign.up');
+
+        Route::post('post-register', [AuthController::class, 'postRegistration'])->name('register.post');
+
+        Route::get('logout', [AuthController::class, 'logOut'])->name('logout');
     });
