@@ -36,38 +36,55 @@ class KanbanController extends Controller
         }
         else
         {
-           $data['kanban'] =  Kanban::query()
+            $data['kanban'] =  Kanban::query()
                ->where('id', '=', $id)
                ->select('id', 'name', 'isActive', 'created_at', 'ownerUserId')
                ->first();
 
-           if(!is_null($data['kanban']) && $this->checkIfKanbanAllow($data['kanban']))
-           {
+            if(!is_null($data['kanban']) && $this->checkIfKanbanAllow($data['kanban']))
+            {
                $cols = Col::query()
                    ->where('kanbanId', '=', $id)
                    ->orderBy('colOrder')
                    ->select('id', 'name', 'colorHexa', 'colOrder')
                    ->get();
 
-               foreach($cols as $col)
-               {
-                   $col['items'] = Item::query()
-                       ->where('colId', '=', $col['id'])
-                       ->orderBy('colId')
-                       ->leftJoin('users AS assignedUser', 'assignedUser.id' , '=',  'items.assignedUserId' )
-                       ->join('users AS ownerUser', 'items.ownerUserId' , '=', 'ownerUser.id')
-                       ->select('items.id as item_id', 'items.name as item_name', 'description', 'items.created_at', 'items.updated_at', 'itemOrder',
-                           'assignedUser.name as assignedUser_name', 'assignedUser.email as assignedUser_email', 'assignedUser.id as assignedUser_id',
-                           'ownerUser.name as ownerUser_name', 'ownerUser.email as ownerUser_email', 'ownerUser.id as ownerUser_id'
+                foreach($cols as $col)
+                {
+                    $col['items'] = Item::query()
+                        ->where('colId', '=', $col['id'])
+                        ->orderBy('colId')
+                        ->leftJoin('users AS assignedUser', 'assignedUser.id' , '=',  'items.assignedUserId' )
+                        ->join('users AS ownerUser', 'items.ownerUserId' , '=', 'ownerUser.id')
+                        ->select('items.id as item_id', 'items.name as item_name', 'description', 'items.created_at', 'items.updated_at', 'itemOrder',
+                            'assignedUser.name as assignedUser_name', 'assignedUser.email as assignedUser_email', 'assignedUser.id as assignedUser_id',
+                            'ownerUser.name as ownerUser_name', 'ownerUser.email as ownerUser_email', 'ownerUser.id as ownerUser_id'
                         )
-                       ->get();
-               }
-               $data['cols'] = $cols;
-           }
-           else
-           {
-               $data['kanban'] = null;
-           }
+                        ->get();
+                }
+                $data['cols'] = $cols;
+                
+                $peopleAccessBoard = Invitation::query()
+                    ->where('kanbanId', '=', $id)
+                    ->join('users', 'users.id', '=', 'invitations.userId')
+                    ->select('name')
+                    ->get();
+
+                $peopleAccessBoard->add(
+                    User::query()
+                        ->join('kanbans', 'kanbans.ownerUserId', '=', 'users.id')
+                        ->where('kanbans.id', '=', $id)
+                        ->select('kanbans.name', 'kanbans.id')
+                        ->first()
+                );
+               
+                $data['people'] = $peopleAccessBoard;
+
+            }
+            else
+            {
+                $data['kanban'] = null;
+            }
 
         }
         $kanbans = $this->getLayoutData();
@@ -173,7 +190,7 @@ class KanbanController extends Controller
         $item->itemOrder = 1;
         $item->save();
 
-        return response()->json(['status' => 'Item saved successfully']);
+        return response()->with('success', 'You are now logged in.');//json(['status' => 'Item saved successfully'])->with('success', 'You are now logged in.');
     }
 
     protected function checkIfKanbanAllow($kanban)

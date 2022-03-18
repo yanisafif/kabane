@@ -35,8 +35,12 @@
 
         </div>
 
-        <div class="d-none" id="data">
-            @json($data)
+        <div class="d-none" id="dataCols">
+            @json($data['cols'])
+        </div>
+        
+        <div class='d-none' id="dataPeople">
+            @json($data['people'])
         </div>
 
         @push('scripts')
