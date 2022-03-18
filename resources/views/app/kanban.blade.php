@@ -16,6 +16,7 @@
                     <div class="card">
                         <div class="card-header pb-0">
                             <h5> {{ $data['kanban']['name'] }} </h5>
+                            <span class="date"> {{ date('j F, Y', strtotime($data['kanban']['created_at'])) }} </span>
                             <div class="mt-2">
                                 <button class="btn btn-primary" id="addDefault">Add &quot;Default&quot; board</button>
                                 <button class="btn btn-secondary" id="addToDo">Add element in &quot;To Do&quot; Board</button>
@@ -35,7 +36,7 @@
         </div>
 
         <div class="d-none" id="data">
-            @json($data["cols"])
+            @json($data)
         </div>
 
         @push('scripts')

@@ -1,5 +1,5 @@
 window.post = function(url, data) {
-    return fetch(url, {method: "POST", headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)});
+    return fetch(url, {method: "POST", headers: {'Content-Type': 'application/json','X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}, body: JSON.stringify(data)});
 }
 
 const modalContainer =  document.getElementById('modal-container');
@@ -9,7 +9,7 @@ let kanban;
     const data = JSON.parse(document.getElementById('data').textContent);
     console.log(data);
     const style = document.createElement('style');
-    for(col of data)
+    for(col of data.cols)
     {
         style.innerHTML += `
             .col${col.id} {
@@ -22,7 +22,7 @@ let kanban;
             title: col.name,
             class: 'col' + col.id,
             item: new Array()
-        }
+        };
 
         for(item of col.items)
         {
@@ -99,6 +99,8 @@ function displayCreateModal(colId) {
         const name = formData[0].value;
         const description = formData[2].value;
         
+        console.log(colId.substring(3, 4));
+
         kanban.addElement(colId, 
             createItem({
                 created_at: new Date().toDateString(), 
@@ -107,9 +109,18 @@ function displayCreateModal(colId) {
             })
         );
 
-        post('kanban/storeItem', {
+        window.post('/kanban/store-item', {
             name, 
-            description
+            description, 
+            colId: parseInt(colId.substring(4))
+        }).then((res) => {
+            console.log(res);
+            return (res.text())
+        }).then((res) => {
+            console.log(res);
+        })
+        .catch((err) => {
+            console.log(err);
         })
 
     }
@@ -124,7 +135,7 @@ function displayCreateModal(colId) {
 
 
 function createItem(item) {
-    const dateDisplay = new Date(Date.parse(item.created_at)).toLocaleDateString('fr-FR', { year: 'numeric', month: 'numeric', day: 'numeric' });
+    const dateDisplay = new Date(Date.parse(item.created_at)).toLocaleDateString('en-GB', { day: "numeric", month: 'short', year: 'numeric' });
     return {
         title: `<a class="kanban-box overflow-hidden" style="max-height: 150px" href="#">
             <div class="row">

@@ -11,6 +11,8 @@ use App\Models\Invitation;
 use App\Models\Item;
 use App\Models\User;
 use View;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class KanbanController extends Controller
 {
@@ -21,7 +23,7 @@ class KanbanController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        //$this->middleware('auth');
     }
 
     public function board($id = null)
@@ -36,9 +38,10 @@ class KanbanController extends Controller
         {
            $data['kanban'] =  Kanban::query()
                ->where('id', '=', $id)
+               ->select('id', 'name', 'isActive', 'created_at', 'ownerUserId')
                ->first();
 
-           if(!is_null($data['kanban']))
+           if(!is_null($data['kanban']) && $this->checkIfKanbanAllow($data['kanban']))
            {
                $cols = Col::query()
                    ->where('kanbanId', '=', $id)
@@ -60,6 +63,10 @@ class KanbanController extends Controller
                        ->get();
                }
                $data['cols'] = $cols;
+           }
+           else
+           {
+               $data['kanban'] = null;
            }
 
         }
@@ -120,12 +127,68 @@ class KanbanController extends Controller
                 continue;
             }
 
-            $invite = new Invitation; 
-            $invite->userId = $user->id; 
+            $invite = new Invitation;
+            $invite->userId = $user->id;
             $invite->kanbanId = $kanban->id;
             $invite->save();
         }
         return redirect(route('kanban.board'));
+    }
+
+    public function storeItem(Request $request)
+    {
+        
+        $rules = [
+            "name" => "required|max:50",
+            "description" => "required",
+            "colId" => "required|numeric"
+        ];
+
+        // Validate the form with is data
+        $validator = Validator::make($request->all(), $rules);
+
+        // If data dont respect the validation rules, redirect on same page with error
+        if ($validator->fails())
+        {
+            return response(json_encode(['status' => 'BLA IFIEBF']), 400, ['Content-Type' => 'application/json']);
+        }
+        
+        $data = $request->only('name', 'description', 'colId');
+        
+        $kanban = Kanban::query()
+            ->join('cols', 'cols.kanbanId', '=', 'kanbans.id')
+            ->where('cols.id', '=', $data['colId'])
+            ->first();
+
+        if(is_null($kanban))
+            return response(json_encode(['status' => 'Kanban not found']), 400, ['Content-Type' => 'application/json']);
+        if(!$this->checkIfKanbanAllow($kanban))
+            return response(json_encode(['status' => 'You\'re not allowed to do that']), 403, ['Content-Type' => 'application/json']);
+
+        $item = new Item;
+        $item->name = $data['name'];
+        $item->description = $data['description'];
+        $item->colId = $data['colId'];
+        $item->ownerUserId = \Auth::user()->id;
+        $item->itemOrder = 1;
+        $item->save();
+
+        return response()->json(['status' => 'Item saved successfully']);
+    }
+
+    protected function checkIfKanbanAllow($kanban)
+    {
+        $userId = \Auth::user()->id;
+
+        if($kanban->ownerUserId == $userId)
+            return true;
+
+        $res = Invitation::query()
+            ->where('userId', '=', $userId)
+            ->where('kanbanId', '=', $kanban->id)
+            ->first();
+
+        return !is_null($res);
     }
 
     protected function getLayoutData()
@@ -154,19 +217,5 @@ class KanbanController extends Controller
             }
         }
         return $data;
-    }
-
-    public function storeItem(Request $request)
-    {
-        $request->validate([
-            "name" => "required|max:50",
-            "description" => "required",
-            "colId" => "required|numeric"
-        ]);
-
-        $data = $request->only('name', 'description', 'colId');
-
-        $item = new Item;
-        // $item->ge
     }
 }
