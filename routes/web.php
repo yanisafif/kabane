@@ -28,24 +28,24 @@ Route::prefix('kanban')
     ->group(function (){
         Route::get('/', function () {
             return view('app.kanban');
-        })->name('index');
+        })->name('index')->middleware('auth');
 
         Route::get('create', function () {
             return view('app.create-kanban');
-        })->name('create');
+        })->name('create')->middleware('auth');
 
         Route::post('store', 'KanbanController@store')
-        ->name('store');
+        ->name('store')->middleware('auth');
 
         Route::get('todo', function () {
             return view('app.todo');
-        })->name('todo');
+        })->name('todo')->middleware('auth');
         Route::get('callendar', function () {
             return view('app.callendar');
-        })->name('callendar');
+        })->name('callendar')->middleware('auth');
         Route::get('chat', function () {
             return view('app.chat');
-        })->name('chat');
+        })->name('chat')->middleware('auth');
 
     });
 
@@ -55,15 +55,15 @@ Route::prefix('user')
 
         Route::get('/login', function () {
             return view('user.login');
-        })->name('login');
+        })->name('login')->middleware('guest');
 
-        Route::post('post-login', [AuthController::class, 'postLogin'])->name('login.post');
+        Route::post('post-login', [AuthController::class, 'postLogin'])->name('login.post')->middleware('guest');
 
         Route::get('/sign-up', function () {
             return view('user.sign-up');
-        })->name('sign.up');
+        })->name('sign.up')->middleware('guest');
 
-        Route::post('post-register', [AuthController::class, 'postRegistration'])->name('register.post');
+        Route::post('post-register', [AuthController::class, 'postRegistration'])->name('register.post')->middleware('guest');
 
-        Route::get('logout', [AuthController::class, 'logOut'])->name('logout');
+        Route::get('logout', [AuthController::class, 'logOut'])->name('logout')->middleware('auth');
     });
