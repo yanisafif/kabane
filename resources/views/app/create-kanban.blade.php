@@ -21,9 +21,19 @@
 	                        <div class="form-group">
 	                            <label>Name</label>
 								<div class="input-group">
-									<input class="form-control" maxlength="50" name="name" type="text" required />
+									<input class="form-control" maxlength="25" name="name" type="text" required />
 								</div>
 	                        </div>
+                            <div class="form-group mb-1" id="invite-field-container">
+	                            <label class="d-block mb-0">People to invite</label>
+                                <span>Write their name or email</span>
+								<div class="input-group">
+									<input class="form-control m-r-20" maxlength="50" name="invite[0]" type="text"/>
+								</div>
+	                        </div>
+                            <div class="pointer text-end mt-2" style="cursor: pointer">
+                                <a class="link text-underline" onclick="addInvite()" > + Add invite field</a>
+                            </div>
 	                        <div class="form-group mb-1">
 								<label>Columns</label>
                                 <div id="col-fields-container">
@@ -65,52 +75,7 @@
 
     @push('scripts')
         <script src="https://unpkg.com/vanilla-picker@2"></script>
-        <script>
-            var colorFields = document.getElementsByClassName('color-field');
-            for(const colorField of colorFields) {
-
-                createPicker(colorField);
-            }
-
-            function createPicker(colorField) {
-                const picker = new Picker(colorField);
-                picker.onChange = function(color) {
-                    colorField.querySelector('input').value = color.hex;
-                };
-            }
-
-            function onAddColumn(element) {
-                createPicker(element.querySelector('div.color-field'));
-            }
-        </script>
-        <script>
-            let n = 2;
-            let colContainer = document.getElementById("col-fields-container");
-
-            function addCol() {
-                let element = document.createElement('div');
-                element.classList.add('small-group', 'mt-1');
-                element.id = 'col-' + n;
-
-                element.innerHTML =
-                        '<div class="input-group">' +
-                            '<span class="input-group-text"> Name</span>' +
-                            '<input class="form-control" type="text" maxlength="50" name="colname['+ n +']" required="" />' +
-                        '</div>' +
-                        '<div class="input-group color-field">' +
-                            '<span class="input-group-text">Color</span>' +
-                            '<input class="form-control" type="text" maxlength="9" name="colcolor['+ n +']" required="" />' +
-                        '</div>' +
-                        '<img style="width: 20px; height: 20px" src="{{ asset('assets/svg/close.svg')  }}" onclick="deleteCol(' + n + ')">';
-                colContainer.appendChild(element);
-                onAddColumn(element)
-                n++;
-            }
-
-            function deleteCol(id) {
-                colContainer.removeChild(document.getElementById('col-' + id))
-            }
-        </script>
+        <script src="{{asset('assets/js/page/app/create-kanban.js')}}"></script>
     @endpush
 
 @endsection

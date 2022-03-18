@@ -9,12 +9,11 @@ use App\Models\Col;
 use App\Models\Kanban;
 use App\Models\Invitation;
 use App\Models\Item;
+use App\Models\User;
 use View;
 
 class KanbanController extends Controller
 {
-    protected  $tempCurrentUerId = '1';
-
     /**
      * Create a new controller instance.
      *
@@ -22,7 +21,7 @@ class KanbanController extends Controller
      */
     public function __construct()
     {
-        // $this->middleware('auth');
+        $this->middleware('auth');
     }
 
     public function board($id = null)
@@ -76,16 +75,22 @@ class KanbanController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->only('name', 'colname', 'colcolor');
+        $request->validate([
+            "name" => "required|max:25",
+            "colname" => "required|array|min:2",
+            "colcolor" => "required|array|min:2",
+            "invite" => "present|array"
+        ]);
 
+        $data = $request->only('name', 'colname', 'colcolor', 'invite');
         $kanban = new Kanban;
         $kanban->name = $data['name'];
         $kanban->isActive = true;
-        $kanban->ownerUserId = $this->tempCurrentUerId;
+        $kanban->ownerUserId = \Auth::user()->id;
         $kanban->save();
-        $len = count($data['colname']);
 
-        for($i = 0; $i < $len; $i++)
+        $lenCol = count($data['colname']);
+        for($i = 0; $i < $lenCol; $i++)
         {
             $currentCol = new Col;
             $currentCol->name = $data['colname'][$i];
@@ -94,17 +99,43 @@ class KanbanController extends Controller
             $currentCol->kanbanId = $kanban->id;
             $currentCol->save();
         }
+
+        $lenInvite = count($data['invite']);
+        for($i = 0; $i < $lenInvite; $i++)
+        {
+            $item = $data['invite'][$i];
+            if(is_null($item))
+            {
+                continue;
+            }
+
+            $user = User::query()
+                ->where('name', '=', $item)
+                ->orWhere('email', '=', $item)
+                ->select('id')
+                ->first();
+
+            if(is_null($user))
+            {
+                continue;
+            }
+
+            $invite = new Invitation; 
+            $invite->userId = $user->id; 
+            $invite->kanbanId = $kanban->id;
+            $invite->save();
+        }
         return redirect(route('kanban.board'));
     }
 
     protected function getLayoutData()
     {
         $data = Kanban::query()
-            ->where('ownerUserId', '=', $this->tempCurrentUerId)
+            ->where('ownerUserId', '=', \Auth::user()->id)
             ->orWhereIn(
                 'id',
                 Invitation::query()
-                    ->where('userId', '=', $this->tempCurrentUerId)
+                    ->where('userId', '=', \Auth::user()->id)
                     ->select('userId')
                     ->get()
             )
@@ -113,7 +144,7 @@ class KanbanController extends Controller
 
         foreach ($data as $item)
         {
-            if($item['ownerUserId'] == $this->tempCurrentUerId)
+            if($item['ownerUserId'] == \Auth::user()->id)
             {
                 $item['isOwner'] = true;
             }
