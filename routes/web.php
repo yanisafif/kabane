@@ -33,6 +33,9 @@ Route::prefix('kanban')
         Route::post('store', 'KanbanController@store')
             ->name('store');
 
+        Route::post('store-item', 'KanbanController@storeItem')
+            ->name('store-item');
+
         Route::get('todo/{id?}', function () {
             return view('app.todo');
         })->name('todo');

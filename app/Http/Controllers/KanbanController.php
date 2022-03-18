@@ -124,4 +124,18 @@ class KanbanController extends Controller
         }
         return $data;
     }
+
+    public function storeItem(Request $request)
+    {
+        $request->validate([
+            "name" => "required|max:50",
+            "description" => "required",
+            "colId" => "required|numeric"
+        ]);
+
+        $data = $request->only('name', 'description', 'colId');
+
+        $item = new Item;
+        // $item->ge
+    }
 }

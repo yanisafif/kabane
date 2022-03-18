@@ -1,3 +1,7 @@
+window.post = function(url, data) {
+    return fetch(url, {method: "POST", headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)});
+}
+
 const modalContainer =  document.getElementById('modal-container');
 let kanban;
 (function() {
@@ -92,7 +96,6 @@ function displayCreateModal(colId) {
     submitBtn.onclick = () => {
         const formData = $('#creation-form').serializeArray();
 
-
         const name = formData[0].value;
         const description = formData[2].value;
         
@@ -103,6 +106,11 @@ function displayCreateModal(colId) {
                 description,
             })
         );
+
+        post('kanban/storeItem', {
+            name, 
+            description
+        })
 
     }
 
