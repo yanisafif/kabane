@@ -149,7 +149,7 @@ class KanbanController extends Controller
             $invite->kanbanId = $kanban->id;
             $invite->save();
         }
-        return redirect(route('kanban.board'));
+        return redirect(route('kanban.board') . '/' . $kanban->id);
     }
 
     public function storeItem(Request $request)
