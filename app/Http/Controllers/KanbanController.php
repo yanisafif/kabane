@@ -67,14 +67,14 @@ class KanbanController extends Controller
                 $peopleAccessBoard = Invitation::query()
                     ->where('kanbanId', '=', $id)
                     ->join('users', 'users.id', '=', 'invitations.userId')
-                    ->select('name')
+                    ->select('users.name', 'users.id')
                     ->get();
 
                 $peopleAccessBoard->add(
                     User::query()
                         ->join('kanbans', 'kanbans.ownerUserId', '=', 'users.id')
                         ->where('kanbans.id', '=', $id)
-                        ->select('kanbans.name', 'kanbans.id')
+                        ->select('users.name', 'users.id')
                         ->first()
                 );
                
@@ -154,11 +154,11 @@ class KanbanController extends Controller
 
     public function storeItem(Request $request)
     {
-        
         $rules = [
             "name" => "required|max:50",
             "description" => "required",
-            "colId" => "required|numeric"
+            "colId" => "required|numeric", 
+            "assign" => "required|numeric"
         ];
 
         // Validate the form with is data
@@ -167,10 +167,10 @@ class KanbanController extends Controller
         // If data dont respect the validation rules, redirect on same page with error
         if ($validator->fails())
         {
-            return response(json_encode(['status' => 'BLA IFIEBF']), 400, ['Content-Type' => 'application/json']);
+            return response(json_encode(['status' => 'Form not valid ']), 400, ['Content-Type' => 'application/json']);
         }
         
-        $data = $request->only('name', 'description', 'colId');
+        $data = $request->only('name', 'description', 'colId', "assign");
         
         $kanban = Kanban::query()
             ->join('cols', 'cols.kanbanId', '=', 'kanbans.id')
@@ -187,10 +187,11 @@ class KanbanController extends Controller
         $item->description = $data['description'];
         $item->colId = $data['colId'];
         $item->ownerUserId = \Auth::user()->id;
+        $item->assignedUserId = ($data['assign'] > 0 ? $data['assign'] : NULL);
         $item->itemOrder = 1;
         $item->save();
 
-        return response()->with('success', 'You are now logged in.');//json(['status' => 'Item saved successfully'])->with('success', 'You are now logged in.');
+        return response()->json(['status' => 'Item saved successfully', 'itemId' => $item->id]);
     }
 
     protected function checkIfKanbanAllow($kanban)

@@ -62,10 +62,11 @@ function displayCreateModal(colId) {
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">New item</h5>
+                    <h5 class="modal-title"> New item</h5>
                     <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <span class="text-danger" id="form-error-label"></span>
                     <form id="creation-form">
                         <div class="mb-3">
                             <label class="col-form-label" for="recipient-name">Title:</label>
@@ -91,12 +92,12 @@ function displayCreateModal(colId) {
         </div>
     </div>
     `
-
+    
     modalContainer.appendChild(modal)
     const select = document.getElementById('select-people')
-
+    
     const people = JSON.parse(document.getElementById('dataPeople').textContent)
-
+    
     for(const person of people) {
         const option = document.createElement('option')
         option.textContent = person.name
@@ -107,45 +108,50 @@ function displayCreateModal(colId) {
     const submitBtn = document.getElementById('modal-submit-btn')
     
     submitBtn.onclick = () => {
+        $('#form-error-label').text('')
         const formData = $('#creation-form').serializeArray()
-        console.log(formData)
         const name = formData[0].value
+        const assign = parseInt(formData[1].value)
         const description = formData[2].value
-        
-        kanban.addElement(colId, 
-            createItem({
-                created_at: new Date().toDateString(), 
-                item_name: name, 
-                description,
-            })
-        );
 
         window.post('/kanban/store-item', {
             name, 
             description, 
+            assign: assign,
             colId: parseInt(colId.substring(4))
         })
-        .then((res) => {
-            console.log(res)
+        .then(async (res) => {
+
+            const json = await res.json()
+            console.log(json)
+
+            if(!res.ok) {
+                if(res.status) {
+                    $('#form-error-label').text(json.status)
+                }
+                else {
+                    $('#form-error-label').text('An error occurred')
+                }
+                return
+            }
+
             kanban.addElement(colId, 
                 createItem({
                     created_at: new Date().toDateString(), 
                     item_name: name, 
                     description,
+                    assignedUser_name: people.find(f => f.id === assign).name, 
+                    item_id: json.itemId
                 })
             );
+
             $("#creation-modal").modal('hide'); 
         })
-        .catch((err) => {
-            console.log(err)
-        })
-
     }
 
     $("#creation-modal").modal('show');
 
     $('#creation-modal').on('hidden.bs.modal', function (e) {
-        console.log('here', e);
         modalContainer.removeChild(modal);
     })
 }
@@ -154,14 +160,14 @@ function displayCreateModal(colId) {
 function createItem(item) {
     const dateDisplay = new Date(Date.parse(item.created_at)).toLocaleDateString('en-GB', { day: "numeric", month: 'short', year: 'numeric' });
     return {
-        title: `<a class="kanban-box overflow-hidden" style="max-height: 150px" href="#">
+        title: `<a class="kanban-box overflow-hidden" id="item-${item.item_id}" style="max-height: 150px" href="#">
             <div class="row">
                 <div class="col">
                     <span >${dateDisplay}</span>
                     <h6>${item.item_name}</h6>
                 </div>
                 <div class="col text-end">
-                    ${item.ownerUser_name ? 'Assigned to: ' +item.ownerUser_name : 'Unassigned' } 
+                    ${item.assignedUser_name ? 'Assigned to: ' + item.assignedUser_name : 'Unassigned' } 
                 </div>
             </div>
             <div class="d-flex mt-2 overflow-hidden" stye>
@@ -185,4 +191,10 @@ function figureTextColor(bgColor) {
     });
     var L = (0.2126 * c[0]) + (0.7152 * c[1]) + (0.0722 * c[2]);
     return (L > 0.179) ? '#000' : '#fff';
+}
+
+function read(body) {
+    body.text().then((res) => {
+        console.log(res)
+    })
 }
