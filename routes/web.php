@@ -26,24 +26,25 @@ Route::get('/', function () {
 Route::prefix('kanban')
     ->as('kanban.')
     ->group(function (){
-        Route::get('/', function () {
-            return view('app.kanban');
-        })->name('index');
+        Route::get('board/{id?}', 'KanbanController@board')
+            ->name('board');
 
-        Route::get('create', function () {
-            return view('app.create-kanban');
-        })->name('create');
+        Route::get('create', 'KanbanController@create')
+            ->name('create');
 
         Route::post('store', 'KanbanController@store')
-        ->name('store');
+            ->name('store');
 
-        Route::get('todo', function () {
+        Route::post('store-item', 'KanbanController@storeItem')
+            ->name('store-item');
+
+        Route::get('todo/{id?}', function () {
             return view('app.todo');
         })->name('todo');
-        Route::get('callendar', function () {
+        Route::get('callendar/{id?}', function () {
             return view('app.callendar');
         })->name('callendar');
-        Route::get('chat', function () {
+        Route::get('chat/{id?}', function () {
             return view('app.chat');
         })->name('chat');
 

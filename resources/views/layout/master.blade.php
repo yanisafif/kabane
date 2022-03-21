@@ -25,6 +25,7 @@
     <div class="loader-wrapper">
       <div class="theme-loader"></div>
     </div>
+
     <!-- Loader ends-->
     <!-- page-wrapper Start-->
     <div class="page-wrapper compact-sidebar" id="pageWrapper">
@@ -34,7 +35,7 @@
       <!-- Page Body Start-->
       <div class="page-body-wrapper sidebar-icon">
         <!-- Page Sidebar Start-->
-        @includeIf('layout.partials.sidebar')
+        @includeIf('layout.partials.sidebar', ['kanbans' => $kanbans])
         <!-- Page Sidebar Ends-->
         <div class="page-body">
           <!-- Container-fluid starts-->
