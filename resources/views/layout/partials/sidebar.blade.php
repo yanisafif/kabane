@@ -20,13 +20,13 @@
                     <li class="dropdown">
                         <a href="{{route('kanban.create')}}" class="nav-link menu-title link-nav" href="#"><i data-feather="plus-square"></i><span>Create a new Kanban</span></a>
                     </li>
+
                     <li class="sidebar-main-title">
                         <div>
                             <h6>My kanban</h6>
                         </div>
                     </li>
-
-                    @foreach($kanbans as $kanban)
+                    @foreach($kanbans['ownedKanban'] as $kanban)
                         <li class="dropdown">
                             <a class="nav-link menu-title  prefixActive('/dashboard') " href="javascript:void(0)"><i data-feather="home"></i><span> {{$kanban['name']}} </span></a>
                             <ul class="nav-submenu menu-content" style="display:  prefixBlock('/dashboard') ;">
@@ -37,20 +37,23 @@
                             </ul>
                         </li>
                     @endforeach
+
                     <li class="sidebar-main-title">
                         <div>
                             <h6>Collaborative Kanban</h6>
                         </div>
                     </li>
-                    <li class="dropdown">
-                        <a class="nav-link menu-title  prefixActive('/ui-kits') " href="javascript:void(0)"><i data-feather="box"></i><span>Create new house</span></a>
-                        <ul class="nav-submenu menu-content" style="display:  prefixBlock('/ui-kits') ;">
-                            <li><a href="{{route('kanban.board')}}" class="routeActive('index')">Kanban</a></li>
-                            <li><a href="{{route('kanban.chat')}}" class="routeActive('dashboard-02')">Chat & collab</a></li>
-                            <li><a href="{{route('kanban.callendar')}}" class="routeActive('dashboard-02')">Callendar</a></li>
-                            <li><a href="{{route('kanban.todo')}}" class="routeActive('dashboard-02')">To do</a></li>
-                        </ul>
-                    </li>
+                    @foreach($kanbans['invitedKanban'] as $kanban)
+                        <li class="dropdown">
+                            <a class="nav-link menu-title  prefixActive('/dashboard') " href="javascript:void(0)"><i data-feather="home"></i><span> {{$kanban['name']}} </span></a>
+                            <ul class="nav-submenu menu-content" style="display:  prefixBlock('/dashboard') ;">
+                                <li><a href="{{route('kanban.board') . '/' . $kanban['id']}}" class="routeActive('index')">Kanban</a></li>
+                                <li><a href="{{route('kanban.chat') . '/' . $kanban['id'] }}" class="routeActive('dashboard-02')">Chat & collab</a></li>
+                                <li><a href="{{route('kanban.callendar') . '/' . $kanban['id']}}" class="routeActive('dashboard-02')">Callendar</a></li>
+                                <li><a href="{{route('kanban.todo') . '/' . $kanban['id'] }}" class="routeActive('dashboard-02')">To do</a></li>
+                            </ul>
+                        </li>
+                    @endforeach
                 </ul>
             </div>
             <div class="right-arrow" id="right-arrow"><i data-feather="arrow-right"></i></div>

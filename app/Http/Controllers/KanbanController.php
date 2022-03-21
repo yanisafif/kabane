@@ -211,29 +211,25 @@ class KanbanController extends Controller
 
     protected function getLayoutData()
     {
-        $data = Kanban::query()
-            ->where('ownerUserId', '=', \Auth::user()->id)
-            ->orWhereIn(
+        $userId = \Auth::user()->id;
+        $data = [];
+
+        $data['invitedKanban'] = Kanban::query()
+            ->whereIn(
                 'id',
                 Invitation::query()
-                    ->where('userId', '=', \Auth::user()->id)
+                    ->where('userId', '=', $userId)
                     ->select('userId')
                     ->get()
             )
             ->select('id', 'name', 'isActive', 'ownerUserId')
             ->get();
+                
+        $data['ownedKanban'] = Kanban::query()
+            ->where('ownerUserId', '=', $userId)
+            ->select('id', 'name', 'isActive', 'ownerUserId')
+            ->get();
 
-        foreach ($data as $item)
-        {
-            if($item['ownerUserId'] == \Auth::user()->id)
-            {
-                $item['isOwner'] = true;
-            }
-            else
-            {
-                $item['isOwner'] = false;
-            }
-        }
         return $data;
     }
 }
