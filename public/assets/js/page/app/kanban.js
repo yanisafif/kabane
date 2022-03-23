@@ -1,5 +1,5 @@
-window.post = function(url, data) {
-    return fetch(url, {method: "POST", headers: {'Content-Type': 'application/json','X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}, body: JSON.stringify(data)});
+window.httpRequest = function(url, method, data) {
+    return fetch(url, {method, headers: {'Content-Type': 'application/json','X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}, body: JSON.stringify(data)});
 }
 
 const modalContainer =  document.getElementById('modal-container')
@@ -49,8 +49,7 @@ let kanban, data, people
         gutter: '15px',
         click: (el) => {
             // Get id
-            const id = el.getElementsByClassName('kanban-box')[0].id 
-            displayItemDetailsModal(id);
+            displayItemDetailsModal(el);
 
         },
         boards: boards,
@@ -131,7 +130,7 @@ function displayCreateModal(colId) {
         const deadline = formData[2].value
         const description = formData[3].value
         
-        window.post('/kanban/store-item', {
+        httpRequest('/item/store', 'POST', {
             name,
             description,
             assign,
@@ -177,7 +176,8 @@ function displayCreateModal(colId) {
     })
 }
 
-function displayItemDetailsModal(htmlId) {
+function displayItemDetailsModal(el) {
+    const htmlId = el.getElementsByClassName('kanban-box')[0].id 
     const idSplitted = htmlId.split('-')
     const itemId = parseInt(idSplitted[1])
     const colId = parseInt(idSplitted[2])
@@ -222,6 +222,7 @@ function displayItemDetailsModal(htmlId) {
                     </div>
                 </form>
                 <div class="modal-footer">
+                    <button class="btn btn-danger" type="button" id="item-delete-btn">Delete</button>
                     <button class="btn btn-secondary"  type="button" data-bs-dismiss="modal">Close</button>
                     <button class="btn btn-primary" id="modal-edit-submit-btn" type="button">Send message</button>
                 </div>
@@ -239,10 +240,26 @@ function displayItemDetailsModal(htmlId) {
     $('#select-people-edit').val(itemJson.assignedUser_id ?? -1)
 
     $('#modification-modal').on('hidden.bs.modal',  () => {
-        modalContainer.removeChild(modal);
+        modalContainer.removeChild(modal)
     })
+
+    document.getElementById('item-delete-btn').onclick = function () {
+        
+        httpRequest('/item/delete', 'DELETE', { itemId })
+            .then((res) => {
+
+                if(!res.ok) {
+                    return
+                }
     
-    $("#modification-modal").modal('show');
+                el.parentNode.removeChild(el)
+                colJson.items.splice(colJson.items.indexOf(itemJson), 1)
+                console.log(data);
+                $("#modification-modal").modal('hide')
+            })
+    }
+    
+    $("#modification-modal").modal('show')
 
 }
 
@@ -262,7 +279,8 @@ function createItem(item, colId) {
             <div class="d-flex mt-2 overflow-hidden">
                 ${item.description  ?? ''}
             </div>
-        </a>`
+        </a>
+        `
     };
 }
 

@@ -152,50 +152,6 @@ class KanbanController extends Controller
         return redirect(route('kanban.board') . '/' . $kanban->id);
     }
 
-    public function storeItem(Request $request)
-    {
-        $rules = [
-            "name" => "required|max:50",
-            "description" => "present",
-            "colId" => "required|numeric",
-            "assign" => "required|numeric",
-            "deadline" => "nullable|date"
-        ];
-
-        // Validate the form with is data
-        $validator = Validator::make($request->all(), $rules);
-
-        // If data dont respect the validation rules, redirect on same page with error
-        if ($validator->fails())
-        {
-            return response(json_encode(['status' => 'Form not valid ', $validator->errors()]), 400, ['Content-Type' => 'application/json']);
-        }
-        
-        $data = $request->only('name', 'description', 'colId', "assign", "deadline");
-
-        $kanban = Kanban::query()
-            ->join('cols', 'cols.kanbanId', '=', 'kanbans.id')
-            ->where('cols.id', '=', $data['colId'])
-            ->first();
-
-        if(is_null($kanban))
-            return response(json_encode(['status' => 'Kanban not found']), 400, ['Content-Type' => 'application/json']);
-        if(!$this->checkIfKanbanAllow($kanban))
-            return response(json_encode(['status' => 'You\'re not allowed to do that']), 403, ['Content-Type' => 'application/json']);
-
-        $item = new Item;
-        $item->name = $data['name'];
-        $item->description = $data['description'];
-        $item->colId = $data['colId'];
-        $item->ownerUserId = \Auth::user()->id;
-        $item->assignedUserId = ($data['assign'] > 0 ? $data['assign'] : NULL);
-        $item->deadline = (!is_null($data['deadline']) ? $data['deadline'] : NULL);
-        $item->itemOrder = 1;
-        $item->save();
-
-        return response()->json(['status' => 'Item saved successfully', 'itemId' => $item->id]);
-    }
-
     protected function checkIfKanbanAllow($kanban)
     {
         $userId = \Auth::user()->id;

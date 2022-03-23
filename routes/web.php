@@ -35,9 +35,6 @@ Route::prefix('kanban')
         Route::post('store', 'KanbanController@store')
             ->name('store');
 
-        Route::post('store-item', 'KanbanController@storeItem')
-            ->name('store-item');
-
         Route::get('todo/{id?}', function () {
             return view('app.todo');
         })->name('todo');
@@ -49,6 +46,17 @@ Route::prefix('kanban')
         })->name('chat');
 
     });
+
+Route::prefix('item')
+    ->as('item.')
+    ->group(function (){
+        Route::post('store', 'ItemController@store')
+            ->name('store');
+
+        Route::delete('delete', 'ItemController@delete')
+            ->name('delete');
+    });
+
 
 Route::prefix('user')
     ->as('user.')
