@@ -159,7 +159,7 @@ class KanbanController extends Controller
             "description" => "present",
             "colId" => "required|numeric",
             "assign" => "required|numeric",
-            "deadline" => "present"
+            "deadline" => "nullable|date"
         ];
 
         // Validate the form with is data
@@ -189,6 +189,7 @@ class KanbanController extends Controller
         $item->colId = $data['colId'];
         $item->ownerUserId = \Auth::user()->id;
         $item->assignedUserId = ($data['assign'] > 0 ? $data['assign'] : NULL);
+        $item->deadline = (!is_null($data['deadline']) ? $data['deadline'] : NULL);
         $item->itemOrder = 1;
         $item->save();
 
