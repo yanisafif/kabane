@@ -3,12 +3,22 @@ window.post = function(url, data) {
 }
 
 const modalContainer =  document.getElementById('modal-container')
-let kanban
+let kanban, data, people
+
 (function() {
-    const boards = new Array()
-    const data = JSON.parse(document.getElementById('dataCols').textContent)
+    const dataCols = document.getElementById('dataCols')
+    data = JSON.parse(dataCols.textContent)
+    dataCols.parentNode.removeChild(dataCols)
     console.log(data)
+
+    const dataPeople = document.getElementById('dataPeople')  
+    people = JSON.parse(dataPeople.textContent)  
+    dataPeople.parentNode.removeChild(dataPeople)
+    console.log(people)
+
+    const boards = new Array()
     const style = document.createElement('style')
+
     for(col of data)
     {
         style.innerHTML += `
@@ -26,19 +36,30 @@ let kanban
 
         for(item of col.items)
         {
-            board.item.push(createItem(item))
+            board.item.push(createItem(item, col.id))
         }
-
+        console.log(board)
         boards.push(board)
         i++
     }
 
-    
+
     kanban = new jKanban({
         element: '#kabane',
         gutter: '15px',
-        click: function (el) {
-            el.class
+        click: (el) => {
+            // Get id
+            const idSplitted = el.getElementsByClassName('kanban-box')[0].id.split('-')
+            const itemId = parseInt(idSplitted[1])
+            const colId = parseInt(idSplitted[2])
+
+            const colJson = data.find(f => f.id === colId)
+            console.log(colJson)
+            const itemJson = colJson.items.find(f => f.item_id === itemId)
+            console.log(itemJson)
+
+            $("#modification-modal").modal('show');
+
         },
         boards: boards,
         itemAddOptions: {
@@ -53,6 +74,7 @@ let kanban
         }
     });
     document.getElementsByTagName('head')[0].appendChild(style)
+
 })();
 
 function displayCreateModal(colId) {
@@ -62,42 +84,44 @@ function displayCreateModal(colId) {
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title"> New item</h5>
+                    <h5 class="modal-title">New item</h5>
                     <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <span class="text-danger" id="form-error-label"></span>
                     <form id="creation-form">
                         <div class="mb-3">
-                            <label class="col-form-label" for="recipient-name">Title:</label>
-                            <input class="form-control" name="title" type="text" value="">
+                            <label class="col-form-label" for="title">Title:</label>
+                            <input class="form-control" required="true" name="title" maxlength="50" type="text" value="">
                         </div>
                         <div class="mb-3">
-                            <label class="col-form-label" for="recipient-name">Assigned:</label>
-                            <select class="form-select" name="assign" id="select-people" aria-label="Default select example">
-                                <option value="-1"> Unassigned </option> 
+                            <label class="col-form-label" for="assign">Assigned:</label>
+                            <select class="form-select" name="assign" id="select-people-creation" aria-label="Select assign person">
+                                <option value="-1"> Unassigned </option>
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label class="col-form-label" for="message-text">Description:</label>
+                            <label class="col-form-label" for="deadline">Deadline:</label>
+                            <input class="form-control" name="deadline" min="${new Date().toISOString().substring(0, 10)}" type="date">
+                        </div>
+                        <div class="mb-3">
+                            <label class="col-form-label" for="description">Description:</label>
                             <textarea class="form-control" name="description"></textarea>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary"  type="button" data-bs-dismiss="modal">Close</button>
-                    <button class="btn btn-primary" id="modal-submit-btn" type="button">Send message</button>
+                    <button class="btn btn-primary" id="modal-creation-submit-btn" type="button">Save item</button>
                 </div>
             </div>
         </div>
     </div>
     `
-    
+
     modalContainer.appendChild(modal)
-    const select = document.getElementById('select-people')
-    
-    const people = JSON.parse(document.getElementById('dataPeople').textContent)
-    
+    const select = document.getElementById('select-people-creation')
+
     for(const person of people) {
         const option = document.createElement('option')
         option.textContent = person.name
@@ -105,25 +129,28 @@ function displayCreateModal(colId) {
         select.appendChild(option)
     }
 
-    const submitBtn = document.getElementById('modal-submit-btn')
-    
+    const submitBtn = document.getElementById('modal-creation-submit-btn')
+
     submitBtn.onclick = () => {
         $('#form-error-label').text('')
         const formData = $('#creation-form').serializeArray()
+        console.log(formData)
         const name = formData[0].value
         const assign = parseInt(formData[1].value)
-        const description = formData[2].value
-
+        const deadline = formData[2].value
+        const description = formData[3].value
+        
         window.post('/kanban/store-item', {
-            name, 
-            description, 
-            assign: assign,
+            name,
+            description,
+            assign,
+            deadline: deadline ?? null,
             colId: parseInt(colId.substring(4))
         })
         .then(async (res) => {
 
             const json = await res.json()
-            console.log(json)
+            console.log(json, res)
 
             if(!res.ok) {
                 if(res.status) {
@@ -135,46 +162,53 @@ function displayCreateModal(colId) {
                 return
             }
 
-            kanban.addElement(colId, 
+            // const col = data.find( f => f.id === parseInt(colId.substring(4)))
+            // col.items.push({})
+
+            kanban.addElement(colId,
                 createItem({
-                    created_at: new Date().toDateString(), 
-                    item_name: name, 
+                    created_at: new Date().toDateString(),
+                    item_name: name,
                     description,
-                    assignedUser_name: people.find(f => f.id === assign).name, 
+                    deadline, 
+                    assignedUser_name: assign > 0 ? people.find(f => f.id === assign).name : '',
                     item_id: json.itemId
                 })
             );
-
-            $("#creation-modal").modal('hide'); 
+            $("#creation-modal").modal('hide')
         })
     }
 
     $("#creation-modal").modal('show');
 
-    $('#creation-modal').on('hidden.bs.modal', function (e) {
+    $('#creation-modal').on('hidden.bs.modal', function () {
         modalContainer.removeChild(modal);
     })
 }
 
 
-function createItem(item) {
-    const dateDisplay = new Date(Date.parse(item.created_at)).toLocaleDateString('en-GB', { day: "numeric", month: 'short', year: 'numeric' });
+function createItem(item, colId) {
     return {
-        title: `<a class="kanban-box overflow-hidden" id="item-${item.item_id}" style="max-height: 150px" href="#">
+        title: `<a id="item-${item.item_id}-${colId}" class="kanban-box overflow-hidden"style="max-height: 150px" href="#">
             <div class="row">
                 <div class="col">
-                    <span >${dateDisplay}</span>
+                    <span >${getDateToDisplay(item.created_at)}</span>
                     <h6>${item.item_name}</h6>
                 </div>
                 <div class="col text-end">
-                    ${item.assignedUser_name ? 'Assigned to: ' + item.assignedUser_name : 'Unassigned' } 
+                    ${item.assignedUser_name ? 'Assigned to: ' + item.assignedUser_name : 'Unassigned'}
                 </div>
             </div>
-            <div class="d-flex mt-2 overflow-hidden" stye>
-                ${item.description}
+            <div class="d-flex mt-2 overflow-hidden">
+                ${item.description  ?? ''}
             </div>
         </a>`
-    }; 
+    };
+}
+
+function getDateToDisplay(dateString) {
+    return new Date(Date.parse(dateString))
+        .toLocaleDateString('en-GB', { day: "numeric", month: 'short', year: 'numeric' })
 }
 
 function figureTextColor(bgColor) {
@@ -191,10 +225,4 @@ function figureTextColor(bgColor) {
     });
     var L = (0.2126 * c[0]) + (0.7152 * c[1]) + (0.0722 * c[2]);
     return (L > 0.179) ? '#000' : '#fff';
-}
-
-function read(body) {
-    body.text().then((res) => {
-        console.log(res)
-    })
 }

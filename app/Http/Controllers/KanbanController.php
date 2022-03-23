@@ -23,7 +23,7 @@ class KanbanController extends Controller
      */
     public function __construct()
     {
-        //$this->middleware('auth');
+        $this->middleware('auth');
     }
 
     public function board($id = null)
@@ -63,7 +63,7 @@ class KanbanController extends Controller
                         ->get();
                 }
                 $data['cols'] = $cols;
-                
+
                 $peopleAccessBoard = Invitation::query()
                     ->where('kanbanId', '=', $id)
                     ->join('users', 'users.id', '=', 'invitations.userId')
@@ -77,7 +77,7 @@ class KanbanController extends Controller
                         ->select('users.name', 'users.id')
                         ->first()
                 );
-               
+
                 $data['people'] = $peopleAccessBoard;
 
             }
@@ -156,9 +156,10 @@ class KanbanController extends Controller
     {
         $rules = [
             "name" => "required|max:50",
-            "description" => "required",
-            "colId" => "required|numeric", 
-            "assign" => "required|numeric"
+            "description" => "present",
+            "colId" => "required|numeric",
+            "assign" => "required|numeric",
+            "deadline" => "present"
         ];
 
         // Validate the form with is data
@@ -167,11 +168,11 @@ class KanbanController extends Controller
         // If data dont respect the validation rules, redirect on same page with error
         if ($validator->fails())
         {
-            return response(json_encode(['status' => 'Form not valid ']), 400, ['Content-Type' => 'application/json']);
+            return response(json_encode(['status' => 'Form not valid ', $validator->errors()]), 400, ['Content-Type' => 'application/json']);
         }
         
-        $data = $request->only('name', 'description', 'colId', "assign");
-        
+        $data = $request->only('name', 'description', 'colId', "assign", "deadline");
+
         $kanban = Kanban::query()
             ->join('cols', 'cols.kanbanId', '=', 'kanbans.id')
             ->where('cols.id', '=', $data['colId'])
@@ -224,7 +225,7 @@ class KanbanController extends Controller
             )
             ->select('id', 'name', 'isActive', 'ownerUserId')
             ->get();
-                
+
         $data['ownedKanban'] = Kanban::query()
             ->where('ownerUserId', '=', $userId)
             ->select('id', 'name', 'isActive', 'ownerUserId')
