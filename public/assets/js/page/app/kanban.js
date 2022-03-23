@@ -49,16 +49,8 @@ let kanban, data, people
         gutter: '15px',
         click: (el) => {
             // Get id
-            const idSplitted = el.getElementsByClassName('kanban-box')[0].id.split('-')
-            const itemId = parseInt(idSplitted[1])
-            const colId = parseInt(idSplitted[2])
-
-            const colJson = data.find(f => f.id === colId)
-            console.log(colJson)
-            const itemJson = colJson.items.find(f => f.item_id === itemId)
-            console.log(itemJson)
-
-            $("#modification-modal").modal('show');
+            const id = el.getElementsByClassName('kanban-box')[0].id 
+            displayItemDetailsModal(id);
 
         },
         boards: boards,
@@ -69,7 +61,6 @@ let kanban, data, people
             footer: true                                                // position the button on footer
         },
         buttonClick: (el, boardId) => {
-            console.log(el, boardId)
             displayCreateModal(boardId)
         }
     });
@@ -184,6 +175,75 @@ function displayCreateModal(colId) {
     $('#creation-modal').on('hidden.bs.modal', function () {
         modalContainer.removeChild(modal);
     })
+}
+
+function displayItemDetailsModal(htmlId) {
+    const idSplitted = htmlId.split('-')
+    const itemId = parseInt(idSplitted[1])
+    const colId = parseInt(idSplitted[2])
+
+    const colJson = data.find(f => f.id === colId)
+    console.log(colJson)
+    const itemJson = colJson.items.find(f => f.item_id === itemId)
+    console.log(itemJson)
+
+    const modal = document.createElement('div')
+    modal.innerHTML = `
+        <div class="modal fade" name="modification-modal" id="modification-modal" role="dialog" aria-labelledby="modification-modal" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <form id="edit-form">
+                    <div class="modal-header">
+                        <h5 class="w-75 mb-0">
+                            <input type="text" name="title" value="asdf" readonly="true" maxlength="50" class="w-100"
+                                ondblclick="this.readOnly=''; this.style.border = '1px solid'"
+                                onfocusout="this.readOnly='true'; this.style.border = 'none'"
+                                style="border: none">
+                        </h5>
+                        <button class="btn-close position-static" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <span class="date">Created: ${getDateToDisplay(itemJson.created_at)} </span>
+                        <span class="date d-inline-block" style="padding-inline: 10px"> Modified: ${getDateToDisplay(itemJson.updated_at)} </span>
+                        <div class="mb-3">
+                            <label class="col-form-label" for="recipient-name">Assigned:</label>
+                            <select class="form-select" name="assign" id="select-people-edit" aria-label="Default select example">
+                                <option value="-1"> Unassigned </option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="col-form-label" for="recipient-name">Deadline:</label>
+                            <input class="form-control" name="title" type="date" value="${itemJson.deadline ?? ''}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="col-form-label" for="message-text">Description:</label>
+                            <textarea class="form-control" name="description"> ${itemJson.description ?? ''} </textarea>
+                        </div>
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary"  type="button" data-bs-dismiss="modal">Close</button>
+                    <button class="btn btn-primary" id="modal-edit-submit-btn" type="button">Send message</button>
+                </div>
+            </div>
+        </div>
+    `
+    modalContainer.appendChild(modal)
+
+    for(const person of people) {
+        const option = document.createElement('option')
+        option.value = person.id
+        option.textContent = person.name
+        document.getElementById('select-people-edit').appendChild(option)
+    }
+    $('#select-people-edit').val(itemJson.assignedUser_id ?? -1)
+
+    $('#modification-modal').on('hidden.bs.modal',  () => {
+        modalContainer.removeChild(modal);
+    })
+    
+    $("#modification-modal").modal('show');
+
 }
 
 
