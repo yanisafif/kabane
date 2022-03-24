@@ -48,9 +48,7 @@ let kanban, data, people
         element: '#kabane',
         gutter: '15px',
         click: (el) => {
-            // Get id
-            displayItemDetailsModal(el);
-
+            displayItemDetailsModal(el)
         },
         boards: boards,
         itemAddOptions: {
@@ -152,27 +150,44 @@ function displayCreateModal(colId) {
                 return
             }
 
-            // const col = data.find( f => f.id === parseInt(colId.substring(4)))
-            // col.items.push({})
+            const col = data.find(f => f.id === parseInt(colId.substring(4)))
+            const assigned = people.find(f => f.id === assign)
+            const owner = people.find(f => f.isCurrentUser)
+            const now = new Date().toDateString()
+
+            col.items.push({
+                assignedUser_name: (assigned ? assigned.name : null),
+                assignedUser_id: (assigned ? assigned.id : null),
+                created_at: now, 
+                deadline, 
+                description, 
+                itemOrder: 1, 
+                item_id: parseInt(json.itemId), 
+                item_name: name, 
+                ownerUser_name: owner.name, 
+                ownerUser_id: owner.id, 
+                updated_at: now
+            })
 
             kanban.addElement(colId,
                 createItem({
-                    created_at: new Date().toDateString(),
+                    created_at: now,
                     item_name: name,
                     description,
                     deadline, 
                     assignedUser_name: assign > 0 ? people.find(f => f.id === assign).name : '',
                     item_id: json.itemId
-                })
+                }, col.id)
             );
+
             $("#creation-modal").modal('hide')
         })
     }
 
-    $("#creation-modal").modal('show');
+    $("#creation-modal").modal('show')
 
     $('#creation-modal').on('hidden.bs.modal', function () {
-        modalContainer.removeChild(modal);
+        modalContainer.removeChild(modal)
     })
 }
 
@@ -254,7 +269,6 @@ function displayItemDetailsModal(el) {
     
                 el.parentNode.removeChild(el)
                 colJson.items.splice(colJson.items.indexOf(itemJson), 1)
-                console.log(data);
                 $("#modification-modal").modal('hide')
             })
     }
@@ -281,7 +295,7 @@ function createItem(item, colId) {
             </div>
         </a>
         `
-    };
+    }
 }
 
 function getDateToDisplay(dateString) {

@@ -78,8 +78,14 @@ class KanbanController extends Controller
                         ->first()
                 );
 
-                $data['people'] = $peopleAccessBoard;
+                $currentUserId = \Auth::user()->id;
 
+                foreach($peopleAccessBoard as $person) 
+                {
+                    $person['isCurrentUser'] = ($currentUserId == $person['id']);
+                }
+
+                $data['people'] = $peopleAccessBoard;
             }
             else
             {
