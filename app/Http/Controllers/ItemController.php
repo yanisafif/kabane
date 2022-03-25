@@ -85,7 +85,7 @@ class ItemController extends Controller
             return response(json_encode(['status' => 'Error', $validator->errors()]), 400, ['Content-Type' => 'application/json']);
         }
 
-        $data = $request->only('itemId', "title", "assign", "deadline", "description"); 
+        $data = $request->only('itemId', "item_name", "assignedUser_id", "deadline", "description"); 
 
         $record = Item::find($data['itemId']);
         if(is_null($record)) 
@@ -93,9 +93,9 @@ class ItemController extends Controller
             return response(json_encode(['status' => 'Error']), 400, ['Content-Type' => 'application/json']);
         }
         
-        if(Arr::exists($data, 'title')) 
-            $record->name = $data['title']; 
-        if(Arr::exists($data, 'assign'))
+        if(Arr::exists($data, 'item_name')) 
+            $record->name = $data['item_name']; 
+        if(Arr::exists($data, 'assignedUser_id'))
             $record->assignedUserId = $data['assign']; 
         if(Arr::exists($data, 'deadline'))
             $record->deadline = $data['deadline']; 

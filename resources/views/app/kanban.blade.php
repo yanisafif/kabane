@@ -79,7 +79,7 @@
                         <form id="edit-form">
                             <div class="modal-header">
                                 <h5 class="w-75 mb-0">
-                                    <input type="text" name="title" class="edit-from-inputs rounded-1 w-100" id="edit-form-title" readonly="true" maxlength="50"
+                                    <input type="text" name="item_name" class="edit-from-inputs rounded-1 w-100" id="edit-form-title" readonly="true" maxlength="50"
                                         ondblclick="this.readOnly=''; this.style.border = '2px solid'"
                                         onfocusout="this.readOnly='true'; this.style.border = 'none'"
                                         style="border: none">
@@ -97,8 +97,8 @@
                                     <span id="edit-form-modified" class="edit-form-date"></span> 
                                 </span>
                                 <div class="mb-3">
-                                    <label class="col-form-label" for="assign">Assigned:</label>
-                                    <select class="form-select" name="assign" id="edit-form-select-people" aria-label="Select a person to assign">
+                                    <label class="col-form-label" for="assignedUser_id">Assigned:</label>
+                                    <select class="form-select" name="assignedUser_id" id="edit-form-select-people" aria-label="Select a person to assign">
                                         <option value="-1"> Unassigned </option>
                                         @foreach($data['people'] as $person)
                                             <option value="{{$person['id']}}">{{$person['name']}}</option>

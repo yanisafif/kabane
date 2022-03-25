@@ -136,16 +136,20 @@ function displayCreateModal(colId) {
 }
 
 function displayItemDetailsModal(el) {
+
+    // Get ids for html id. Pattern: 'item-$itemId-$colId
     const htmlId = el.getElementsByClassName('kanban-box')[0].id 
     const idSplitted = htmlId.split('-')
     const itemId = parseInt(idSplitted[1])
     const colId = parseInt(idSplitted[2])
 
+    // Gather needed data
     const colJson = data.find(f => f.id === colId)
     console.log(colJson)
     const itemJson = colJson.items.find(f => f.item_id === itemId)
     console.log(itemJson)
 
+    // Set form modal fields
     $('#edit-form-title').val(itemJson.item_name)
     $('#edit-form-deadline').val(itemJson.deadline ?? '')
     $('#edit-form-description').val(itemJson.description ?? '')
@@ -153,93 +157,88 @@ function displayItemDetailsModal(el) {
     $('#edit-form-created').text(getDateToDisplay(itemJson.created_at))
     $('#edit-form-modified').text(getDateToDisplay(itemJson.updated_at))
 
-
+    // On modal close clear fields
     $('#modification-modal').on('hidden.bs.modal',  () => {
         $('.edit-from-inputs').val('')
         $('#edit-form-select-people').val('-1')
         $('.edit-form-date').text('')
     })
 
-    document.getElementById('item-delete-btn').onclick = function () {
+    // On delete button click 
+    $('#item-delete-btn').click(() => {
         
+        // Send delete request
         httpRequest('/item/delete', 'DELETE', { itemId })
             .then((res) => {
 
+                // Handle request failure
                 if(!res.ok) {
                     $("form-edit-error-label").text('An error occurred')
                     return
                 }
-    
+                
+                // Remove item form board and data object
                 el.parentNode.removeChild(el)
                 colJson.items.splice(colJson.items.indexOf(itemJson), 1)
-                $("#modification-modal").modal('hide')
-            })
-    }
 
-    document.getElementById('modal-edit-submit-btn').onclick = function () {
+                $("#modification-modal").modal('hide') // Close modal
+            })
+    })
+
+    // On modal save 
+    $('#modal-edit-submit-btn').click(() => {
 
         const dataForm = {}
-
+        
+        // Get data from modal form
         for(input of $('#edit-form').serializeArray()) {
-            dataForm[input.name] = input.value
+            dataForm[input.name] = input.value || null
         }
-
-        if(dataForm.assign === '-1') {
-            dataForm.assign = null
+    
+        // Parse data
+        if(dataForm.assignedUser_id === '-1') {
+            dataForm.assignedUser_id = null
         }
         else {
-            dataForm.assign = parseInt(dataForm.assign)
+            dataForm.assignedUser_id = parseInt(dataForm.assignedUser_id)
         }
-        if(dataForm.description === '') {
-            dataForm.description = null
-        }
-        if(dataForm.deadline === '') {
-            dataForm.deadline = null
-        }
-
-        console.log(dataForm, itemJson)
- 
+        
         const requestBody = {
             itemId: itemJson.item_id
         }
 
-        if(dataForm.title !== itemJson.item_name) {
-            requestBody.title = dataForm.title
-        }
-        if(dataForm.assign !== itemJson.assignedUser_id) {
-            requestBody.assign = dataForm.assign
-        }
-        if(dataForm.deadline != itemJson.deadline) {
-            requestBody.deadline = dataForm.deadline
-        }
-        if(dataForm.description != itemJson.description) {
-            requestBody.description = dataForm.description
-        }
+        // Build request, insert only modified elements
+        for(const key in dataForm) {
 
+            if(dataForm[key] !== itemJson[key]) {
+                requestBody[key] = dataForm[key]
+            }
+        }
+        
+        console.log(dataForm, itemJson)
         console.log(requestBody)
 
+        // If nothing has been modified then close modal
         if(Object.keys(requestBody).length === 1) {
             $("#modification-modal").modal('hide')
             return
         }
 
+        // Send update request
         httpRequest('/item/update', 'PUT', requestBody)
             .then(async (res) => {
+
+                // Handle request failure
                 if(!res.ok) {
-                    $("form-edit-error-label").text('An error occurred')
+                    $("#form-edit-error-label").text('An error occurred')
                     return
                 }
 
-                
-
                 $("#modification-modal").modal('hide')
             })
-        
-        
-    }
+    })
 
-    $("#modification-modal").modal('show')
-
+    $("#modification-modal").modal('show') // Show modal 
 }
 
 
