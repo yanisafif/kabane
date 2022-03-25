@@ -30,10 +30,10 @@ class ItemController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            "name" => "required|max:50",
+            "item_name" => "required|max:50",
             "description" => "present",
             "colId" => "required|numeric",
-            "assign" => "required|numeric",
+            "assignedUser_id" => "required|numeric",
             "deadline" => "nullable|date"
         ];
 
@@ -46,7 +46,7 @@ class ItemController extends Controller
             return response(json_encode(['status' => 'Form not valid ', $validator->errors()]), 400, ['Content-Type' => 'application/json']);
         }
         
-        $data = $request->only('name', 'description', 'colId', "assign", "deadline");
+        $data = $request->only('item_name', 'description', 'colId', "assignedUser_id", "deadline");
 
         $kanban = Kanban::query()
             ->join('cols', 'cols.kanbanId', '=', 'kanbans.id')
@@ -59,16 +59,16 @@ class ItemController extends Controller
             return response(json_encode(['status' => 'You\'re not allowed to do that']), 403, ['Content-Type' => 'application/json']);
 
         $item = new Item;
-        $item->name = $data['name'];
+        $item->name = $data['item_name'];
         $item->description = $data['description'];
         $item->colId = $data['colId'];
         $item->ownerUserId = \Auth::user()->id;
-        $item->assignedUserId = ($data['assign'] > 0 ? $data['assign'] : NULL);
+        $item->assignedUserId = ($data['assignedUser_id'] > 0 ? $data['assignedUser_id'] : NULL);
         $item->deadline = (!is_null($data['deadline']) ? $data['deadline'] : NULL);
         $item->itemOrder = 1;
         $item->save();
 
-        return response()->json(['status' => 'Item saved successfully', 'itemId' => $item->id]);
+        return response()->json(['status' => 'Item saved successfully', 'item_id' => $item->id]);
     }
 
     public function update(Request $request)

@@ -43,12 +43,12 @@
                             <span class="text-danger" id="form-error-label"></span>
                             <form id="creation-form">
                                 <div class="mb-3">
-                                    <label class="col-form-label" for="title">Title:</label>
-                                    <input class="form-control create-inputs" required="true" name="title" maxlength="50" type="text">
+                                    <label class="col-form-label" for="item_name">Title:</label>
+                                    <input class="form-control create-inputs" required="true" name="item_name" maxlength="50" type="text">
                                 </div>
                                 <div class="mb-3">
-                                    <label class="col-form-label" for="assign">Assigned:</label>
-                                    <select class="form-select" name="assign" id="select-people-creation" aria-label="Select assign person">
+                                    <label class="col-form-label" for="assignedUser_id">Assigned:</label>
+                                    <select class="form-select" name="assignedUser_id" id="select-people-creation" aria-label="Select assign person">
                                         <option value="-1"> Unassigned </option>
                                         @foreach($data['people'] as $person)
                                             <option value="{{$person['id']}}">{{$person['name']}}</option>

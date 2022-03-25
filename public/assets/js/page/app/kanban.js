@@ -66,75 +66,69 @@ let kanban, data, people
 })();
 
 function displayCreateModal(colId) {
-    const submitBtn = document.getElementById('modal-creation-submit-btn')
 
+    // On submit
     $('#modal-creation-submit-btn').click(() => {
         $('#form-error-label').text('')
-        const formData = $('#creation-form').serializeArray()
-        console.log(formData)
-        const name = formData[0].value
-        const assign = parseInt(formData[1].value)
-        const deadline = formData[2].value
-        const description = formData[3].value
         
-        httpRequest('/item/store', 'POST', {
-            name,
-            description,
-            assign,
-            deadline: deadline ?? null,
-            colId: parseInt(colId.substring(4))
-        })
-        .then(async (res) => {
+        // Get data from form
+        const dataForm = {}
+        for(input of $('#creation-form').serializeArray()) {
+            dataForm[input.name] = input.value ?? null
+        }
+        dataForm.assignedUser_id = parseInt(dataForm.assignedUser_id)
+        dataForm.colId = parseInt(colId.substring(4))
+        
+        // Send add request 
+        httpRequest('/item/store', 'POST', dataForm)
+            .then(async (res) => {
 
-            const json = await res.json()
-            console.log(json, res)
-
-            if(!res.ok) {
-                if(res.status) {
-                    $('#form-error-label').text(json.status)
+                const json = await res.json()
+                console.log(json, res)
+                
+                // Handle request failure
+                if(!res.ok) {
+                    if(res.status) {
+                        $('#form-error-label').text(json.status)
+                    }
+                    else {
+                        $('#form-error-label').text('An error occurred')
+                    }
+                    return
                 }
-                else {
-                    $('#form-error-label').text('An error occurred')
+                
+                // Gather needed data to create an item in the board
+                const col = data.find(f => f.id === dataForm.colId)
+                const assigned = people.find(f => f.id === dataForm.assignedUser_id)
+                const owner = people.find(f => f.isCurrentUser)
+                const now = new Date().toDateString()
+
+                // Create item 
+                const item = {
+                    assignedUser_name: (assigned ? assigned.name : null),
+                    assignedUser_id: (assigned ? assigned.id : null),
+                    created_at: now, 
+                    deadline: dataForm.deadline, 
+                    description: dataForm.description, 
+                    itemOrder: 1, 
+                    item_id: parseInt(json.item_id), 
+                    item_name: dataForm.item_name, 
+                    ownerUser_name: owner.name, 
+                    ownerUser_id: owner.id,
+                    updated_at: now
                 }
-                return
-            }
+                
+                col.items.push(item) // Add item to main object 'data' 
 
-            const col = data.find(f => f.id === parseInt(colId.substring(4)))
-            const assigned = people.find(f => f.id === assign)
-            const owner = people.find(f => f.isCurrentUser)
-            const now = new Date().toDateString()
+                kanban.addElement(colId, createItem(item, col.id)) // Create html item and add it to the board
 
-            col.items.push({
-                assignedUser_name: (assigned ? assigned.name : null),
-                assignedUser_id: (assigned ? assigned.id : null),
-                created_at: now, 
-                deadline, 
-                description, 
-                itemOrder: 1, 
-                item_id: parseInt(json.itemId), 
-                item_name: name, 
-                ownerUser_name: owner.name, 
-                ownerUser_id: owner.id,
-                updated_at: now
+                $("#creation-modal").modal('hide')
             })
-
-            kanban.addElement(colId,
-                createItem({
-                    created_at: now,
-                    item_name: name,
-                    description,
-                    deadline, 
-                    assignedUser_name: assign > 0 ? people.find(f => f.id === assign).name : '',
-                    item_id: json.itemId
-                }, col.id)
-            );
-
-            $("#creation-modal").modal('hide')
-        })
     })
 
-    $("#creation-modal").modal('show')
+    $("#creation-modal").modal('show') // Show modal
 
+    // Clear modal on close
     $('#creation-modal').on('hidden.bs.modal', function () {
         $('.create-inputs').val('')
         $('#select-people-creation').val('-1')
@@ -199,8 +193,8 @@ function displayItemDetailsModal(el) {
         if(dataForm.description === '') {
             dataForm.description = null
         }
-        if(dataForm.description === '') {
-            dataForm.description = null
+        if(dataForm.deadline === '') {
+            dataForm.deadline = null
         }
 
         console.log(dataForm, itemJson)
@@ -229,13 +223,14 @@ function displayItemDetailsModal(el) {
             return
         }
 
-        requestBody.itemId = itemJson.item_id
         httpRequest('/item/update', 'PUT', requestBody)
             .then(async (res) => {
                 if(!res.ok) {
                     $("form-edit-error-label").text('An error occurred')
                     return
                 }
+
+                
 
                 $("#modification-modal").modal('hide')
             })
