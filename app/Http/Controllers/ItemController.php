@@ -13,6 +13,7 @@ use App\Models\User;
 use View;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Arr;
 
 class ItemController extends Controller
 {
@@ -68,6 +69,42 @@ class ItemController extends Controller
         $item->save();
 
         return response()->json(['status' => 'Item saved successfully', 'itemId' => $item->id]);
+    }
+
+    public function update(Request $request)
+    {
+        $rules = [
+            "itemId" => "required|numeric",
+        ];
+
+        // Validate the form with is data
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails())
+        {
+            return response(json_encode(['status' => 'Error', $validator->errors()]), 400, ['Content-Type' => 'application/json']);
+        }
+
+        $data = $request->only('itemId', "title", "assign", "deadline", "description"); 
+
+        $record = Item::find($data['itemId']);
+        if(is_null($record)) 
+        {
+            return response(json_encode(['status' => 'Error']), 400, ['Content-Type' => 'application/json']);
+        }
+        
+        if(Arr::exists($data, 'title')) 
+            $record->name = $data['title']; 
+        if(Arr::exists($data, 'assign'))
+            $record->assignedUserId = $data['assign']; 
+        if(Arr::exists($data, 'deadline'))
+            $record->deadline = $data['deadline']; 
+        if(Arr::exists($data, 'description'))
+            $record->description = $data['description'];
+        
+        $record->save(); 
+
+        return response()->json(['status' => 'Succeed']);
     }
 
     public function delete(Request $request) 

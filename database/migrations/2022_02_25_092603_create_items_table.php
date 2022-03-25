@@ -18,7 +18,7 @@ class CreateItemsTable extends Migration
             $table->string('name', 50);
             $table->text('description')->nullable();
             $table->timestamps();
-            $table->dateTime('deadline')->nullable();
+            $table->date('deadline')->nullable();
             $table->unsignedBigInteger('itemOrder');
 
             $table->unsignedBigInteger('colId');

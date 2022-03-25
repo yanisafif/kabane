@@ -55,6 +55,9 @@ Route::prefix('item')
 
         Route::delete('delete', 'ItemController@delete')
             ->name('delete');
+
+        Route::put('update', 'ItemController@update')
+            ->name('update');
     });
 
 

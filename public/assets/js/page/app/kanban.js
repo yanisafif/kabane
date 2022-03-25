@@ -80,7 +80,7 @@ function displayCreateModal(colId) {
                     <form id="creation-form">
                         <div class="mb-3">
                             <label class="col-form-label" for="title">Title:</label>
-                            <input class="form-control" required="true" name="title" maxlength="50" type="text" value="">
+                            <input class="form-control edit-inputs" required="true" name="title" maxlength="50" type="text" value="">
                         </div>
                         <div class="mb-3">
                             <label class="col-form-label" for="assign">Assigned:</label>
@@ -165,7 +165,7 @@ function displayCreateModal(colId) {
                 item_id: parseInt(json.itemId), 
                 item_name: name, 
                 ownerUser_name: owner.name, 
-                ownerUser_id: owner.id, 
+                ownerUser_id: owner.id,
                 updated_at: now
             })
 
@@ -210,7 +210,7 @@ function displayItemDetailsModal(el) {
                 <form id="edit-form">
                     <div class="modal-header">
                         <h5 class="w-75 mb-0">
-                            <input type="text" name="title" value="asdf" readonly="true" maxlength="50" class="w-100"
+                            <input type="text" name="title" value="${itemJson.item_name}" readonly="true" maxlength="50" class="w-100"
                                 ondblclick="this.readOnly=''; this.style.border = '1px solid'"
                                 onfocusout="this.readOnly='true'; this.style.border = 'none'"
                                 style="border: none">
@@ -218,28 +218,31 @@ function displayItemDetailsModal(el) {
                         <button class="btn-close position-static" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
+                        <div>
+                            <span class="text-danger" id="form-edit-error-label"></span>
+                        </div>
                         <span class="date">Created: ${getDateToDisplay(itemJson.created_at)} </span>
                         <span class="date d-inline-block" style="padding-inline: 10px"> Modified: ${getDateToDisplay(itemJson.updated_at)} </span>
                         <div class="mb-3">
-                            <label class="col-form-label" for="recipient-name">Assigned:</label>
+                            <label class="col-form-label" for="assign">Assigned:</label>
                             <select class="form-select" name="assign" id="select-people-edit" aria-label="Default select example">
                                 <option value="-1"> Unassigned </option>
                             </select>
                         </div>
                         <div class="mb-3">
                             <label class="col-form-label" for="recipient-name">Deadline:</label>
-                            <input class="form-control" name="title" type="date" value="${itemJson.deadline ?? ''}">
+                            <input class="form-control" name="deadline" type="date" value="${itemJson.deadline ?? ''}">
                         </div>
                         <div class="mb-3">
                             <label class="col-form-label" for="message-text">Description:</label>
-                            <textarea class="form-control" name="description"> ${itemJson.description ?? ''} </textarea>
+                            <textarea class="form-control" name="description">${itemJson.description ?? ''}</textarea>
                         </div>
                     </div>
                 </form>
                 <div class="modal-footer">
                     <button class="btn btn-danger" type="button" id="item-delete-btn">Delete</button>
                     <button class="btn btn-secondary"  type="button" data-bs-dismiss="modal">Close</button>
-                    <button class="btn btn-primary" id="modal-edit-submit-btn" type="button">Send message</button>
+                    <button class="btn btn-primary" id="modal-edit-submit-btn" type="button">Save item</button>
                 </div>
             </div>
         </div>
@@ -264,6 +267,7 @@ function displayItemDetailsModal(el) {
             .then((res) => {
 
                 if(!res.ok) {
+                    $("form-edit-error-label").text('An error occurred')
                     return
                 }
     
@@ -272,7 +276,68 @@ function displayItemDetailsModal(el) {
                 $("#modification-modal").modal('hide')
             })
     }
-    
+
+    document.getElementById('modal-edit-submit-btn').onclick = function () {
+
+        const dataForm = {}
+
+        for(input of $('#edit-form').serializeArray()) {
+            dataForm[input.name] = input.value
+        }
+
+        if(dataForm.assign === '-1') {
+            dataForm.assign = null
+        }
+        else {
+            dataForm.assign = parseInt(dataForm.assign)
+        }
+        if(dataForm.description === '') {
+            dataForm.description = null
+        }
+        if(dataForm.description === '') {
+            dataForm.description = null
+        }
+
+        console.log(dataForm, itemJson)
+ 
+        const requestBody = {
+            itemId: itemJson.item_id
+        }
+
+        if(dataForm.title !== itemJson.item_name) {
+            requestBody.title = dataForm.title
+        }
+        if(dataForm.assign !== itemJson.assignedUser_id) {
+            requestBody.assign = dataForm.assign
+        }
+        if(dataForm.deadline != itemJson.deadline) {
+            requestBody.deadline = dataForm.deadline
+        }
+        if(dataForm.description != itemJson.description) {
+            requestBody.description = dataForm.description
+        }
+
+        console.log(requestBody)
+
+        if(Object.keys(requestBody).length === 1) {
+            $("#modification-modal").modal('hide')
+            return
+        }
+
+        requestBody.itemId = itemJson.item_id
+        httpRequest('/item/update', 'PUT', requestBody)
+            .then(async (res) => {
+                if(!res.ok) {
+                    $("form-edit-error-label").text('An error occurred')
+                    return
+                }
+
+                $("#modification-modal").modal('hide')
+            })
+        
+        
+    }
+
     $("#modification-modal").modal('show')
 
 }
