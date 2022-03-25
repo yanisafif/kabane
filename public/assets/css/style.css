@@ -10223,8 +10223,8 @@ strong {
       color: #fff; }
 
 .user-profile .profile-header {
-  height: 420px;
-  padding: 30px;
+  height: 100%;
+  padding: 50px;
   display: -webkit-box !important;
   display: -ms-flexbox !important;
   display: flex !important; }

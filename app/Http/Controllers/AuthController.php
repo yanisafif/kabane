@@ -39,7 +39,7 @@ class AuthController extends Controller
     {
         // Array of rules
         $rules = [
-            'name' => 'required',
+            'name' => 'required|unique:users',
             'email' => 'required|email|unique:users',
             'password' => 'required|confirmed|min:6',
             'policy' => 'required'

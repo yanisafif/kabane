@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -66,4 +67,7 @@ Route::prefix('user')
         Route::post('post-register', [AuthController::class, 'postRegistration'])->name('register.post')->middleware('guest');
 
         Route::get('logout', [AuthController::class, 'logOut'])->name('logout')->middleware('auth');
+
+        Route::get('/profile/{name}', [UserController::class, 'getUser'])
+        ->name('user.profile')->middleware('auth');
     });
