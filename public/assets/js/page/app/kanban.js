@@ -66,60 +66,9 @@ let kanban, data, people
 })();
 
 function displayCreateModal(colId) {
-    const modal = document.createElement('div')
-    modal.innerHTML = `
-    <div class="modal fade" name="creation-modal" id="creation-modal" role="dialog" aria-labelledby="creation-modal" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">New item</h5>
-                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <span class="text-danger" id="form-error-label"></span>
-                    <form id="creation-form">
-                        <div class="mb-3">
-                            <label class="col-form-label" for="title">Title:</label>
-                            <input class="form-control edit-inputs" required="true" name="title" maxlength="50" type="text" value="">
-                        </div>
-                        <div class="mb-3">
-                            <label class="col-form-label" for="assign">Assigned:</label>
-                            <select class="form-select" name="assign" id="select-people-creation" aria-label="Select assign person">
-                                <option value="-1"> Unassigned </option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="col-form-label" for="deadline">Deadline:</label>
-                            <input class="form-control" name="deadline" min="${new Date().toISOString().substring(0, 10)}" type="date">
-                        </div>
-                        <div class="mb-3">
-                            <label class="col-form-label" for="description">Description:</label>
-                            <textarea class="form-control" name="description"></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary"  type="button" data-bs-dismiss="modal">Close</button>
-                    <button class="btn btn-primary" id="modal-creation-submit-btn" type="button">Save item</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    `
-
-    modalContainer.appendChild(modal)
-    const select = document.getElementById('select-people-creation')
-
-    for(const person of people) {
-        const option = document.createElement('option')
-        option.textContent = person.name
-        option.value = person.id
-        select.appendChild(option)
-    }
-
     const submitBtn = document.getElementById('modal-creation-submit-btn')
 
-    submitBtn.onclick = () => {
+    $('#modal-creation-submit-btn').click(() => {
         $('#form-error-label').text('')
         const formData = $('#creation-form').serializeArray()
         console.log(formData)
@@ -182,12 +131,13 @@ function displayCreateModal(colId) {
 
             $("#creation-modal").modal('hide')
         })
-    }
+    })
 
     $("#creation-modal").modal('show')
 
     $('#creation-modal').on('hidden.bs.modal', function () {
-        modalContainer.removeChild(modal)
+        $('.create-inputs').val('')
+        $('#select-people-creation').val('-1')
     })
 }
 
@@ -202,63 +152,18 @@ function displayItemDetailsModal(el) {
     const itemJson = colJson.items.find(f => f.item_id === itemId)
     console.log(itemJson)
 
-    const modal = document.createElement('div')
-    modal.innerHTML = `
-        <div class="modal fade" name="modification-modal" id="modification-modal" role="dialog" aria-labelledby="modification-modal" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <form id="edit-form">
-                    <div class="modal-header">
-                        <h5 class="w-75 mb-0">
-                            <input type="text" name="title" value="${itemJson.item_name}" readonly="true" maxlength="50" class="w-100"
-                                ondblclick="this.readOnly=''; this.style.border = '1px solid'"
-                                onfocusout="this.readOnly='true'; this.style.border = 'none'"
-                                style="border: none">
-                        </h5>
-                        <button class="btn-close position-static" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div>
-                            <span class="text-danger" id="form-edit-error-label"></span>
-                        </div>
-                        <span class="date">Created: ${getDateToDisplay(itemJson.created_at)} </span>
-                        <span class="date d-inline-block" style="padding-inline: 10px"> Modified: ${getDateToDisplay(itemJson.updated_at)} </span>
-                        <div class="mb-3">
-                            <label class="col-form-label" for="assign">Assigned:</label>
-                            <select class="form-select" name="assign" id="select-people-edit" aria-label="Default select example">
-                                <option value="-1"> Unassigned </option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="col-form-label" for="recipient-name">Deadline:</label>
-                            <input class="form-control" name="deadline" type="date" value="${itemJson.deadline ?? ''}">
-                        </div>
-                        <div class="mb-3">
-                            <label class="col-form-label" for="message-text">Description:</label>
-                            <textarea class="form-control" name="description">${itemJson.description ?? ''}</textarea>
-                        </div>
-                    </div>
-                </form>
-                <div class="modal-footer">
-                    <button class="btn btn-danger" type="button" id="item-delete-btn">Delete</button>
-                    <button class="btn btn-secondary"  type="button" data-bs-dismiss="modal">Close</button>
-                    <button class="btn btn-primary" id="modal-edit-submit-btn" type="button">Save item</button>
-                </div>
-            </div>
-        </div>
-    `
-    modalContainer.appendChild(modal)
+    $('#edit-form-title').val(itemJson.item_name)
+    $('#edit-form-deadline').val(itemJson.deadline ?? '')
+    $('#edit-form-description').val(itemJson.description ?? '')
+    $('#edit-form-select-people').val(itemJson.assignedUser_id ?? -1)
+    $('#edit-form-created').text(getDateToDisplay(itemJson.created_at))
+    $('#edit-form-modified').text(getDateToDisplay(itemJson.updated_at))
 
-    for(const person of people) {
-        const option = document.createElement('option')
-        option.value = person.id
-        option.textContent = person.name
-        document.getElementById('select-people-edit').appendChild(option)
-    }
-    $('#select-people-edit').val(itemJson.assignedUser_id ?? -1)
 
     $('#modification-modal').on('hidden.bs.modal',  () => {
-        modalContainer.removeChild(modal)
+        $('.edit-from-inputs').val('')
+        $('#edit-form-select-people').val('-1')
+        $('.edit-form-date').text('')
     })
 
     document.getElementById('item-delete-btn').onclick = function () {
