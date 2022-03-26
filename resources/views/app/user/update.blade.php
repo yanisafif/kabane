@@ -67,14 +67,14 @@
                                         <label class="form-label">Twitter</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="icofont icofont-social-twitter"></i></span>
-                                            <input class="form-control" name="link_twitter" type="text" value="{{ empty($user->link_twitter) ? 'https://www.instagram.com/' : $user->link_twitter }}" />
+                                            <input class="form-control" name="link_twitter" type="text" value="{{ empty($user->link_twitter) ? 'https://www.twitter.com/' : $user->link_twitter }}" />
                                         </div>
                                     </div>
                                     <div class="mb-3 m-form__group">
                                         <label class="form-label">Facebook</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="icofont icofont-social-facebook"></i></span>
-                                            <input class="form-control" name="link_facebook" type="text" value="{{ empty($user->link_facebook) ? 'https://www.instagram.com/' : $user->link_facebook }}" />
+                                            <input class="form-control" name="link_facebook" type="text" value="{{ empty($user->link_facebook) ? 'https://www.facebook.com/' : $user->link_facebook }}" />
                                         </div>
                                     </div>
                                     <div class="mb-3 m-form__group">
@@ -88,7 +88,7 @@
                                         <label class="form-label">Linkedin</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fa fa-linkedin"></i></span>
-                                            <input class="form-control" name="link_linkedin" type="text" value="{{ empty($user->link_linkedin) ? 'https://www.instagram.com/' : $user->link_linkedin }}" />
+                                            <input class="form-control" name="link_linkedin" type="text" value="{{ empty($user->link_linkedin) ? 'https://www.linkedin.com/in' : $user->link_linkedin }}" />
                                         </div>
                                     </div>
                                     <div class="card-footer">
