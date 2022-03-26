@@ -186,10 +186,11 @@
                             <div class="col">
                                 <form>
                                     <div class="mb-3 m-form__group">
-                                        <label class="form-label">Type this to delete your account : "We will miss you"</label>
+                                        <label class="form-label">Type this to delete your account : "<span class="fw-bold">I will come back soon</span>"</label>
                                         <div class="input-group">
                                             <span class="input-group-text bg-danger text-light"><i class="icon-user"></i></span>
-                                            <input class="form-control" type="text" name="delete_account" required="required" />
+                                            <input class="form-control" type="text" name="delete_account" required="required"
+                                            onselectstart="return false" onpaste="return false" onCopy="return false" onCut="return false" onDrag="return false" onDrop="return false" autocomplete=off />
                                         </div>
                                     </div>
                                     <div class="card-footer">
