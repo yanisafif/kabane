@@ -73,4 +73,7 @@ Route::prefix('user')
 
         Route::get('/profile/update/{id}', [UserController::class, 'getUpdateUser'])
         ->name('user.update')->middleware('auth');
+
+        Route::post('post-update-password', [UserController::class, 'postEditUserPassword'])->name('update.password')->middleware('auth');
+        Route::post('post-update-link', [UserController::class, 'postEditUserLinkInformation'])->name('update.link')->middleware('auth');
     });
