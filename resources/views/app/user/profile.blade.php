@@ -23,7 +23,7 @@
                                 {{-- Select image user id --}}
 
                                 @if (auth()->user()->id == $user->id)
-                                    <a class="icon-wrapper" href="#"><i class="icofont icofont-pencil-alt-5"></i></a>
+                                    <a class="icon-wrapper" href="/user/profile/update/{{ auth()->user()->id }}"><i class="icofont icofont-pencil-alt-5"></i></a>
                                 @endif
 
 	                        </div>

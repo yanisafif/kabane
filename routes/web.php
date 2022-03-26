@@ -70,4 +70,7 @@ Route::prefix('user')
 
         Route::get('/profile/{name}', [UserController::class, 'getUser'])
         ->name('user.profile')->middleware('auth');
+
+        Route::get('/profile/update/{id}', [UserController::class, 'getUpdateUser'])
+        ->name('user.update')->middleware('auth');
     });
