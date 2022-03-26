@@ -17,7 +17,8 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col">
-                                <form>
+                                <form method="POST" action="{{ route('user.update.name')}}">
+                                    @csrf
                                     <div class="mb-3 m-form__group">
                                         <label class="form-label">Pseudo</label>
                                         <div class="input-group">
@@ -40,7 +41,8 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col">
-                                <form>
+                                <form method="POST" action="{{ route('user.update.email')}}">
+                                    @csrf
                                     <div class="mb-3 m-form__group">
                                         <label class="form-label">Email</label>
                                         <div class="input-group">
@@ -63,7 +65,8 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col">
-                                <form>
+                                <form method="POST" action="{{ route('user.update.information')}}">
+                                    @csrf
                                     <div class="mb-3 m-form__group">
                                         <label class="form-label">Title</label>
                                         <div class="input-group">

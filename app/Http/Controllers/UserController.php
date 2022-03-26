@@ -29,19 +29,72 @@ class UserController extends Controller
             "name" => "required|unique:users|max:50"
         ];
 
+        $data = $request->all();
+
+        // Validate the form with is data
+        $validator = Validator::make($data, $rules);
+        $user = User::find(auth()->user()->id);
+
+        if ($validator->fails())
+        {
+            return back()->with('danger', 'Pseudo is not valid or already used.');
+
+        }else{
+            // Make the changes
+            $user->update(['name' => $data['name']]);
+            return back()->with('success', 'Your pseudo has been updated with success.');
+
+        }
+
     }
     public function postEditEmail(Request $request){
         $rules = [
             "email" => "required|email|unique:users",
         ];
 
+        $data = $request->all();
+
+        // Validate the form with is data
+        $validator = Validator::make($data, $rules);
+        $user = User::find(auth()->user()->id);
+
+        if ($validator->fails())
+        {
+            return back()->with('danger', 'Email is not valid or already used.');
+
+        }else{
+            // Make the changes
+            $user->update(['email'=>$data['email']]);
+            return back()->with('success', 'Your email has been updated with success.');
+
+        }
+
     }
 
-    public function postEditUserPrimaryInformation(Request $request){
-        $rules = [
+    public function postEditUserSecondaryInformation(Request $request){
+        $request->validate([
             "title" => "nullable",
             "description" => "nullable",
-        ];
+        ]);
+
+        $query = DB::table('users')
+            ->updateOrInsert(
+                [
+                    'id' => auth()->user()->id,
+                    'name' => auth()->user()->name,
+                ],
+                [
+                    'title'=> $request->title,
+                    'description'=> $request->description,
+                ]);
+
+        if($query){
+            return back()->with('success', 'Your information has been updated with success.');
+        }else{
+            return back()->with('danger', 'Oups ! something went wrong retry in few secondes.');
+        }
+
+
     }
 
     public function postEditUserLinkInformation(Request $request){
@@ -88,12 +141,6 @@ class UserController extends Controller
                 ]);
 
         return back()->with('success', 'Link has been updated with success');
-
-
-
-
-
-
     }
 
     public function postEditUserPassword(Request $request){
@@ -117,7 +164,7 @@ class UserController extends Controller
         }else{
             // Make the changes
             $user->update(['password'=> Hash::make($data['new_password'])]);
-            return back()->with('succes', 'Password has been updated with succes');
+            return back()->with('success', 'Password has been updated with success.');
 
         }
     }
