@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Hash;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\File;
 
 class UserController extends Controller
 {
@@ -22,6 +23,61 @@ class UserController extends Controller
         $user = DB::table('users')->where('id', $id)->first();
 
         return view('app.user.update', ['user' => $user]);
+    }
+
+    public function postUpdateAvatar(Request $request)
+    {
+
+        $validator = Validator::make($request->all(), [
+            'file' => 'required|mimes:png,jpg,jpeg,gif|max:5000'
+        ]);
+
+        if ($validator->fails()) {
+            return back()->with('danger', 'Your image is maybe corrupted, try again in few seconds.');
+
+        }else{
+            $image = $request->file('file');
+            $imageName = time().'.'.$image->extension();
+            $image->move(public_path('avatars'), $imageName);
+
+            $user = User::find(auth()->user()->id);
+            if (!empty($user->path_image)){
+                $existingPathImage = public_path('avatars/'.$user->path_image);
+                if (File::exists($existingPathImage)){
+                    unlink($existingPathImage);
+                }
+            }
+
+            $query = DB::table('users')
+                ->updateOrInsert(
+                    [
+                        'id' => auth()->user()->id,
+                        'name' => auth()->user()->name,
+                    ],
+                    [
+                        'path_image'=> $imageName,
+                    ]
+                );
+
+            return back()->with('success', 'Woaaaaw, you will looking so good with this new avatar.');
+        }
+    }
+
+    public function getDeleteAvatar($id){
+        if (auth()->user()->id == $id){
+            $user = User::find(auth()->user()->id);
+            if (!empty($user->path_image)){
+                $existingPathImage = public_path('avatars/'.$user->path_image);
+                if (File::exists($existingPathImage)){
+                    unlink($existingPathImage);
+                }
+                $query = DB::table('users')
+                    ->where('id', $user->id)
+                    ->update(['path_image' => null]);
+
+                return back()->with('success', 'Image is successfully deleted.');
+            }
+        }
     }
 
     public function postEditUserName(Request $request){

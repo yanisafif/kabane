@@ -11,6 +11,35 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="card">
+                    <div class="card-header">
+                        <h5>Change your Avatar</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+
+                                @if (!empty(auth()->user()->path_image))
+                                    <div class="avatars text-center">
+                                        <div class="avatar"><img class="img-100 rounded-circle" style="height: 100px" src="{{asset('avatars/'.auth()->user()->path_image)}}" alt="Avatar">
+                                            <a href="/user/profile/delete/avatar/{{auth()->user()->id}}"><div class="status status-100 bg-danger"><i class="icofont icofont-trash"> </i> </div></a>
+                                        </div>
+                                    </div>
+                                @endif
+                                <form class="dropzone digits" id="image-upload" action="{{ route('user.update.avatar') }}" method="post" enctype="multipart/form-data">
+                                    @csrf
+                                    <div>
+                                        <label for="formFileLg" class="form-label">Select your image file</label>
+                                        <input class="form-control form-control-lg" id="formFileLg" type="file" name="file">
+                                    </div>
+                                    <div class="card-footer">
+                                        <button class="btn btn-primary m-r-15" type="submit">Submit</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
                     <div class="card-header pb-0">
                         <h5>Change your Pseudo</h5>
                     </div>
@@ -207,7 +236,6 @@
 			</div>
 		</div>
 	</div>
-
 
 	@push('scripts')
 	@endpush

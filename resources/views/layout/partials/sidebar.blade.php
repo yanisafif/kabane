@@ -1,10 +1,10 @@
 <header class="main-nav">
     <div class="sidebar-user text-center">
-        <a class="setting-primary" href="/user/profile/update/{{ auth()->user()->id }}"><i data-feather="settings"></i></a><img class="img-90 rounded-circle" src="{{asset('assets/images/dashboard/1.png')}}" alt="" />
+        <a class="setting-primary" href="/user/profile/update/{{ auth()->user()->id }}"><i data-feather="settings"></i></a><img class="img-100 rounded-circle" style="height:100px" src="{{ empty(auth()->user()->path_image) ? asset('assets/images/dashboard/1.png') : asset('avatars/'.auth()->user()->path_image) }}" alt="avatars" />
         <a href="/user/profile/{{ auth()->user()->name }}">
             <h6 class="mt-3 f-14 f-w-600">
                 @auth
-                    {{  auth()->user()->name }}
+                    {{ auth()->user()->name }}
                 @endauth
             </h6>
         </a>
