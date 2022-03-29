@@ -96,7 +96,7 @@ class ItemController extends Controller
         if(Arr::exists($data, 'item_name')) 
             $record->name = $data['item_name']; 
         if(Arr::exists($data, 'assignedUser_id'))
-            $record->assignedUserId = $data['assign']; 
+            $record->assignedUserId = $data['assignedUser_id']; 
         if(Arr::exists($data, 'deadline'))
             $record->deadline = $data['deadline']; 
         if(Arr::exists($data, 'description'))

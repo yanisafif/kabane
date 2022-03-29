@@ -38,18 +38,12 @@ let kanban, data, people
         {
             board.item.push(createItem(item, col.id))
         }
-        console.log(board)
         boards.push(board)
-        i++
     }
-
 
     kanban = new jKanban({
         element: '#kabane',
         gutter: '15px',
-        click: (el) => {
-            displayItemDetailsModal(el)
-        },
         boards: boards,
         itemAddOptions: {
             enabled: true,                                              // add a button to board for easy item creation
@@ -59,9 +53,32 @@ let kanban, data, people
         },
         buttonClick: (el, boardId) => {
             displayCreateModal(boardId)
+        },
+        click: (el) => {
+            displayItemDetailsModal(el)
         }
     });
+
+    // Add style classes
     document.getElementsByTagName('head')[0].appendChild(style)
+
+    // On modal create close clear fields and events
+    $('#creation-modal').on('hidden.bs.modal', function () {
+        $('.create-inputs').val('')
+        $('#select-people-creation').val('-1')
+
+        $('#modal-creation-submit-btn').unbind('click')
+    })
+
+    // On modal edit close clear fields and events
+    $('#modification-modal').on('hidden.bs.modal', () => {
+        $('.edit-from-inputs').val('')
+        $('#edit-form-select-people').val('-1')
+        $('.edit-form-date').text('')
+
+        $('#item-delete-btn').unbind('click')
+        $('#modal-edit-submit-btn').unbind('click')
+    })
 
 })();
 
@@ -84,7 +101,6 @@ function displayCreateModal(colId) {
             .then(async (res) => {
 
                 const json = await res.json()
-                console.log(json, res)
                 
                 // Handle request failure
                 if(!res.ok) {
@@ -127,12 +143,6 @@ function displayCreateModal(colId) {
     })
 
     $("#creation-modal").modal('show') // Show modal
-
-    // Clear modal on close
-    $('#creation-modal').on('hidden.bs.modal', function () {
-        $('.create-inputs').val('')
-        $('#select-people-creation').val('-1')
-    })
 }
 
 function displayItemDetailsModal(el) {
@@ -144,25 +154,16 @@ function displayItemDetailsModal(el) {
     const colId = parseInt(idSplitted[2])
 
     // Gather needed data
-    const colJson = data.find(f => f.id === colId)
-    console.log(colJson)
-    const itemJson = colJson.items.find(f => f.item_id === itemId)
-    console.log(itemJson)
+    const colData = data.find(f => f.id === colId)
+    const itemData = colData.items.find(f => f.item_id === itemId)
 
     // Set form modal fields
-    $('#edit-form-title').val(itemJson.item_name)
-    $('#edit-form-deadline').val(itemJson.deadline ?? '')
-    $('#edit-form-description').val(itemJson.description ?? '')
-    $('#edit-form-select-people').val(itemJson.assignedUser_id ?? -1)
-    $('#edit-form-created').text(getDateToDisplay(itemJson.created_at))
-    $('#edit-form-modified').text(getDateToDisplay(itemJson.updated_at))
-
-    // On modal close clear fields
-    $('#modification-modal').on('hidden.bs.modal',  () => {
-        $('.edit-from-inputs').val('')
-        $('#edit-form-select-people').val('-1')
-        $('.edit-form-date').text('')
-    })
+    $('#edit-form-title').val(itemData.item_name)
+    $('#edit-form-deadline').val(itemData.deadline ?? '')
+    $('#edit-form-description').val(itemData.description ?? '')
+    $('#edit-form-select-people').val(itemData.assignedUser_id ?? -1)
+    $('#edit-form-created').text(getDateToDisplay(itemData.created_at))
+    $('#edit-form-modified').text(getDateToDisplay(itemData.updated_at))
 
     // On delete button click 
     $('#item-delete-btn').click(() => {
@@ -179,7 +180,7 @@ function displayItemDetailsModal(el) {
                 
                 // Remove item form board and data object
                 el.parentNode.removeChild(el)
-                colJson.items.splice(colJson.items.indexOf(itemJson), 1)
+                colData.items.splice(colData.items.indexOf(itemData), 1)
 
                 $("#modification-modal").modal('hide') // Close modal
             })
@@ -204,19 +205,16 @@ function displayItemDetailsModal(el) {
         }
         
         const requestBody = {
-            itemId: itemJson.item_id
+            itemId: itemData.item_id
         }
 
         // Build request, insert only modified elements
         for(const key in dataForm) {
 
-            if(dataForm[key] !== itemJson[key]) {
+            if(dataForm[key] !== itemData[key]) {
                 requestBody[key] = dataForm[key]
             }
         }
-        
-        console.log(dataForm, itemJson)
-        console.log(requestBody)
 
         // If nothing has been modified then close modal
         if(Object.keys(requestBody).length === 1) {
@@ -234,6 +232,12 @@ function displayItemDetailsModal(el) {
                     return
                 }
 
+                for(const key in requestBody) {
+                    itemData[key] = requestBody[key]
+                }
+
+                kanban.replaceElement(el, createItem(itemData, colData.id))
+                
                 $("#modification-modal").modal('hide')
             })
     })
@@ -244,6 +248,7 @@ function displayItemDetailsModal(el) {
 
 function createItem(item, colId) {
     return {
+        id: `item-${item.item_id}`,
         title: `<a id="item-${item.item_id}-${colId}" class="kanban-box overflow-hidden"style="max-height: 150px" href="#">
             <div class="row">
                 <div class="col">
