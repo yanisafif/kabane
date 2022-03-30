@@ -58,6 +58,9 @@ Route::prefix('item')
 
         Route::put('update', 'ItemController@update')
             ->name('update');
+
+        Route::put('move', 'ItemController@move')
+            ->name('move');
     });
 
 

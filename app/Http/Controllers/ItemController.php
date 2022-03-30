@@ -129,6 +129,29 @@ class ItemController extends Controller
         return response()->json(['status' => 'Succeed']);
     }
 
+    public function move(Request $request) 
+    {
+        $rules = [
+            "itemId" => "required|numeric",
+            "targetCol" => "required|numeric"
+        ];
+
+        // Validate the form with is data
+        $validator = Validator::make($request->all(), $rules);
+
+        // If data dont respect the validation rules, redirect on same page with error
+        if ($validator->fails())
+        {
+            return response(json_encode(['status' => 'Error']), 400, ['Content-Type' => 'application/json']);
+        }
+
+        $data = $request->only('itemId', 'targetCol');
+
+        $item = Item::find($data['itemId']); 
+        $item->colId = $data['targetCol']; 
+        $item->save();
+    }
+
     protected function checkIfKanbanAllow($kanban)
     {
         $userId = \Auth::user()->id;
