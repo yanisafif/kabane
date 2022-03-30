@@ -2,7 +2,6 @@ window.httpRequest = function(url, method, data) {
     return fetch(url, {method, headers: {'Content-Type': 'application/json','X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}, body: JSON.stringify(data)});
 }
 
-const modalContainer =  document.getElementById('modal-container')
 let kanban, data, people
 
 (function() {
@@ -56,6 +55,9 @@ let kanban, data, people
         },
         click: (el) => {
             displayItemDetailsModal(el)
+        },
+        dropEl: (el, target, source) => {
+            moveItem(el, target, source)
         }
     });
 
@@ -243,6 +245,30 @@ function displayItemDetailsModal(el) {
     })
 
     $("#modification-modal").modal('show') // Show modal 
+}
+
+function moveItem(el, target, source) {
+
+    // Get col id
+    const sourceId = parseInt(source.parentNode.getAttribute('data-id').substring(4))
+    const targetId = parseInt(target.parentNode.getAttribute('data-id').substring(4))
+
+    // Modify colId in html item id 
+    const itemAEl = el.getElementsByTagName('a')[0]
+    const itemId = parseInt(itemAEl.id.split('-')[1])
+    itemAEl.id = `item-${itemId}-${targetId}`
+
+    // Get data columns
+    const dataColSource = data.find(f => f.id === sourceId)
+    const dataColTarget = data.find(f => f.id === targetId)
+
+    // Get moved item
+    const dataItem = dataColSource.items.find(f =>  f.item_id ===  itemId)
+
+    // Move item in the object 'data'
+    dataColTarget.items.push(dataItem)
+    dataColSource.items.splice(dataColSource.items.indexOf(dataItem), 1)
+
 }
 
 
