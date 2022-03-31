@@ -155,12 +155,34 @@ class ItemController extends Controller
         {
             return response(json_encode(['status' => 'Error']), 400, ['Content-Type' => 'application/json']);
         }
-
         $data = $request->only('itemId', 'targetCol');
 
+        $kanbanFromSource = Kanban::query()
+            ->join('cols', 'kanbans.id', 'cols.kanbanId')
+            ->join('items', 'items.colId', 'cols.id')
+            ->where('items.id', '=', $data['itemId'])
+            ->first();
+
+        $kanbanFromTarget = Kanban::query()
+            ->join('cols', 'kanbans.id', 'cols.kanbanId')
+            ->where('cols.id', '=', $data['targetCol'])
+            ->first();
+
+        if(is_null($kanbanFromSource) || is_null($kanbanFromTarget) || $kanbanFromSource->kanbanId != $kanbanFromTarget->kanbanId)
+        {
+            return response(json_encode(['status' => 'Error']), 400, ['Content-Type' => 'application/json']);
+        }
+        if(!$this->checkIfKanbanAllow($kanbanFromSource))
+        {
+            return response(json_encode(['status' => 'You\'re not allowed to do that']), 403, ['Content-Type' => 'application/json']);
+        }
+        
         $item = Item::find($data['itemId']); 
         $item->colId = $data['targetCol']; 
         $item->save();
+
+        return response()->json(['status' => 'Succeed']);
+        
     }
 
     protected function checkIfKanbanAllow($kanban)
@@ -178,27 +200,4 @@ class ItemController extends Controller
         return !is_null($res);
     }
 
-    protected function getLayoutData()
-    {
-        $userId = \Auth::user()->id;
-        $data = [];
-
-        $data['invitedKanban'] = Kanban::query()
-            ->whereIn(
-                'id',
-                Invitation::query()
-                    ->where('userId', '=', $userId)
-                    ->select('userId')
-                    ->get()
-            )
-            ->select('id', 'name', 'isActive', 'ownerUserId')
-            ->get();
-
-        $data['ownedKanban'] = Kanban::query()
-            ->where('ownerUserId', '=', $userId)
-            ->select('id', 'name', 'isActive', 'ownerUserId')
-            ->get();
-
-        return $data;
-    }
 }
