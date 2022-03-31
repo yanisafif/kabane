@@ -265,10 +265,19 @@ function moveItem(el, target, source) {
     // Get moved item
     const dataItem = dataColSource.items.find(f =>  f.item_id ===  itemId)
 
-    // Move item in the object 'data'
-    dataColTarget.items.push(dataItem)
-    dataColSource.items.splice(dataColSource.items.indexOf(dataItem), 1)
-
+    // Send request
+    httpRequest('/item/move', 'PUT', {
+        itemId, 
+        targetCol: targetId
+    }).then((res) => {
+        
+        // Move item in the object 'data'
+        if(res.ok) {
+            dataColTarget.items.push(dataItem)
+            dataColSource.items.splice(dataColSource.items.indexOf(dataItem), 1)
+        }
+    })
+    
 }
 
 
