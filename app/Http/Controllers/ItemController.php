@@ -124,6 +124,17 @@ class ItemController extends Controller
 
         $itemId = $request->only('itemId')['itemId'];
 
+        $kanban = Kanban::query()
+            ->join('cols', 'kanbans.id', 'cols.kanbanId')
+            ->join('items', 'items.colId', 'cols.id')
+            ->where('items.id', '=', $itemId)
+            ->first();
+    
+        if(is_null($kanban))
+            return response(json_encode(['status' => 'Error']), 400, ['Content-Type' => 'application/json']);
+        if(!$this->checkIfKanbanAllow($kanban))
+            return response(json_encode(['status' => 'You\'re not allowed to do that']), 403, ['Content-Type' => 'application/json']);
+
         Item::find($itemId)->delete();
 
         return response()->json(['status' => 'Succeed']);
