@@ -32,7 +32,9 @@ let kanban, data, people
                 <input type="text" name="item_name" class="rounded-1 w-100 title-col" 
                     readonly="true" maxlength="50"
                     ondblclick="onTitleDbClick(this)"
-                    onfocusout="onTileFocusOut(this, ${col.id})"
+                    onfocusout="onTileFocusOut(this)"
+                    onkeyup="onTitleKeyUp(this, event)"
+                    data-id="${col.id}"
                     style="border: none; background: transparent" value="${col.name}">
             `,
             class: 'col' + col.id,
@@ -103,8 +105,21 @@ function onTitleDbClick(thisEl) {
     thisEl.dataset.oldValue = thisEl.value
 }
 
+// Trigger on keyup
+function onTitleKeyUp(thisEl, e) {
+
+    // If equals 'Enter' then handle edit finish
+    if(e.keyCode === 13) {
+        handleTitleFinishEdit(thisEl)
+    }
+}
+
 // Trigger on cols' input focus out 
-function onTileFocusOut(thisEl, colId) {
+function onTileFocusOut(thisEl) {
+    handleTitleFinishEdit(thisEl)
+}
+
+function handleTitleFinishEdit(thisEl) {
     thisEl.readOnly = 'true'
     thisEl.style.border = 'none'
     thisEl.style.background = 'transparent'
@@ -123,11 +138,10 @@ function onTileFocusOut(thisEl, colId) {
 
     // Make request
     httpRequest('/col/rename', 'PUT', {
-        colId, 
+        colId: thisEl.dataset.id, 
         colName: thisEl.value
     })
 }
-
 //#endregion
 
 function displayCreateModal(colId) {
