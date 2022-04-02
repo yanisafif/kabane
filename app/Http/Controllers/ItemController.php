@@ -55,7 +55,7 @@ class ItemController extends Controller
 
         if(is_null($kanban))
             return response(json_encode(['status' => 'Kanban not found']), 400, ['Content-Type' => 'application/json']);
-        if(!$this->checkIfKanbanAllow($kanban))
+        if(!checkIfKanbanAllow($kanban))
             return response(json_encode(['status' => 'You\'re not allowed to do that']), 403, ['Content-Type' => 'application/json']);
 
         $item = new Item;
@@ -132,7 +132,7 @@ class ItemController extends Controller
     
         if(is_null($kanban))
             return response(json_encode(['status' => 'Error']), 400, ['Content-Type' => 'application/json']);
-        if(!$this->checkIfKanbanAllow($kanban))
+        if(!checkIfKanbanAllow($kanban))
             return response(json_encode(['status' => 'You\'re not allowed to do that']), 403, ['Content-Type' => 'application/json']);
 
         Item::find($itemId)->delete();
@@ -172,7 +172,7 @@ class ItemController extends Controller
         {
             return response(json_encode(['status' => 'Error']), 400, ['Content-Type' => 'application/json']);
         }
-        if(!$this->checkIfKanbanAllow($kanbanFromSource))
+        if(checkIfKanbanAllow($kanbanFromSource))
         {
             return response(json_encode(['status' => 'You\'re not allowed to do that']), 403, ['Content-Type' => 'application/json']);
         }

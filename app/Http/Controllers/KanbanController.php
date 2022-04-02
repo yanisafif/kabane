@@ -41,7 +41,7 @@ class KanbanController extends Controller
                ->select('id', 'name', 'isActive', 'created_at', 'ownerUserId')
                ->first();
 
-            if(!is_null($data['kanban']) && $this->checkIfKanbanAllow($data['kanban']))
+            if(!is_null($data['kanban']) && checkIfKanbanAllow($data['kanban']))
             {
                $cols = Col::query()
                    ->where('kanbanId', '=', $id)
@@ -93,14 +93,12 @@ class KanbanController extends Controller
             }
 
         }
-        $kanbans = $this->getLayoutData();
-        return view('app.kanban', compact('kanbans', 'data'));
+        return view('app.kanban', compact('data'));
     }
 
     public function create()
     {
-        $kanbans = $this->getLayoutData();
-        return view('app.create-kanban', compact('kanbans'));
+        return view('app.create-kanban');
     }
 
     public function store(Request $request)
@@ -156,44 +154,5 @@ class KanbanController extends Controller
             $invite->save();
         }
         return redirect(route('kanban.board') . '/' . $kanban->id);
-    }
-
-    protected function checkIfKanbanAllow($kanban)
-    {
-        $userId = \Auth::user()->id;
-
-        if($kanban->ownerUserId == $userId)
-            return true;
-
-        $res = Invitation::query()
-            ->where('userId', '=', $userId)
-            ->where('kanbanId', '=', $kanban->id)
-            ->first();
-
-        return !is_null($res);
-    }
-
-    protected function getLayoutData()
-    {
-        $userId = \Auth::user()->id;
-        $data = [];
-
-        $data['invitedKanban'] = Kanban::query()
-            ->whereIn(
-                'id',
-                Invitation::query()
-                    ->where('userId', '=', $userId)
-                    ->select('userId')
-                    ->get()
-            )
-            ->select('id', 'name', 'isActive', 'ownerUserId')
-            ->get();
-
-        $data['ownedKanban'] = Kanban::query()
-            ->where('ownerUserId', '=', $userId)
-            ->select('id', 'name', 'isActive', 'ownerUserId')
-            ->get();
-
-        return $data;
     }
 }

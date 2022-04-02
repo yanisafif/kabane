@@ -35,7 +35,7 @@
       <!-- Page Body Start-->
       <div class="page-body-wrapper sidebar-icon">
         <!-- Page Sidebar Start-->
-        @includeIf('layout.partials.sidebar', ['kanbans' => $kanbans])
+        @includeIf('layout.partials.sidebar', ['kanbans' => getLayoutData()])
         <!-- Page Sidebar Ends-->
         <div class="page-body">
           <!-- Container-fluid starts-->
