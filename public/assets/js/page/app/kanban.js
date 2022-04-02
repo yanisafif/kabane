@@ -28,7 +28,13 @@ let kanban, data, people
         `
         const board = {
             id: '_col' + col.id,
-            title: col.name,
+            title: ` 
+                <input type="text" name="item_name" class="rounded-1 w-100 title-col" 
+                    readonly="true" maxlength="50"
+                    ondblclick="onTitleDbClick(this)"
+                    onfocusout="onTileFocusOut(this, ${col.id})"
+                    style="border: none; background: transparent" value="${col.name}">
+            `,
             class: 'col' + col.id,
             item: new Array()
         }
@@ -44,6 +50,7 @@ let kanban, data, people
         element: '#kabane',
         gutter: '15px',
         boards: boards,
+        dragBoards: false,   
         itemAddOptions: {
             enabled: true,                                              // add a button to board for easy item creation
             content: '+ Add item',                                                // text or html content of the board button
@@ -83,6 +90,45 @@ let kanban, data, people
     })
 
 })();
+
+//#region Handle title modifications 
+
+// Trigger on cols' input double click
+function onTitleDbClick(thisEl) {
+    // Enable modification
+    thisEl.readOnly=''; 
+    thisEl.style.border = '2px solid'
+    thisEl.style.background = ''
+
+    thisEl.dataset.oldValue = thisEl.value
+}
+
+// Trigger on cols' input focus out 
+function onTileFocusOut(thisEl, colId) {
+    thisEl.readOnly = 'true'
+    thisEl.style.border = 'none'
+    thisEl.style.background = 'transparent'
+
+
+    // New value empty, undo modification 
+    if(!thisEl.value) {
+        thisEl.value = thisEl.dataset.oldValue 
+        return
+    }
+
+    // No changes made 
+    if(thisEl.dataset.oldValue === thisEl.value) {
+        return
+    }
+
+    // Make request
+    httpRequest('/col/rename', 'PUT', {
+        colId, 
+        colName: thisEl.value
+    })
+}
+
+//#endregion
 
 function displayCreateModal(colId) {
 

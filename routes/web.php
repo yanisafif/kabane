@@ -63,6 +63,13 @@ Route::prefix('item')
             ->name('move');
     });
 
+Route::prefix('col')
+    ->as('col.')
+    ->group(function (){
+        Route::put('rename', 'ColController@rename')
+            ->name('rename');
+    });
+
 
 Route::prefix('user')
     ->as('user.')
