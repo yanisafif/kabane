@@ -19,8 +19,7 @@
 
 	                    <div class="userpro-box">
 	                        <div class="img-wrraper">
-	                            <div class="avatar"><img class="img-fluid" alt="" src="{{asset('assets/images/dashboard/1.png')}}" /></div>
-                                {{-- Select image user id --}}
+                                <div class="avatar"><img class="img-fluid" alt="" src="{{ empty(auth()->user()->path_image) ? asset('assets/images/dashboard/1.png') : asset('avatars/'.auth()->user()->path_image) }}" /></div>
 
                                 @if (auth()->user()->id == $user->id)
                                     <a class="icon-wrapper" href="/user/profile/update/{{ auth()->user()->id }}"><i class="icofont icofont-pencil-alt-5"></i></a>
