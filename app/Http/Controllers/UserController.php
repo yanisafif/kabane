@@ -11,18 +11,28 @@ use Illuminate\Support\Facades\File;
 
 class UserController extends Controller
 {
-    public function getUser($name)
+    public function getUser($name = 'blalblbal')
     {
         $user = DB::table('users')->where('name', $name)->first();
 
-        return view('app.user.profile', ['user' => $user]);
+        if ($user !== null) {
+            return view('app.user.profile', ['user' => $user]);
+        }
+        // TODO: change path when we know the root path
+        return back()->with('danger', 'This page does not exist in this context.');
     }
 
     public function getUpdateUser($id)
     {
-        $user = DB::table('users')->where('id', $id)->first();
+        if (auth()->user()->id == $id){
+            $user = DB::table('users')->where('id', auth()->user()->id)->first();
+            if ($user !== null) {
+                return view('app.user.update', ['user' => $user]);
+            }
+        }
+        return back()->with('danger', 'You dont have access to this page.');
+        // TODO: change path when we know the root path
 
-        return view('app.user.update', ['user' => $user]);
     }
 
     public function postUpdateAvatar(Request $request)
@@ -37,7 +47,7 @@ class UserController extends Controller
 
         }else{
             $image = $request->file('file');
-            $imageName = time().'.'.$image->extension();
+            $imageName = time().'.'.auth()->user()->id.$image->extension();
             $image->move(public_path('avatars'), $imageName);
 
             $user = User::find(auth()->user()->id);
@@ -227,5 +237,12 @@ class UserController extends Controller
 
     public function postDeleteUser(Request $request){
 
+        // Create a middleware for check if user is not the owner of colaborative Kanban
+
+        // Delete user
+
+        // Delete is personal data
+
+        // Delete all is personal kanban
     }
 }
