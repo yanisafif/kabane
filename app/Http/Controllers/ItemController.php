@@ -172,7 +172,7 @@ class ItemController extends Controller
         {
             return response(json_encode(['status' => 'Error']), 400, ['Content-Type' => 'application/json']);
         }
-        if(checkIfKanbanAllow($kanbanFromSource))
+        if(!checkIfKanbanAllow($kanbanFromSource))
         {
             return response(json_encode(['status' => 'You\'re not allowed to do that']), 403, ['Content-Type' => 'application/json']);
         }
@@ -183,21 +183,6 @@ class ItemController extends Controller
 
         return response()->json(['status' => 'Succeed']);
         
-    }
-
-    protected function checkIfKanbanAllow($kanban)
-    {
-        $userId = \Auth::user()->id;
-
-        if($kanban->ownerUserId == $userId)
-            return true;
-
-        $res = Invitation::query()
-            ->where('userId', '=', $userId)
-            ->where('kanbanId', '=', $kanban->id)
-            ->first();
-
-        return !is_null($res);
     }
 
 }
