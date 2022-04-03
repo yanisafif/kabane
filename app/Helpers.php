@@ -1,8 +1,5 @@
 <?php
 
-use App\Models\Invitation;
-use App\Models\Kanban;
-
 if (!function_exists('checkIfKanbanAllow')) 
 {
     function checkIfKanbanAllow($kanban)
@@ -12,15 +9,15 @@ if (!function_exists('checkIfKanbanAllow'))
         if($kanban->ownerUserId == $userId)
             return true;
 
-        $res = Invitation::query()
+        $res = App\Models\Invitation::query()
             ->where('userId', '=', $userId)
             ->where('kanbanId', '=', $kanban->id)
             ->first();
 
         return !is_null($res);
     }
-
 }
+
 if (!function_exists('getLayoutData')) 
 {
     function getLayoutData()
@@ -28,10 +25,10 @@ if (!function_exists('getLayoutData'))
         $userId = \Auth::user()->id;
         $data = [];
     
-        $data['invitedKanban'] = Kanban::query()
+        $data['invitedKanban'] = App\Models\Kanban::query()
             ->whereIn(
                 'id',
-                Invitation::query()
+                App\Models\Invitation::query()
                     ->where('userId', '=', $userId)
                     ->select('userId')
                     ->get()
@@ -39,7 +36,7 @@ if (!function_exists('getLayoutData'))
             ->select('id', 'name', 'isActive', 'ownerUserId')
             ->get();
     
-        $data['ownedKanban'] = Kanban::query()
+        $data['ownedKanban'] = App\Models\Kanban::query()
             ->where('ownerUserId', '=', $userId)
             ->select('id', 'name', 'isActive', 'ownerUserId')
             ->get();
