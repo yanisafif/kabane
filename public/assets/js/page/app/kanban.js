@@ -4,6 +4,7 @@ window.httpRequest = function(url, method, data) {
 
 let kanban, data, people
 
+// Init kanban board
 (function() {
     const dataCols = document.getElementById('dataCols')
     data = JSON.parse(dataCols.textContent)
@@ -16,32 +17,37 @@ let kanban, data, people
     console.log(people)
 
     const boards = new Array()
-    const style = document.createElement('style')
 
-    for(col of data)
+    for(const col of data)
     {
-        style.innerHTML += `
-            .col${col.id} {
-                background-color: ${col.colorHexa};
-                color: ${figureTextColor(col.colorHexa)};
-            }
-        `
+        col.txtColor = figureTextColor(col.colorHexa)
+
         const board = {
             id: '_col' + col.id,
             title: ` 
-                <input type="text" name="item_name" class="rounded-1 w-100 title-col" 
-                    readonly="true" maxlength="50"
-                    ondblclick="onTitleDbClick(this)"
-                    onfocusout="onTileFocusOut(this)"
-                    onkeyup="onTitleKeyUp(this, event)"
-                    data-id="${col.id}"
-                    style="border: none; background: transparent" value="${col.name}">
+                <div class="d-inline-flex" style="width: 90%">
+                    <input type="text" name="item_name" class="rounded-1 w-100 title-col" 
+                        readonly="true" maxlength="50"
+                        ondblclick="onTitleDbClick(this)"
+                        onfocusout="onTileFocusOut(this)"
+                        onkeyup="onTitleKeyUp(this, event)"
+                        data-id="${col.id}"
+                        style="border: none; background: transparent" value="${col.name}">
+                </div>
+                <div class="d-inline-flex align-middle">
+                    <svg xmlns="http://www.w3.org/2000/svg" onclick="" class="ionicon" viewBox="0 0 512 512" style="width: 25px; height: 25px">
+                        <title>Color Palette</title>
+                        <path  d="M430.11 347.9c-6.6-6.1-16.3-7.6-24.6-9-11.5-1.9-15.9-4-22.6-10-14.3-12.7-14.3-31.1 0-43.8l30.3-26.9c46.4-41 46.4-108.2 0-149.2-34.2-30.1-80.1-45-127.8-45-55.7 0-113.9 20.3-158.8 60.1-83.5 73.8-83.5 194.7 0 268.5 41.5 36.7 97.5 55 152.9 55.4h1.7c55.4 0 110-17.9 148.8-52.4 14.4-12.7 11.99-36.6.1-47.7z" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="32"/>
+                        <circle fill="currentColor"  cx="144" cy="208" r="32"/><circle fill="currentColor"  cx="152" cy="311" r="32"/><circle fill="currentColor" cx="224" cy="144" r="32"/>
+                        <circle fill="currentColor"  cx="256" cy="367" r="48"/><circle fill="currentColor"  cx="328" cy="144" r="32"/>
+                    </svg>        
+                </div>
             `,
-            class: 'col' + col.id,
+            class: 'col-header-' + col.id,
             item: new Array()
         }
 
-        for(item of col.items)
+        for(const item of col.items)
         {
             board.item.push(createItem(item, col.id))
         }
@@ -70,11 +76,20 @@ let kanban, data, people
         }
     });
 
+    // Define cols' header color
+    for(const col of data) { 
+        $(`.col-header-${col.id}`).css({
+            'background-color':  col.colorHexa, 
+            color: col.txtColor, 
+            fill: col.txtColor
+        })
+    }
+
     // Add style classes
     document.getElementsByTagName('head')[0].appendChild(style)
 
     // On modal create close clear fields and events
-    $('#creation-modal').on('hidden.bs.modal', function () {
+    $('#creation-modal').on('hidden.bs.modal', () => {
         $('.create-inputs').val('')
         $('#select-people-creation').val('-1')
 
@@ -108,7 +123,7 @@ function onTitleDbClick(thisEl) {
 // Trigger on keyup
 function onTitleKeyUp(thisEl, e) {
 
-    // If equals 'Enter' then handle edit finish
+    // If equals to 'Enter' then handle edit finish
     if(e.keyCode === 13) {
         handleTitleFinishEdit(thisEl)
     }
@@ -340,7 +355,7 @@ function moveItem(el, target, source) {
     
 }
 
-
+// Create render item element
 function createItem(item, colId) {
     return {
         id: `item-${item.item_id}`,
