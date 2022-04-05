@@ -27,24 +27,25 @@ class ColController extends Controller
         $this->middleware('auth');
     }
 
-    public function rename(Request $request)
+    public function edit(Request $request)
     {
         $rules = [
-            "colName" => "required|max:50",
-            "colId" => "required|numeric",
+            "colName" => "nullable|present|max:50",
+            "colorHexa" => "nullable|present|max:9",
+            "colId" => "required|numeric"
         ];
 
         // Validate the form with is data
         $validator = Validator::make($request->all(), $rules);
 
+        $data = $request->only('colName', 'colorHexa', 'colId');
+
         // If data dont respect the validation rules, the request fails
-        if ($validator->fails())
+        if ($validator->fails() || (is_null($data['colName']) && is_null($data['colorHexa'])))
         {
             return response(json_encode(['status' => 'Form not valid ', $validator->errors()]), 400, ['Content-Type' => 'application/json']);
         }
         
-        $data = $request->only('colName', 'colId');
-
         $kanban = Kanban::query()
             ->join('cols', 'cols.kanbanId', '=', 'kanbans.id')
             ->where('cols.id', '=', $data['colId'])
@@ -56,7 +57,13 @@ class ColController extends Controller
             return response(json_encode(['status' => 'You\'re not allowed to do that']), 403, ['Content-Type' => 'application/json']);
         
         $col = Col::find($data['colId']); 
-        $col->name = $data['colName'];
+
+        if(!is_null($data['colName']))
+            $col->name = $data['colName'];
+        
+        if(!is_null($data['colorHexa']))
+            $col->colorHexa = $data['colorHexa'];
+
         $col->save();
 
         return response()->json(['status' => 'Column renamed succefully']);

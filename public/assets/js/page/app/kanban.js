@@ -100,20 +100,34 @@ let kanban, data, people
     for(const colorBtn of colorBtns) { 
 
         const colId = parseInt(colorBtn.parentNode.dataset.id)
-        const color = data.find(f => f.id === colId)
+        const col = data.find(f => f.id === colId)
 
         const picker = new Picker({
             parent: colorBtn, 
-            color: color ? color.colorHexa : '#ff0000'
+            color: col ? col.colorHexa : '#ff0000'
         }) // Create picker element from vanilla-picker lib
 
-        picker.onChange = function(color) {
+        picker.onChange = (color) => {
 
             setColHeaderColor(
                 colorBtn.parentNode.dataset.id, 
                 color.hex, 
                 figureTextColor(color.hex)
             )
+        }
+
+        picker.onDone = (color) => { 
+
+            httpRequest('/col/edit', 'PUT', {
+                colId,
+                colorHexa: color.hex, 
+                colName: null
+            }).then((res) => {
+
+                if(res.ok) {
+                    col.colorHexa = color.hex
+                }
+            })
         }
     }
 
@@ -183,9 +197,10 @@ function handleTitleFinishEdit(thisEl) {
     }
 
     // Make request
-    httpRequest('/col/rename', 'PUT', {
+    httpRequest('/col/edit', 'PUT', {
         colId: thisEl.parentNode.parentNode.id, 
-        colName: thisEl.value
+        colName: thisEl.value, 
+        colorHexa: null
     })
 }
 //#endregion
