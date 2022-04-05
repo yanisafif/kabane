@@ -131,9 +131,6 @@ let kanban, data, people
         }
     }
 
-    // Add style classes
-    document.getElementsByTagName('head')[0].appendChild(style)
-
     // On modal create close clear fields and events
     $('#creation-modal').on('hidden.bs.modal', () => {
         $('.create-inputs').val('')

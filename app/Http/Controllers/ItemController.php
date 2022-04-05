@@ -87,22 +87,24 @@ class ItemController extends Controller
 
         $data = $request->only('itemId', "item_name", "assignedUser_id", "deadline", "description"); 
 
-        $record = Item::find($data['itemId']);
-        if(is_null($record)) 
-        {
+        $kanban = $this->getKanbanFromItemId($data['itemId']);
+        if(is_null($kanban)) 
             return response(json_encode(['status' => 'Error']), 400, ['Content-Type' => 'application/json']);
-        }
+        if(!checkIfKanbanAllow($kanban))
+            return response(json_encode(['status' => 'You\'re not allowed to do that']), 403, ['Content-Type' => 'application/json']);
+
+        $itemRecord = Item::find($data['itemId']);
         
         if(Arr::exists($data, 'item_name')) 
-            $record->name = $data['item_name']; 
+            $itemRecord->name = $data['item_name']; 
         if(Arr::exists($data, 'assignedUser_id'))
-            $record->assignedUserId = $data['assignedUser_id']; 
+            $itemRecord->assignedUserId = $data['assignedUser_id']; 
         if(Arr::exists($data, 'deadline'))
-            $record->deadline = $data['deadline']; 
+            $itemRecord->deadline = $data['deadline']; 
         if(Arr::exists($data, 'description'))
-            $record->description = $data['description'];
+            $itemRecord->description = $data['description'];
         
-        $record->save(); 
+        $itemRecord->save(); 
 
         return response()->json(['status' => 'Succeed']);
     }
@@ -124,11 +126,7 @@ class ItemController extends Controller
 
         $itemId = $request->only('itemId')['itemId'];
 
-        $kanban = Kanban::query()
-            ->join('cols', 'kanbans.id', 'cols.kanbanId')
-            ->join('items', 'items.colId', 'cols.id')
-            ->where('items.id', '=', $itemId)
-            ->first();
+        $kanban = $this->getKanbanFromItemId($itemId);
     
         if(is_null($kanban))
             return response(json_encode(['status' => 'Error']), 400, ['Content-Type' => 'application/json']);
@@ -157,11 +155,7 @@ class ItemController extends Controller
         }
         $data = $request->only('itemId', 'targetCol');
 
-        $kanbanFromSource = Kanban::query()
-            ->join('cols', 'kanbans.id', 'cols.kanbanId')
-            ->join('items', 'items.colId', 'cols.id')
-            ->where('items.id', '=', $data['itemId'])
-            ->first();
+        $kanbanFromSource = $this->getKanbanFromItemId($data['itemId']);
 
         $kanbanFromTarget = Kanban::query()
             ->join('cols', 'kanbans.id', 'cols.kanbanId')
@@ -183,6 +177,15 @@ class ItemController extends Controller
 
         return response()->json(['status' => 'Succeed']);
         
+    }
+
+    protected function getKanbanFromItemId($itemId)
+    {
+        return Kanban::query()
+            ->join('cols', 'kanbans.id', 'cols.kanbanId')
+            ->join('items', 'items.colId', 'cols.id')
+            ->where('items.id', '=', $itemId)
+            ->first();
     }
 
 }
