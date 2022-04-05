@@ -19,3 +19,7 @@
   overflow: visible;
 }
 
+.col-header-color-btn {
+  cursor: pointer;
+}
+

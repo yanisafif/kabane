@@ -31,7 +31,7 @@ let kanban, data, people
                         readonly="true" maxlength="50"
                         ondblclick="onTitleDbClick(this)"
                         onfocusout="onTileFocusOut(this)"
-                        onkeyup="onTitleKeyUp(this, event)"
+                        onkeyup="event.keyCode === 13 && this.blur()"
                         style="border: none; background: transparent" value="${col.name}">
                 </div>
                 <div class="d-inline-flex align-middle col-header-color-btn">
@@ -159,47 +159,38 @@ function onTitleDbClick(thisEl) {
     thisEl.readOnly=''; 
     thisEl.style.border = '2px solid'
     thisEl.style.background = ''
+    thisEl.style.color = '#000'
+    thisEl.select()
 
     thisEl.dataset.oldValue = thisEl.value
 }
 
-// Trigger on keyup
-function onTitleKeyUp(thisEl, e) {
-
-    // If equals to 'Enter' then handle edit finish
-    if(e.keyCode === 13) {
-        handleTitleFinishEdit(thisEl)
-    }
-}
-
 // Trigger on cols' input focus out 
 function onTileFocusOut(thisEl) {
-    handleTitleFinishEdit(thisEl)
-}
-
-function handleTitleFinishEdit(thisEl) {
     thisEl.readOnly = 'true'
     thisEl.style.border = 'none'
     thisEl.style.background = 'transparent'
-
+    thisEl.style.color = 'inherit'
+    
     // New value empty, undo modification 
     if(!thisEl.value) {
         thisEl.value = thisEl.dataset.oldValue 
         return
     }
-
+    
     // No changes made 
     if(thisEl.dataset.oldValue === thisEl.value) {
         return
     }
-
+    
     // Make request
     httpRequest('/col/edit', 'PUT', {
-        colId: thisEl.parentNode.parentNode.id, 
+        colId: thisEl.parentNode.parentNode.dataset.id, 
         colName: thisEl.value, 
         colorHexa: null
     })
 }
+
 //#endregion
 
 function displayCreateModal(colId) {
