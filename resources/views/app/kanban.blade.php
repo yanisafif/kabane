@@ -135,7 +135,8 @@
         </div>
 
         @push('scripts')
-            <script src="{{asset('assets/js/jkanban/jkanban.js')}}"></script>
+        <script src="{{asset('assets/js/jkanban/jkanban.js')}}"></script>
+        <script src="https://unpkg.com/vanilla-picker@2"></script>
             <script src="{{asset('assets/js/page/app/kanban.js')}}"></script>
         @endpush
 

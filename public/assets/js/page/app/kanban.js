@@ -25,16 +25,16 @@ let kanban, data, people
         const board = {
             id: '_col' + col.id,
             title: ` 
+            <div data-id="${col.id}">
                 <div class="d-inline-flex" style="width: 90%">
                     <input type="text" name="item_name" class="rounded-1 w-100 title-col" 
                         readonly="true" maxlength="50"
                         ondblclick="onTitleDbClick(this)"
                         onfocusout="onTileFocusOut(this)"
                         onkeyup="onTitleKeyUp(this, event)"
-                        data-id="${col.id}"
                         style="border: none; background: transparent" value="${col.name}">
                 </div>
-                <div class="d-inline-flex align-middle">
+                <div class="d-inline-flex align-middle col-header-color-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" onclick="" class="ionicon" viewBox="0 0 512 512" style="width: 25px; height: 25px">
                         <title>Color Palette</title>
                         <path  d="M430.11 347.9c-6.6-6.1-16.3-7.6-24.6-9-11.5-1.9-15.9-4-22.6-10-14.3-12.7-14.3-31.1 0-43.8l30.3-26.9c46.4-41 46.4-108.2 0-149.2-34.2-30.1-80.1-45-127.8-45-55.7 0-113.9 20.3-158.8 60.1-83.5 73.8-83.5 194.7 0 268.5 41.5 36.7 97.5 55 152.9 55.4h1.7c55.4 0 110-17.9 148.8-52.4 14.4-12.7 11.99-36.6.1-47.7z" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="32"/>
@@ -42,6 +42,7 @@ let kanban, data, people
                         <circle fill="currentColor"  cx="256" cy="367" r="48"/><circle fill="currentColor"  cx="328" cy="144" r="32"/>
                     </svg>        
                 </div>
+            </div>
             `,
             class: 'col-header-' + col.id,
             item: new Array()
@@ -76,13 +77,44 @@ let kanban, data, people
         }
     });
 
+    const setColHeaderColor = (id, bgColor, txtColor) => {
+        $(`.col-header-${id}`).css({
+            'background-color':  bgColor, 
+            color: txtColor, 
+            fill: txtColor
+        })    
+    }
+
     // Define cols' header color
     for(const col of data) { 
-        $(`.col-header-${col.id}`).css({
-            'background-color':  col.colorHexa, 
-            color: col.txtColor, 
-            fill: col.txtColor
-        })
+        setColHeaderColor(col.id, col.colorHexa, col.txtColor)
+        // $(`.col-header-${col.id}`).css({
+        //     'background-color':  col.colorHexa, 
+        //     color: col.txtColor, 
+        //     fill: col.txtColor
+        // })       
+    }
+
+    // Create color picker element
+    const colorBtns = document.getElementsByClassName('col-header-color-btn') // Get all color btns
+    for(const colorBtn of colorBtns) { 
+
+        const colId = parseInt(colorBtn.parentNode.dataset.id)
+        const color = data.find(f => f.id === colId)
+
+        const picker = new Picker({
+            parent: colorBtn, 
+            color: color ? color.colorHexa : '#ff0000'
+        }) // Create picker element from vanilla-picker lib
+
+        picker.onChange = function(color) {
+
+            setColHeaderColor(
+                colorBtn.parentNode.dataset.id, 
+                color.hex, 
+                figureTextColor(color.hex)
+            )
+        }
     }
 
     // Add style classes
@@ -139,7 +171,6 @@ function handleTitleFinishEdit(thisEl) {
     thisEl.style.border = 'none'
     thisEl.style.background = 'transparent'
 
-
     // New value empty, undo modification 
     if(!thisEl.value) {
         thisEl.value = thisEl.dataset.oldValue 
@@ -153,7 +184,7 @@ function handleTitleFinishEdit(thisEl) {
 
     // Make request
     httpRequest('/col/rename', 'PUT', {
-        colId: thisEl.dataset.id, 
+        colId: thisEl.parentNode.parentNode.id, 
         colName: thisEl.value
     })
 }

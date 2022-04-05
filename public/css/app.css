@@ -15,3 +15,7 @@
   color: inherit;
 }
 
+.kanban-board {
+  overflow: visible;
+}
+
