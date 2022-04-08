@@ -87,12 +87,7 @@ let kanban, data, people
 
     // Define cols' header color
     for(const col of data) { 
-        setColHeaderColor(col.id, col.colorHexa, col.txtColor)
-        // $(`.col-header-${col.id}`).css({
-        //     'background-color':  col.colorHexa, 
-        //     color: col.txtColor, 
-        //     fill: col.txtColor
-        // })       
+        setColHeaderColor(col.id, col.colorHexa, col.txtColor)  
     }
 
     // Create color picker element
@@ -107,6 +102,7 @@ let kanban, data, people
             color: col ? col.colorHexa : '#ff0000'
         }) // Create picker element from vanilla-picker lib
 
+        // Update header color on color change
         picker.onChange = (color) => {
 
             setColHeaderColor(
@@ -116,7 +112,12 @@ let kanban, data, people
             )
         }
 
-        picker.onDone = (color) => { 
+        // Send update request on color picker close
+        picker.onDone = (color) => {
+
+            if(col.colorHexa === color.hex) {
+                return
+            }
 
             httpRequest('/col/edit', 'PUT', {
                 colId,
@@ -193,6 +194,8 @@ function onTileFocusOut(thisEl) {
 
 //#endregion
 
+
+//#region Modal
 function displayCreateModal(colId) {
 
     // On submit
@@ -355,7 +358,9 @@ function displayItemDetailsModal(el) {
 
     $("#modification-modal").modal('show') // Show modal 
 }
+//#endregion
 
+//Trigger when an on item is drag/drop on an other column
 function moveItem(el, target, source) {
 
     // Get col id
@@ -389,7 +394,10 @@ function moveItem(el, target, source) {
     
 }
 
-// Create render item element
+
+//region Tools
+
+// Create render item element. Called on init, item add and item edit
 function createItem(item, colId) {
     return {
         id: `item-${item.item_id}`,
@@ -431,3 +439,5 @@ function figureTextColor(bgColor) {
     var L = (0.2126 * c[0]) + (0.7152 * c[1]) + (0.0722 * c[2]);
     return (L > 0.179) ? '#000' : '#fff';
 }
+
+//#endregion
