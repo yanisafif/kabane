@@ -18,9 +18,9 @@
                             <h5> {{ $data['kanban']['name'] }} </h5>
                             <span class="date"> {{ date('j F, Y', strtotime($data['kanban']['created_at'])) }} </span>
                             <div class="mt-2">
-                                <button class="btn btn-primary" id="addDefault">Add &quot;Default&quot; board</button>
-                                <button class="btn btn-secondary" id="addToDo">Add element in &quot;To Do&quot; Board</button>
-                                <button class="btn btn-danger mb-0" id="removeBoard">Remove &quot;Done&quot; Board</button>
+                                @if($data['isOwner'])
+                                    <button class="btn btn-primary" id="settings-access-btn">Settings pannel</button>
+                                @endif
                             </div>
                         </div>
                         <div class="card-body kanban-block">
@@ -122,8 +122,42 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            @if($data['isOwner'])
+                <div class="modal" id="settings-modal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Settings pannel</h5>
+                                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div>
+                                    <h6>Columns</h6>
+                                    <div>
+                                        @foreach($data['cols'] as $col)
+                                        <div class="mb-3 card">
+                                            <div class="p-2 settings-col-container">
+                                                <div class="flex: 1"> 
+                                                    <div class="setting-col-color"> </div>
+                                                </div>
+                                                <div class="setting-col-name">{{ $col['name'] }} </div>
+                                                <img class="setting-col-delete" src=" {{ asset('assets/svg/trash.svg') }}">
+                                            </div>
+                                        </div>
+                                        @endforeach
+                                    </div>
+                                </div>
 
-        </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary"  type="button" data-bs-dismiss="modal">Close</button>
+                                <button class="btn btn-primary" id="modal-creation-submit-btn" type="button">Save item</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+        </div>      
 
 
         <div class="d-none" id="dataCols">
@@ -135,9 +169,12 @@
         </div>
 
         @push('scripts')
-        <script src="{{asset('assets/js/jkanban/jkanban.js')}}"></script>
-        <script src="https://unpkg.com/vanilla-picker@2"></script>
-            <script src="{{asset('assets/js/page/app/kanban.js')}}"></script>
+            <script src="{{asset('assets/js/jkanban/jkanban.js')}}"></script>
+            <script src="https://unpkg.com/vanilla-picker@2"></script>
+            <script src="{{asset('assets/js/page/app/kanban.main.js')}}"></script>
+            @if($data['isOwner'])
+                <script src="{{asset('assets/js/page/app/kanban.admin.js')}}"></script>
+            @endif
         @endpush
 
     @elseif($data['kanbanNotSelected'])

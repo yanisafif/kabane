@@ -99,7 +99,9 @@ let kanban, data, people
 
         const picker = new Picker({
             parent: colorBtn, 
-            color: col ? col.colorHexa : '#ff0000'
+            color: col ? col.colorHexa : '#ff0000', 
+            popup: 'left'
+
         }) // Create picker element from vanilla-picker lib
 
         // Update header color on color change

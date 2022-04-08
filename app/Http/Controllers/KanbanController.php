@@ -70,13 +70,13 @@ class KanbanController extends Controller
                     ->select('users.name', 'users.id')
                     ->get();
 
-                $peopleAccessBoard->add(
-                    User::query()
+                $kanbanOwner = User::query()
                         ->join('kanbans', 'kanbans.ownerUserId', '=', 'users.id')
                         ->where('kanbans.id', '=', $id)
                         ->select('users.name', 'users.id')
-                        ->first()
-                );
+                        ->first();
+    
+                $peopleAccessBoard->add($kanbanOwner);
 
                 $currentUserId = \Auth::user()->id;
 
@@ -86,6 +86,7 @@ class KanbanController extends Controller
                 }
 
                 $data['people'] = $peopleAccessBoard;
+                $data['isOwner'] = ($kanbanOwner->id == $currentUserId);
             }
             else
             {
