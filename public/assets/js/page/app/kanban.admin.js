@@ -19,7 +19,7 @@ function setUpAddCol() {
             colorHexa: '#24695c'
         };
         
-        httpRequest('/col/add', 'POST', dataToSend).then( async(res) => {
+        window.httpRequest('/col/add', 'POST', dataToSend).then( async(res) => {
             
             const json = await res.json();
 

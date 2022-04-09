@@ -161,41 +161,6 @@ let people
         const col = data.find(f => f.id === colId)
 
         window.createColorPicker(colorBtn, col);
-
-        // const picker = new Picker({
-        //     parent: colorBtn, 
-        //     color: col ? col.colorHexa : '#ff0000', 
-        //     popup: 'left'
-        // }) // Create picker element from vanilla-picker lib
-
-        // // Update header color on color change
-        // picker.onChange = (color) => {
-
-        //     setColHeaderColor(
-        //         colorBtn.parentNode.dataset.id, 
-        //         color.hex, 
-        //         window.figureTextColor(color.hex)
-        //     )
-        // }
-
-        // // Send update request on color picker close
-        // picker.onDone = (color) => {
-
-        //     if(col.colorHexa === color.hex) {
-        //         return
-        //     }
-
-        //     httpRequest('/col/edit', 'PUT', {
-        //         colId,
-        //         colorHexa: color.hex, 
-        //         colName: null
-        //     }).then((res) => {
-
-        //         if(res.ok) {
-        //             col.colorHexa = color.hex
-        //         }
-        //     })
-        // }
     }
 
     // On modal create close clear fields and events
