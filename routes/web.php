@@ -66,6 +66,9 @@ Route::prefix('item')
 Route::prefix('col')
     ->as('col.')
     ->group(function (){
+        Route::post('add', 'ColController@add')
+            ->name('add');
+
         Route::put('edit', 'ColController@edit')
             ->name('edit');
 

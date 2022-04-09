@@ -2,12 +2,101 @@ window.httpRequest = function(url, method, data) {
     return fetch(url, {method, headers: {'Content-Type': 'application/json','X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}, body: JSON.stringify(data)});
 }
 
-let kanban, data, people, kanbanId
+window.figureTextColor = function(bgColor) {
+    var color = (bgColor.charAt(0) === '#') ? bgColor.substring(1, 7) : bgColor;
+    var r = parseInt(color.substring(0, 2), 16); // hexToR
+    var g = parseInt(color.substring(2, 4), 16); // hexToG
+    var b = parseInt(color.substring(4, 6), 16); // hexToB
+    var uicolors = [r / 255, g / 255, b / 255];
+    var c = uicolors.map((col) => {
+        if (col <= 0.03928) {
+        return col / 12.92;
+        }
+        return Math.pow((col + 0.055) / 1.055, 2.4);
+    });
+    var L = (0.2126 * c[0]) + (0.7152 * c[1]) + (0.0722 * c[2]);
+    return (L > 0.179) ? '#000' : '#fff';
+}
+
+window.createBoard = function(col) {
+    return {
+        id: '_col' + col.id,
+        title: ` 
+        <div data-id="${col.id}">
+            <div class="d-inline-flex" style="width: 90%">
+                <input type="text" name="item_name" class="rounded-1 w-100 title-col" 
+                    readonly="true" maxlength="50"
+                    ondblclick="onTitleDbClick(this)"
+                    onfocusout="onTileFocusOut(this)"
+                    onkeyup="event.keyCode === 13 && this.blur()"
+                    style="border: none; background: transparent" value="${col.name}">
+            </div>
+            <div class="d-inline-flex align-middle col-header-color-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" onclick="" class="ionicon" viewBox="0 0 512 512" style="width: 25px; height: 25px">
+                    <title>Color Palette</title>
+                    <path  d="M430.11 347.9c-6.6-6.1-16.3-7.6-24.6-9-11.5-1.9-15.9-4-22.6-10-14.3-12.7-14.3-31.1 0-43.8l30.3-26.9c46.4-41 46.4-108.2 0-149.2-34.2-30.1-80.1-45-127.8-45-55.7 0-113.9 20.3-158.8 60.1-83.5 73.8-83.5 194.7 0 268.5 41.5 36.7 97.5 55 152.9 55.4h1.7c55.4 0 110-17.9 148.8-52.4 14.4-12.7 11.99-36.6.1-47.7z" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="32"/>
+                    <circle fill="currentColor"  cx="144" cy="208" r="32"/><circle fill="currentColor"  cx="152" cy="311" r="32"/><circle fill="currentColor" cx="224" cy="144" r="32"/>
+                    <circle fill="currentColor"  cx="256" cy="367" r="48"/><circle fill="currentColor"  cx="328" cy="144" r="32"/>
+                </svg>        
+            </div>
+        </div>
+        `,
+        class: 'col-header-' + col.id,
+        item: new Array()
+    }
+}
+
+window.setColHeaderColor = function (id, bgColor, txtColor) {
+    $(`.col-header-${id}`).css({
+        'background-color':  bgColor, 
+        color: txtColor, 
+        fill: txtColor
+    })  
+}
+
+window.createColorPicker = function(colorBtn, col) {
+    const picker = new Picker({
+        parent: colorBtn, 
+        color: col ? col.colorHexa : '#24695c', 
+        popup: 'left'
+    }) // Create picker element from vanilla-picker lib
+
+    // Update header color on color change
+    picker.onChange = (color) => {
+
+        setColHeaderColor(
+            colorBtn.parentNode.dataset.id, 
+            color.hex, 
+            window.figureTextColor(color.hex)
+        )
+    }
+
+    // Send update request on color picker close
+    picker.onDone = (color) => {
+
+        if(col.colorHexa === color.hex) {
+            return
+        }
+
+        httpRequest('/col/edit', 'PUT', {
+            colId: col.id,
+            colorHexa: color.hex, 
+            colName: null
+        }).then((res) => {
+
+            if(res.ok) {
+                col.colorHexa = color.hex
+            }
+        })
+    }
+}
+
+let people
 
 // Init kanban board
 (function() {
     const dataCols = document.getElementById('dataCols')
-    data = JSON.parse(dataCols.textContent)
+    window.data = JSON.parse(dataCols.textContent)
     dataCols.parentNode.removeChild(dataCols)
     console.log(data)
 
@@ -16,39 +105,15 @@ let kanban, data, people, kanbanId
     dataPeople.parentNode.removeChild(dataPeople)
     console.log(people)
 
-    kanbanId = parseInt(document.getElementById('dataKanbanId').dataset.kanbanid)
+    window.kanbanId = parseInt(document.getElementById('dataKanbanId').dataset.kanbanid)
 
     const boards = new Array()
 
     for(const col of data)
     {
-        col.txtColor = figureTextColor(col.colorHexa)
+        col.txtColor = window.figureTextColor(col.colorHexa)
 
-        const board = {
-            id: '_col' + col.id,
-            title: ` 
-            <div data-id="${col.id}">
-                <div class="d-inline-flex" style="width: 90%">
-                    <input type="text" name="item_name" class="rounded-1 w-100 title-col" 
-                        readonly="true" maxlength="50"
-                        ondblclick="onTitleDbClick(this)"
-                        onfocusout="onTileFocusOut(this)"
-                        onkeyup="event.keyCode === 13 && this.blur()"
-                        style="border: none; background: transparent" value="${col.name}">
-                </div>
-                <div class="d-inline-flex align-middle col-header-color-btn">
-                    <svg xmlns="http://www.w3.org/2000/svg" onclick="" class="ionicon" viewBox="0 0 512 512" style="width: 25px; height: 25px">
-                        <title>Color Palette</title>
-                        <path  d="M430.11 347.9c-6.6-6.1-16.3-7.6-24.6-9-11.5-1.9-15.9-4-22.6-10-14.3-12.7-14.3-31.1 0-43.8l30.3-26.9c46.4-41 46.4-108.2 0-149.2-34.2-30.1-80.1-45-127.8-45-55.7 0-113.9 20.3-158.8 60.1-83.5 73.8-83.5 194.7 0 268.5 41.5 36.7 97.5 55 152.9 55.4h1.7c55.4 0 110-17.9 148.8-52.4 14.4-12.7 11.99-36.6.1-47.7z" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="32"/>
-                        <circle fill="currentColor"  cx="144" cy="208" r="32"/><circle fill="currentColor"  cx="152" cy="311" r="32"/><circle fill="currentColor" cx="224" cy="144" r="32"/>
-                        <circle fill="currentColor"  cx="256" cy="367" r="48"/><circle fill="currentColor"  cx="328" cy="144" r="32"/>
-                    </svg>        
-                </div>
-            </div>
-            `,
-            class: 'col-header-' + col.id,
-            item: new Array()
-        }
+        const board = window.createBoard(col)
 
         for(const item of col.items)
         {
@@ -57,7 +122,7 @@ let kanban, data, people, kanbanId
         boards.push(board)
     }
 
-    kanban = new jKanban({
+    window.kanban = new jKanban({
         element: '#kabane',
         gutter: '15px',
         boards: boards,
@@ -83,14 +148,6 @@ let kanban, data, people, kanbanId
         }
     });
 
-    const setColHeaderColor = (id, bgColor, txtColor) => {
-        $(`.col-header-${id}`).css({
-            'background-color':  bgColor, 
-            color: txtColor, 
-            fill: txtColor
-        })    
-    }
-
     // Define cols' header color
     for(const col of data) { 
         setColHeaderColor(col.id, col.colorHexa, col.txtColor)  
@@ -103,41 +160,42 @@ let kanban, data, people, kanbanId
         const colId = parseInt(colorBtn.parentNode.dataset.id)
         const col = data.find(f => f.id === colId)
 
-        const picker = new Picker({
-            parent: colorBtn, 
-            color: col ? col.colorHexa : '#ff0000', 
-            popup: 'left'
+        window.createColorPicker(colorBtn, col);
 
-        }) // Create picker element from vanilla-picker lib
+        // const picker = new Picker({
+        //     parent: colorBtn, 
+        //     color: col ? col.colorHexa : '#ff0000', 
+        //     popup: 'left'
+        // }) // Create picker element from vanilla-picker lib
 
-        // Update header color on color change
-        picker.onChange = (color) => {
+        // // Update header color on color change
+        // picker.onChange = (color) => {
 
-            setColHeaderColor(
-                colorBtn.parentNode.dataset.id, 
-                color.hex, 
-                figureTextColor(color.hex)
-            )
-        }
+        //     setColHeaderColor(
+        //         colorBtn.parentNode.dataset.id, 
+        //         color.hex, 
+        //         window.figureTextColor(color.hex)
+        //     )
+        // }
 
-        // Send update request on color picker close
-        picker.onDone = (color) => {
+        // // Send update request on color picker close
+        // picker.onDone = (color) => {
 
-            if(col.colorHexa === color.hex) {
-                return
-            }
+        //     if(col.colorHexa === color.hex) {
+        //         return
+        //     }
 
-            httpRequest('/col/edit', 'PUT', {
-                colId,
-                colorHexa: color.hex, 
-                colName: null
-            }).then((res) => {
+        //     httpRequest('/col/edit', 'PUT', {
+        //         colId,
+        //         colorHexa: color.hex, 
+        //         colName: null
+        //     }).then((res) => {
 
-                if(res.ok) {
-                    col.colorHexa = color.hex
-                }
-            })
-        }
+        //         if(res.ok) {
+        //             col.colorHexa = color.hex
+        //         }
+        //     })
+        // }
     }
 
     // On modal create close clear fields and events
@@ -212,7 +270,7 @@ function displayCreateModal(colId) {
         
         // Get data from form
         const dataForm = {}
-        for(input of $('#creation-form').serializeArray()) {
+        for(const input of $('#creation-form').serializeArray()) {
             dataForm[input.name] = input.value ?? null
         }
         dataForm.assignedUser_id = parseInt(dataForm.assignedUser_id)
@@ -470,22 +528,6 @@ function createItem(item, colId) {
 function getDateToDisplay(dateString) {
     return new Date(Date.parse(dateString))
         .toLocaleDateString('en-GB', { day: "numeric", month: 'short', year: 'numeric' })
-}
-
-function figureTextColor(bgColor) {
-    var color = (bgColor.charAt(0) === '#') ? bgColor.substring(1, 7) : bgColor;
-    var r = parseInt(color.substring(0, 2), 16); // hexToR
-    var g = parseInt(color.substring(2, 4), 16); // hexToG
-    var b = parseInt(color.substring(4, 6), 16); // hexToB
-    var uicolors = [r / 255, g / 255, b / 255];
-    var c = uicolors.map((col) => {
-        if (col <= 0.03928) {
-        return col / 12.92;
-        }
-        return Math.pow((col + 0.055) / 1.055, 2.4);
-    });
-    var L = (0.2126 * c[0]) + (0.7152 * c[1]) + (0.0722 * c[2]);
-    return (L > 0.179) ? '#000' : '#fff';
 }
 
 //#endregion

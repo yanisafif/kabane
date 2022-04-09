@@ -20,6 +20,7 @@
                             <div class="mt-2">
                                 @if($data['isOwner'])
                                     <button class="btn btn-primary" id="settings-access-btn">Settings pannel</button>
+                                    <button class="btn btn-primary" id="add-col-btn">Add a column</button>
                                 @endif
                             </div>
                         </div>
@@ -168,7 +169,7 @@
                                         </div>
                                     </div>
                                 </div>
-
+                            </div>
                             <div class="modal-footer">
                                 <button class="btn btn-secondary"  type="button" data-bs-dismiss="modal">Close</button>
                                 {{-- <button class="btn btn-primary" id="modal-creation-submit-btn" type="button">Save item</button> --}}

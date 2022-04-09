@@ -27,6 +27,46 @@ class ColController extends Controller
         $this->middleware('auth');
     }
 
+    public function add(Request $request) 
+    {
+        $rules = [
+            "colName" => "required|max:50",
+            "colorHexa" => "required|max:9",
+            "colOrder" => "required|numeric",
+            "kanbanId" => "required|numeric"
+        ];
+
+        // Validate the form with is data
+        $validator = Validator::make($request->all(), $rules);
+
+        // If data dont respect the validation rules, the request fails
+        if($validator->fails())
+        {
+            return response(json_encode(['status' => 'Form not valid ', $validator->errors()]), 400, ['Content-Type' => 'application/json']);
+        }
+
+        $data = $request->only('colName', 'colorHexa', 'kanbanId', 'colOrder');
+        
+        $kanban = Kanban::query()
+            ->where('id', '=', $data['kanbanId'])
+            ->first();
+
+        if(is_null($kanban))
+            return response(json_encode(['status' => 'Kanban not found']), 400, ['Content-Type' => 'application/json']);
+        if(!checkIfKanbanAllow($kanban, true))
+            return response(json_encode(['status' => 'You\'re not allowed to do that']), 403, ['Content-Type' => 'application/json']);
+
+        $newCol = new Col;
+
+        $newCol->kanbanId = $data['kanbanId']; 
+        $newCol->name = $data['colName']; 
+        $newCol->colorHexa = $data['colorHexa']; 
+        $newCol->colOrder = $data['colOrder'];
+        $newCol->save();
+
+        return response()->json(['status' => 'Column saved successfully', 'itemId' => $newCol->id]);
+    }
+
     public function edit(Request $request)
     {
         $rules = [
@@ -66,7 +106,7 @@ class ColController extends Controller
 
         $col->save();
 
-        return response()->json(['status' => 'Column renamed succefully']);
+        return response()->json(['status' => 'Column renamed successfully']);
     }
 
     public function move(Request $request) 
@@ -124,5 +164,7 @@ class ColController extends Controller
                 $col->save();
             }
         }
+
+        return response()->json(['status' => 'Column moved successfully']);
     }
 }

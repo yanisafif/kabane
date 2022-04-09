@@ -2,12 +2,15 @@
 
 if (!function_exists('checkIfKanbanAllow')) 
 {
-    function checkIfKanbanAllow($kanban)
+    function checkIfKanbanAllow($kanban, $requireAdmin = false)
     {
         $userId = \Auth::user()->id;
 
         if($kanban->ownerUserId == $userId)
             return true;
+        
+        if($requireAdmin) 
+            return false;
 
         $res = App\Models\Invitation::query()
             ->where('userId', '=', $userId)
