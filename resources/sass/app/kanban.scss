@@ -8,9 +8,19 @@
     overflow: visible;
 }
 
-.col-header-color-btn {
+.col-header-input {
+    flex-grow: 1;
+    margin-right: 10px
+}
+
+.col-header-color-btn, .col-header-delete-btn {
     cursor: pointer;
 }
+
+.col-header-delete-btn {
+    margin-right: 10px;
+}
+
 
 .settings-col-container {
     border-radius: 5px;

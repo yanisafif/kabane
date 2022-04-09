@@ -74,6 +74,9 @@ Route::prefix('col')
 
         Route::put('move', 'ColController@move')
             ->name('move');
+
+        Route::delete('delete', 'ColController@delete')
+            ->name('delete');
     });
 
 

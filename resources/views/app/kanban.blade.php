@@ -177,6 +177,26 @@
                         </div>
                     </div>
                 </div>
+                <div class="modal" id="delete-col-modal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Delete confirmation</h5>
+                                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div>
+                                    <h6>Are you sure you want to delete the column <strong id="modal-delete-col-name"></strong> ?</h6>
+                                    <p class="text-danger">Every item in the column would be deleted.</p>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary"  type="button" data-bs-dismiss="modal">No</button>
+                                <button class="btn btn-primary" id="modal-delete-col-yes-btn" type="button">Yes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             @endif
         </div>      
 
@@ -187,7 +207,7 @@
 
         <div class="d-none" id="dataKanbanId" data-kanbanid="{{ $data['kanban']['id'] }}"></div>
         
-        <div class='d-none' id="dataPeople">
+        <div class='d-none' id="dataPeople" data-isowner="{{ $data['isOwner'] ? 'true' : 'false'}}">
             @json($data['people'])
         </div>
 

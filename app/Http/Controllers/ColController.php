@@ -138,16 +138,69 @@ class ColController extends Controller
         if(!checkIfKanbanAllow($kanban))
             return response(json_encode(['status' => 'You\'re not allowed to do that']), 403, ['Content-Type' => 'application/json']);
         
+        $this->sortCols($data['kanbanId'], $data['cols']);
+
+        return response()->json(['status' => 'Column moved successfully']);
+    }
+
+    public function delete(Request $request) 
+    {
+        $rules = [
+            "deleteColId" => 'required|numeric',
+            "cols" => "required|array",
+            "kanbanId" => "required|numeric"
+        ];
+
+        // Validate the form with is data
+        $validator = Validator::make($request->all(), $rules);
+
+        
+        // If data dont respect the validation rules, the request fails
+        if ($validator->fails())
+        {
+            return response(json_encode(['status' => 'Form not valid ', $validator->errors()]), 400, ['Content-Type' => 'application/json']);
+        }
+
+        $data = $request->only('cols', 'kanbanId', 'deleteColId');
+
+        $kanban = Kanban::query()
+            ->where('id', '=', $data['kanbanId'])
+            ->first();
+
+        if(is_null($kanban))
+            return response(json_encode(['status' => 'Kanban not found']), 400, ['Content-Type' => 'application/json']);
+        if(!checkIfKanbanAllow($kanban, true))
+            return response(json_encode(['status' => 'You\'re not allowed to do that']), 403, ['Content-Type' => 'application/json']);
+
+        $items = Item::query()
+            ->where('colId', '=', $data['deleteColId'])
+            ->get();
+        
+        if(!is_null($items))
+        {
+            foreach($items as $item)
+            {
+                $item->delete();
+            }
+        }
+
+        Col::find($data['deleteColId'])->delete();
+
+        $this->sortCols($data['kanbanId'], $data['cols']);
+    }
+
+    protected function sortCols($kanbanId, $listSortedCol)
+    {
         $cols = Col::query()
             ->orderby('colOrder')
             ->select('cols.id', 'cols.colOrder')
-            ->where('kanbanId', '=', $data['kanbanId'])
+            ->where('kanbanId', '=', $kanbanId)
             ->get();
-        
+    
         foreach($cols as $col)
         {
             $colNewOrder = null;
-            foreach($data['cols'] as $colOrderMap)
+            foreach($listSortedCol as $colOrderMap)
             {
                 if($col->id == $colOrderMap['colId'])
                 {
@@ -164,7 +217,5 @@ class ColController extends Controller
                 $col->save();
             }
         }
-
-        return response()->json(['status' => 'Column moved successfully']);
     }
 }

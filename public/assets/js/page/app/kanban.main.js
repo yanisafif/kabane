@@ -22,8 +22,8 @@ window.createBoard = function(col) {
     return {
         id: '_col' + col.id,
         title: ` 
-        <div data-id="${col.id}">
-            <div class="d-inline-flex" style="width: 90%">
+        <div data-id="${col.id}" class="d-flex">
+            <div class="d-inline-flex col-header-input">
                 <input type="text" name="item_name" class="rounded-1 w-100 title-col" 
                     readonly="true" maxlength="50"
                     ondblclick="onTitleDbClick(this)"
@@ -31,8 +31,18 @@ window.createBoard = function(col) {
                     onkeyup="event.keyCode === 13 && this.blur()"
                     style="border: none; background: transparent" value="${col.name}">
             </div>
+            ${isowner ? `            
+                <div class="d-inline-flex align-middle col-header-delete-btn">
+                    <svg style="width: 25px; height: 25px" xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"><title>Trash</title>
+                        <path d="M112 112l20 320c.95 18.49 14.4 32 32 32h184c17.67 0 30.87-13.51 32-32l20-320" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/>
+                        <path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M80 112h352"/>
+                        <path d="M192 112V72h0a23.93 23.93 0 0124-24h80a23.93 23.93 0 0124 24h0v40M256 176v224M184 176l8 224M328 176l-8 224" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/>
+                    </svg>
+                </div>
+            `: ''}
+
             <div class="d-inline-flex align-middle col-header-color-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" onclick="" class="ionicon" viewBox="0 0 512 512" style="width: 25px; height: 25px">
+                <svg xmlns="http://www.w3.org/2000/svg" onclick=""  class="ionicon" viewBox="0 0 512 512" style="width: 25px; height: 25px">
                     <title>Color Palette</title>
                     <path  d="M430.11 347.9c-6.6-6.1-16.3-7.6-24.6-9-11.5-1.9-15.9-4-22.6-10-14.3-12.7-14.3-31.1 0-43.8l30.3-26.9c46.4-41 46.4-108.2 0-149.2-34.2-30.1-80.1-45-127.8-45-55.7 0-113.9 20.3-158.8 60.1-83.5 73.8-83.5 194.7 0 268.5 41.5 36.7 97.5 55 152.9 55.4h1.7c55.4 0 110-17.9 148.8-52.4 14.4-12.7 11.99-36.6.1-47.7z" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="32"/>
                     <circle fill="currentColor"  cx="144" cy="208" r="32"/><circle fill="currentColor"  cx="152" cy="311" r="32"/><circle fill="currentColor" cx="224" cy="144" r="32"/>
@@ -91,7 +101,25 @@ window.createColorPicker = function(colorBtn, col) {
     }
 }
 
-let people
+window.updateAndGetColOrder = function() {
+    const arrayMap = new Array()
+
+    for(const currentColEl of document.getElementsByClassName('kanban-board')) {
+
+        const current = {
+            colId: parseInt(currentColEl.dataset.id.substring(4)), 
+            colOrder: parseInt(currentColEl.dataset.order)
+        }
+
+        arrayMap.push(current)
+
+        data.find(f => f.id === current.colId).colOrder = current.colOrder
+    }
+
+    return arrayMap
+}
+
+let people, isowner
 
 // Init kanban board
 (function() {
@@ -101,6 +129,7 @@ let people
     console.log(data)
 
     const dataPeople = document.getElementById('dataPeople')  
+    isowner =  (dataPeople.dataset.isowner === 'true')
     people = JSON.parse(dataPeople.textContent)  
     dataPeople.parentNode.removeChild(dataPeople)
     console.log(people)
@@ -435,27 +464,7 @@ function moveBoard(colEl) {
         return
     }
 
-    const listColElement = document.getElementsByClassName('kanban-board')
-
-    const arrayToSend = new Array()
-    arrayToSend.push({ colId: 16, colOrder: 1})
-
-    // Build list of col with new order
-    for(const currentColEl of listColElement) {
-
-        const current = {
-            colId: parseInt(currentColEl.dataset.id.substring(4)), 
-            colOrder: parseInt(currentColEl.dataset.order)
-        }
-
-        arrayToSend.push(current)
-
-        data.find(f => f.id === current.colId).colOrder = current.colOrder;
-    }
-
-
-
-    console.log(arrayToSend)
+    const arrayToSend = window.updateAndGetColOrder()
 
     httpRequest('/col/move', 'PUT', {
         cols: arrayToSend, 
