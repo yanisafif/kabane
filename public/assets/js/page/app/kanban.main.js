@@ -2,7 +2,7 @@ window.httpRequest = function(url, method, data) {
     return fetch(url, {method, headers: {'Content-Type': 'application/json','X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}, body: JSON.stringify(data)});
 }
 
-let kanban, data, people
+let kanban, data, people, kanbanId
 
 // Init kanban board
 (function() {
@@ -15,6 +15,8 @@ let kanban, data, people
     people = JSON.parse(dataPeople.textContent)  
     dataPeople.parentNode.removeChild(dataPeople)
     console.log(people)
+
+    kanbanId = parseInt(document.getElementById('dataKanbanId').dataset.kanbanid)
 
     const boards = new Array()
 
@@ -59,7 +61,7 @@ let kanban, data, people
         element: '#kabane',
         gutter: '15px',
         boards: boards,
-        dragBoards: false,   
+        dragBoards: true,   
         itemAddOptions: {
             enabled: true,                                              // add a button to board for easy item creation
             content: '+ Add item',                                                // text or html content of the board button
@@ -74,6 +76,10 @@ let kanban, data, people
         },
         dropEl: (el, target, source) => {
             moveItem(el, target, source)
+        }, 
+        dragendBoard: (colEl) => {
+            console.log(colEl)
+            moveBoard(colEl)
         }
     });
 
@@ -392,8 +398,48 @@ function moveItem(el, target, source) {
             dataColTarget.items.push(dataItem)
             dataColSource.items.splice(dataColSource.items.indexOf(dataItem), 1)
         }
-    })
+    })   
+}
+
+function moveBoard(colEl) {
+    // Gather needed data
+    const colId = parseInt(colEl.dataset.id.substring(4))
+    const colOrder = parseInt(colEl.dataset.order)
+    const colObj = data.find(f => f.id === colId)
     
+    // Exit function if board has been darg to the same place
+    if (colOrder === colObj.colOrder) {
+        return
+    }
+
+    const listColElement = document.getElementsByClassName('kanban-board')
+
+    const arrayToSend = new Array()
+    arrayToSend.push({ colId: 16, colOrder: 1})
+
+    // Build list of col with new order
+    for(const currentColEl of listColElement) {
+
+        const current = {
+            colId: parseInt(currentColEl.dataset.id.substring(4)), 
+            colOrder: parseInt(currentColEl.dataset.order)
+        }
+
+        arrayToSend.push(current)
+
+        data.find(f => f.id === current.colId).colOrder = current.colOrder;
+    }
+
+
+
+    console.log(arrayToSend)
+
+    httpRequest('/col/move', 'PUT', {
+        cols: arrayToSend, 
+        kanbanId
+    }).then((res) => {
+        console.log(res);
+    })
 }
 
 

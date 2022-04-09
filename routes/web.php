@@ -68,6 +68,9 @@ Route::prefix('col')
     ->group(function (){
         Route::put('edit', 'ColController@edit')
             ->name('edit');
+
+        Route::put('move', 'ColController@move')
+            ->name('move');
     });
 
 

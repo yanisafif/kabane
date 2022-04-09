@@ -29,21 +29,18 @@
   flex-wrap: wrap;
 }
 
-.setting-col-name {
+.setting-people-name {
   flex: 1;
   padding-left: 5px;
 }
 
-.setting-col-delete {
+.setting-people-uninvite {
   height: 20px;
   width: 20px;
 }
 
-.setting-col-color {
-  height: 20px;
-  width: 20px;
-  border-radius: 10px;
-  background-color: red;
-  justify-content: flex-end;
+.setting-invite .input-group-text {
+  background-color: rgba(36, 105, 92, 0.1);
+  color: #24695c;
 }
 

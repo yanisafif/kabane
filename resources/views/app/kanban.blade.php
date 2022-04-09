@@ -135,23 +135,43 @@
                                 <div>
                                     <h6>Columns</h6>
                                     <div>
-                                        @foreach($data['cols'] as $col)
-                                        <div class="mb-3 card">
-                                            <div class="p-2 settings-col-container">
-                                                <div class="flex: 1"> 
-                                                    <div class="setting-col-color"> </div>
+                                        @if(count($data['people']) > 1)
+                                            @foreach($data['people'] as $people)
+                                                @if(!$people['isCurrentUser'])
+                                                <div class="mb-3 card">
+                                                    <div class="p-2 settings-people-container">
+                                                        <div class="setting-people-name">{{ $people['name'] }} </div>
+                                                        <img class="setting-people-uninvite" data-id="{{ $people['id'] }}" src=" {{ asset('assets/svg/trash.svg') }}">
+                                                    </div>
                                                 </div>
-                                                <div class="setting-col-name">{{ $col['name'] }} </div>
-                                                <img class="setting-col-delete" src=" {{ asset('assets/svg/trash.svg') }}">
+                                                @endif
+                                            @endforeach
+                                        @else
+                                            <span> No one is invited to your kanban yet.</span>
+                                        @endif
+                                        <div class="pt-2">
+                                            <form class="pb-2">
+                                                <div class="small-group setting-invite d-flex">
+                                                    <div class="input-group" style="margin-right: 7px">
+                                                        <span class="input-group-text">Name</span>
+                                                        <input class="form-control settings-color-field" type="text" maxlength="50" name="colname[0]" required="" />
+                                                    </div>
+                                                    <div class="input-group color-field">
+                                                        <span class="input-group-text">Color</span>
+                                                        <input class="form-control" type="text" maxlength="9" name="colcolor[0]" required="" />
+                                                    </div>
+                                                </div>
+                                            </form>
+                                            <div class="pb-2" style="text-align: end;">
+                                                <button class="btn btn-success" style="margin-right: 15px"> Save </button>
                                             </div>
                                         </div>
-                                        @endforeach
                                     </div>
                                 </div>
 
                             <div class="modal-footer">
                                 <button class="btn btn-secondary"  type="button" data-bs-dismiss="modal">Close</button>
-                                <button class="btn btn-primary" id="modal-creation-submit-btn" type="button">Save item</button>
+                                {{-- <button class="btn btn-primary" id="modal-creation-submit-btn" type="button">Save item</button> --}}
                             </div>
                         </div>
                     </div>
@@ -163,6 +183,8 @@
         <div class="d-none" id="dataCols">
             @json($data['cols'])
         </div>
+
+        <div class="d-none" id="dataKanbanId" data-kanbanid="{{ $data['kanban']['id'] }}"></div>
         
         <div class='d-none' id="dataPeople">
             @json($data['people'])

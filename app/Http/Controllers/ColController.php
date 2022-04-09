@@ -69,4 +69,60 @@ class ColController extends Controller
         return response()->json(['status' => 'Column renamed succefully']);
     }
 
+    public function move(Request $request) 
+    {
+        $rules = [
+            "cols" => "required|array",
+            "kanbanId" => "required|numeric"
+        ];
+
+        // Validate the form with is data
+        $validator = Validator::make($request->all(), $rules);
+
+        
+        // If data dont respect the validation rules, the request fails
+        if ($validator->fails())
+        {
+            return response(json_encode(['status' => 'Form not valid ', $validator->errors()]), 400, ['Content-Type' => 'application/json']);
+        }
+
+        $data = $request->only('cols', 'kanbanId');
+
+        $kanban = Kanban::query()
+            ->where('id', '=', $data['kanbanId'])
+            ->first();
+
+
+        if(is_null($kanban))
+            return response(json_encode(['status' => 'Kanban not found']), 400, ['Content-Type' => 'application/json']);
+        if(!checkIfKanbanAllow($kanban))
+            return response(json_encode(['status' => 'You\'re not allowed to do that']), 403, ['Content-Type' => 'application/json']);
+        
+        $cols = Col::query()
+            ->orderby('colOrder')
+            ->select('cols.id', 'cols.colOrder')
+            ->where('kanbanId', '=', $data['kanbanId'])
+            ->get();
+        
+        foreach($cols as $col)
+        {
+            $colNewOrder = null;
+            foreach($data['cols'] as $colOrderMap)
+            {
+                if($col->id == $colOrderMap['colId'])
+                {
+                    $colNewOrder = $colOrderMap['colOrder'];
+                    break;
+                }
+            }
+            if(is_null($colNewOrder))
+                return response(json_encode(['status' => 'Error']), 400, ['Content-Type' => 'application/json']);
+
+            if($col->colOrder != $colNewOrder)
+            {
+                $col->colOrder = $colNewOrder;
+                $col->save();
+            }
+        }
+    }
 }
