@@ -85,3 +85,11 @@ Route::prefix('user')
 
 
     });
+
+Route::prefix('admin')
+    ->as('admin.')
+    ->group(function (){
+        Route::get('/panel', function () {
+            return view('user.update');
+        })->name('panel')->middleware('auth');
+    });

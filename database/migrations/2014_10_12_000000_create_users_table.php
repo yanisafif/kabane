@@ -25,6 +25,7 @@ class CreateUsersTable extends Migration
             $table->string('link_linkedin')->nullable();
             $table->string('token')->nullable();
             $table->string('path_image')->nullable();
+            $table->boolean('is_admin')->default(0);
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
