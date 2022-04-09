@@ -62,11 +62,11 @@ function wireColDeleteBtn(deleteBtn) {
 
         const colId = parseInt(deleteBtn.parentNode.dataset.id)
         const colObj = window.data.find(f => f.id === colId)
-
+        
         $('#modal-delete-col-name').text(colObj.name)
         
         $('#modal-delete-col-yes-btn').click(() => {
-
+            
             window.kanban.removeBoard('_col' + colId)    
             const arrayToSend = window.updateAndGetColOrder()
             
@@ -74,13 +74,13 @@ function wireColDeleteBtn(deleteBtn) {
                 kanbanId: window.kanbanId, 
                 deleteColId: colId, 
                 cols: arrayToSend
-
+                
             }).then((res) => {
                 console.log(res)
             })
 
+            window.data.splice(window.data.indexOf(colObj), 1)            
             $('#delete-col-modal').modal('hide')
-
         })
 
         $('#delete-col-modal').modal('show')
