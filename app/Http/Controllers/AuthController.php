@@ -28,7 +28,7 @@ class AuthController extends Controller
         // Log user with credentials and remember_me
         if (Auth::attempt($credentials, $remember_me)) {
             // Redirect on the main page of application
-            return redirect()->route('kanban.index')->with('success', 'You are now logged in.');
+            return redirect()->route('kanban.board')->with('success', 'You are now logged in.');
         }
 
         // If the attempt fail, redirect user on login with session message
