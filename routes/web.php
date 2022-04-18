@@ -92,5 +92,5 @@ Route::prefix('admin')
     ->as('admin.')
     ->group(function (){
         Route::get('/panel', [AdminController::class, 'panel'])
-            ->name('admin.panel')->middleware('auth');
+            ->name('panel')->middleware('auth');
     });

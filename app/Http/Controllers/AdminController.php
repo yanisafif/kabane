@@ -9,14 +9,18 @@ use App\Models\User;
 
 class AdminController extends Controller
 {
-    public function panel()
-    {
-        $users = User::query()
-                   ->select('name', 'email', 'title', 'is_admin', 'created_at', 'updated_at')
-                   ->get();
+    public function panel(){
+        if(auth()->user()->is_admin){
+            $users = User::query()
+                ->select('name', 'email', 'title', 'is_admin', 'created_at', 'updated_at')
+                ->get();
 
-        $kanbans = $this->getLayoutData();
-        return view('app.admin.panel', ['users' => $users, 'kanbans' => $kanbans]);
+            $kanbans = $this->getLayoutData();
+            return view('app.admin.panel', ['users' => $users, 'kanbans' => $kanbans]);
+        }
+
+        return redirect()->route('kanban.board')->with('danger', 'You do not have access to this page.');
+
 
     }
 
