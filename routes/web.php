@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -90,7 +91,6 @@ Route::prefix('user')
 Route::prefix('admin')
     ->as('admin.')
     ->group(function (){
-        Route::get('/panel', function () {
-            return view('user.update');
-        })->name('panel')->middleware('auth');
+        Route::get('/panel', [AdminController::class, 'panel'])
+            ->name('admin.panel')->middleware('auth');
     });
