@@ -1,6 +1,7 @@
 (function() {
     setUpAddCol()
     setUpDeleteColumn()
+    setUpSettingsConsole()
 })()
 
 function setUpAddCol() {
@@ -57,6 +58,35 @@ function setUpDeleteColumn() {
     })
 }
 
+function setUpSettingsConsole() {
+
+    $('#settings-access-btn').click(() => {
+        $('#settings-modal').modal('show')
+    })
+
+    $('#settings-invite-btn').click(() => {
+        $('#settings-invite-error-message').text('')
+
+        const usernameInvitation = $('#settings-name-field').val()
+        console.log('Send invite', usernameInvitation)
+        
+        window.httpRequest('/kanban/invite', 'POST', {
+            kanbanId: window.kanbanId, 
+            username: usernameInvitation
+        }).then(async (res) => {
+            
+            const json = await res.json()
+            console.log(json)
+
+            if(!res.ok) {
+                $('#settings-invite-error-message').text(json.status ?? 'An error occurred')
+                return
+            }
+        })
+
+    })
+}
+
 function wireColDeleteBtn(deleteBtn) {
     deleteBtn.onclick = () => {
 
@@ -70,7 +100,7 @@ function wireColDeleteBtn(deleteBtn) {
             window.kanban.removeBoard('_col' + colId)    
             const arrayToSend = window.updateAndGetColOrder()
             
-            httpRequest('/col/delete', 'DELETE', {
+            httpRequest('/col/delete', 'DELETE', {  
                 kanbanId: window.kanbanId, 
                 deleteColId: colId, 
                 cols: arrayToSend
