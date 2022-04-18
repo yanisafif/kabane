@@ -8,18 +8,20 @@ use Hash;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\File;
+use App\Models\Kanban;
+use App\Models\Invitation;
 
 class UserController extends Controller
 {
-    public function getUser($name = 'blalblbal')
+    public function getUser($name)
     {
         $user = DB::table('users')->where('name', $name)->first();
 
         if ($user !== null) {
-            return view('app.user.profile', ['user' => $user]);
+            $kanbans = $this->getLayoutData();
+            return view('app.user.profile', ['user' => $user, 'kanbans' => $kanbans]);
         }
-        // TODO: change path when we know the root path
-        return back()->with('danger', 'This page does not exist in this context.');
+        return redirect()->route('kanban.board')->with('danger', 'This page does not exist in this context.');
     }
 
     public function getUpdateUser($id)
@@ -27,12 +29,11 @@ class UserController extends Controller
         if (auth()->user()->id == $id){
             $user = DB::table('users')->where('id', auth()->user()->id)->first();
             if ($user !== null) {
-                return view('app.user.update', ['user' => $user]);
+                $kanbans = $this->getLayoutData();
+                return view('app.user.update', ['user' => $user, 'kanbans' => $kanbans]);
             }
         }
-        return back()->with('danger', 'You dont have access to this page.');
-        // TODO: change path when we know the root path
-
+        return redirect()->route('kanban.board')->with('danger', 'You dont have access to this page.');
     }
 
     public function postUpdateAvatar(Request $request)
@@ -244,5 +245,29 @@ class UserController extends Controller
         // Delete is personal data
 
         // Delete all is personal kanban
+    }
+
+    protected function getLayoutData()
+    {
+        $userId = \Auth::user()->id;
+        $data = [];
+
+        $data['invitedKanban'] = Kanban::query()
+            ->whereIn(
+                'id',
+                Invitation::query()
+                    ->where('userId', '=', $userId)
+                    ->select('userId')
+                    ->get()
+            )
+            ->select('id', 'name', 'isActive', 'ownerUserId')
+            ->get();
+
+        $data['ownedKanban'] = Kanban::query()
+            ->where('ownerUserId', '=', $userId)
+            ->select('id', 'name', 'isActive', 'ownerUserId')
+            ->get();
+
+        return $data;
     }
 }

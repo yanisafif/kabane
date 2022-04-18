@@ -63,7 +63,7 @@ class AuthController extends Controller
         $credentials = array('email' => $data['email'], 'password' => $data['password']);
         // If logged successfully redirect to the main page of the applications
         if (Auth::attempt($credentials)) {
-            return redirect()->route('kanban.index')->with('success', 'You are now logged in.');
+            return redirect()->route('kanban.board')->with('success', 'You are now logged in.');
         }
 
         return redirect()->route('user.sign.up')->with('danger', 'Register details are not valid.');
