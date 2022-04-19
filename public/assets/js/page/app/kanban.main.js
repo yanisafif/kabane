@@ -119,7 +119,7 @@ window.updateAndGetColOrder = function() {
     return arrayMap
 }
 
-let people, isowner
+let isowner
 
 // Init kanban board
 (function() {
@@ -130,7 +130,7 @@ let people, isowner
 
     const dataPeople = document.getElementById('dataPeople')  
     isowner =  (dataPeople.dataset.isowner === 'true')
-    people = JSON.parse(dataPeople.textContent)  
+    window.people = JSON.parse(dataPeople.textContent)  
     dataPeople.parentNode.removeChild(dataPeople)
     console.log(people)
 
@@ -453,6 +453,7 @@ function moveItem(el, target, source) {
     })   
 }
 
+// Trigger on column drag/drop to other position
 function moveBoard(colEl) {
     // Gather needed data
     const colId = parseInt(colEl.dataset.id.substring(4))

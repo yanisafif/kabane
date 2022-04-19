@@ -136,8 +136,8 @@
                                 <h5>Poeple</h5>
                                 <div>
                                     <h6>Invited people</h6>
-                                    <div>
-                                        <div class="mb-3">
+                                    <div class="mb-3">
+                                        <div id="settings-people-list-container">
                                         @if(count($data['people']) > 1)
                                             @foreach($data['people'] as $people)
                                                 @if(!$people['isCurrentUser'])
@@ -148,6 +148,7 @@
                                                 @endif
                                             @endforeach
                                         @endif
+                                        </div>
                                         <span id="settings-noinvited-message" class="{{ count($data['people']) > 1 ? 'd-none': ''}}"> 
                                             No one is invited to your kanban yet.
                                         </span>
@@ -158,12 +159,12 @@
                                                 <div class="small-group setting-invite d-flex">
                                                     <div class="input-group">
                                                         <span class="input-group-text">Name</span>
-                                                        <input class="form-control" id="settings-name-field" type="text" maxlength="50" name="name" required="" />
+                                                        <input class="form-control" id="settings-name-field" type="text" maxlength="50" name="name"/>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="pb-2" style="text-align: end;">
-                                                <button class="btn btn-success" id="settings-invite-btn" style="margin-right: 15px"> Invite </button>
+                                                <button class="btn btn-success" id="settings-invite-btn"> Invite </button>
                                             </div>
                                         </div>
                                     </div>

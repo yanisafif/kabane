@@ -82,6 +82,28 @@ function setUpSettingsConsole() {
                 $('#settings-invite-error-message').text(json.status ?? 'An error occurred')
                 return
             }
+
+            $('#settings-name-field').val('')
+
+            const settingFormEl = document.createElement('div'); 
+            settingFormEl.classList.add('p-2', 'settings-person-container', 'd-flex')
+            settingFormEl.innerHTML = `
+                <div class="setting-person-name">${json.username}</div>
+                <img class="setting-person-uninvite" data-id="${json.userId}" src="${window.location.protocol +'//'+ window.location.hostname}/assets/svg/trash.svg">
+            `
+            document.getElementById('settings-people-list-container').appendChild(settingFormEl);
+
+            window.people.push({ 
+                id: json.userId, 
+                name: json.username,
+                isCurrentUser: false
+            })
+
+            const itemFormEl = document.createElement('option')
+            itemFormEl.value = json.userId
+            itemFormEl.textContent = json.username
+            document.getElementById('select-people-creation').appendChild(itemFormEl)
+            document.getElementById('edit-form-select-people').appendChild(itemFormEl.cloneNode(true))
         })
 
     })

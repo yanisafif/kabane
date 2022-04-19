@@ -181,7 +181,7 @@ class KanbanController extends Controller
             return response(json_encode(['status' => 'You\'re not allowed to do that']), 403, ['Content-Type' => 'application/json']);
     
         $user = User::query()
-                ->where('name', '=', $data['username'])
+                ->where('name', 'LIKE', $data['username'])
                 ->first();
 
         if(is_null($user))
@@ -208,7 +208,11 @@ class KanbanController extends Controller
         $invitationRecord->kanbanId = $kanban->id;
         $invitationRecord->save();
 
-        return response()->json(['status' => 'Invitation created successfully']);
+        return response()->json([
+            'status' => 'Invitation created successfully', 
+            'userId' => $user->id, 
+            'username' => $user->name
+        ]);
 
     }
 }
