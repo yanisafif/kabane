@@ -8,6 +8,8 @@ use Session;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ResetPassword;
 
 class AuthController extends Controller
 {
@@ -36,7 +38,7 @@ class AuthController extends Controller
     }
 
     public function postRegistration(Request $request)
-    {
+    { $this->resetPassword('afifyanis@gmail.com');
         // Array of rules
         $rules = [
             'name' => 'required|unique:users',
@@ -86,4 +88,12 @@ class AuthController extends Controller
 
         return redirect()->route('index.international')->with('success', 'You have been logged out successfully');
     }
+
+    public function resetPassword($email) {
+        $uuid = url('reset/password', ['UUID123456789']);
+
+        Mail::to($email)
+            ->queue(new ResetPassword($uuid));
+    }
+
 }
