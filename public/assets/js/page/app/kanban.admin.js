@@ -38,7 +38,6 @@ function setUpAddCol() {
                 window.setColHeaderColor(col.id, col.colorHexa, col.txtColor)
                 window.createColorPicker(colorField, col)
                 wireColDeleteBtn(colDomEl.querySelector('.col-header-delete-btn'))
-
             }
         })
     })
@@ -64,7 +63,7 @@ function setUpSettingsConsole() {
         $('#settings-modal').modal('show')
     })
 
-    // Wire univite person btns
+    // Wire uninvite person btns
     for(const el of document.getElementsByClassName('setting-person-uninvite')) {
         wirePersonUninvite(el)
     }
@@ -96,16 +95,20 @@ function setUpSettingsConsole() {
                 <div class="setting-person-name">${json.username}</div>
                 <img class="setting-person-uninvite" data-id="${json.userId}" src="${window.location.protocol +'//'+ window.location.hostname}/assets/svg/trash.svg">
             `
-            
             document.getElementById('settings-people-list-container').appendChild(settingFormEl);
             wirePersonUninvite(settingFormEl.querySelector('.setting-person-uninvite'))
-
+            
+            // Add person to array people
             window.people.push({ 
                 id: json.userId, 
                 name: json.username,
                 isCurrentUser: false
             })
-
+            
+            if(window.people.length >= 2) {
+                $("#settings-noinvited-message").addClass('d-none')
+            }
+            
             const itemFormEl = document.createElement('option')
             itemFormEl.value = json.userId
             itemFormEl.textContent = json.username
@@ -130,6 +133,14 @@ function wirePersonUninvite(deleteBtn) {
             if(!res.ok) {
                 return
             }
+
+            // Remove person form array 'people'
+            window.people.splice(window.people.findIndex(f => f.id === userId), 1)
+
+            if(window.people.length === 1) {
+                $("#settings-noinvited-message").removeClass('d-none')
+            }
+
             
             $('#edit-form-select-people').find(`option[value='${userId}']`).remove()
             $('#select-people-creation').find(`option[value='${userId}']`).remove()

@@ -244,13 +244,17 @@ class KanbanController extends Controller
             return response(json_encode(['status' => 'User not found']), 400, ['Content-Type' => 'application/json']);
         
         if($user->id == $kanban->ownerUserId)
-            return response(json_encode(['status' => 'You can\'t invite yourself']), 400, ['Content-Type' => 'application/json']); 
+            return response(json_encode(['status' => 'You can\'t uninvite yourself']), 400, ['Content-Type' => 'application/json']); 
 
-        Invitation::query()
+        $inviteToDelete = Invitation::query()
             ->where('userId', '=', $user->id)
             ->where('kanbanId', '=', $data['kanbanId'])
-            ->first()
-            ->delete();
+            ->first();
+        
+        if(is_null($inviteToDelete))
+            return response(json_encode(['status' => 'Error']), 400, ['Content-Type' => 'application/json']); 
+
+        $inviteToDelete->delete();
 
         return response()->json([
             'status' => 'Invitation deleted successfully', 
