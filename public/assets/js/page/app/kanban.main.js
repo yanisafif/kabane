@@ -1,23 +1,10 @@
+//#region Global tools
+
 window.httpRequest = function(url, method, data) {
     return fetch(url, {method, headers: {'Content-Type': 'application/json','X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}, body: JSON.stringify(data)});
 }
 
-window.figureTextColor = function(bgColor) {
-    var color = (bgColor.charAt(0) === '#') ? bgColor.substring(1, 7) : bgColor;
-    var r = parseInt(color.substring(0, 2), 16); // hexToR
-    var g = parseInt(color.substring(2, 4), 16); // hexToG
-    var b = parseInt(color.substring(4, 6), 16); // hexToB
-    var uicolors = [r / 255, g / 255, b / 255];
-    var c = uicolors.map((col) => {
-        if (col <= 0.03928) {
-        return col / 12.92;
-        }
-        return Math.pow((col + 0.055) / 1.055, 2.4);
-    });
-    var L = (0.2126 * c[0]) + (0.7152 * c[1]) + (0.0722 * c[2]);
-    return (L > 0.179) ? '#000' : '#fff';
-}
-
+// Create render board element
 window.createBoard = function(col) {
     return {
         id: '_col' + col.id,
@@ -56,6 +43,7 @@ window.createBoard = function(col) {
     }
 }
 
+// Set the column's color header
 window.setColHeaderColor = function (id, bgColor, txtColor) {
     $(`.col-header-${id}`).css({
         'background-color':  bgColor, 
@@ -64,6 +52,7 @@ window.setColHeaderColor = function (id, bgColor, txtColor) {
     })  
 }
 
+// Create a color picker element for col's header
 window.createColorPicker = function(colorBtn, col) {
     const picker = new Picker({
         parent: colorBtn, 
@@ -77,7 +66,7 @@ window.createColorPicker = function(colorBtn, col) {
         setColHeaderColor(
             colorBtn.parentNode.dataset.id, 
             color.hex, 
-            window.figureTextColor(color.hex)
+            figureTextColor(color.hex)
         )
     }
 
@@ -101,6 +90,7 @@ window.createColorPicker = function(colorBtn, col) {
     }
 }
 
+// Reorder columns in array 'window.data' object, get array of col order
 window.updateAndGetColOrder = function() {
     const arrayMap = new Array()
 
@@ -118,6 +108,11 @@ window.updateAndGetColOrder = function() {
 
     return arrayMap
 }
+
+//#endregion
+
+
+//#region Init
 
 let isowner
 
@@ -140,7 +135,7 @@ let isowner
 
     for(const col of data)
     {
-        col.txtColor = window.figureTextColor(col.colorHexa)
+        col.txtColor = figureTextColor(col.colorHexa)
 
         const board = window.createBoard(col)
 
@@ -172,7 +167,6 @@ let isowner
             moveItem(el, target, source)
         }, 
         dragendBoard: (colEl) => {
-            console.log(colEl)
             moveBoard(colEl)
         }
     });
@@ -211,6 +205,9 @@ let isowner
     })
 
 })();
+
+//#endregion
+
 
 //#region Handle title modifications 
 
@@ -258,7 +255,7 @@ function onTileFocusOut(thisEl) {
 //#region Modal
 function displayCreateModal(colId) {
 
-    // On submit
+    // On form submit
     $('#modal-creation-submit-btn').click(() => {
         $('#form-error-label').text('')
         
@@ -420,6 +417,9 @@ function displayItemDetailsModal(el) {
 }
 //#endregion
 
+
+//#region On drag
+
 //Trigger when an on item is drag/drop on an other column
 function moveItem(el, target, source) {
 
@@ -475,8 +475,10 @@ function moveBoard(colEl) {
     })
 }
 
+//#endregion
 
-//region Tools
+
+//#region Tools
 
 // Create render item element. Called on init, item add and item edit
 function createItem(item, colId) {
@@ -503,6 +505,22 @@ function createItem(item, colId) {
 function getDateToDisplay(dateString) {
     return new Date(Date.parse(dateString))
         .toLocaleDateString('en-GB', { day: "numeric", month: 'short', year: 'numeric' })
+}
+
+function figureTextColor(bgColor) {
+    var color = (bgColor.charAt(0) === '#') ? bgColor.substring(1, 7) : bgColor;
+    var r = parseInt(color.substring(0, 2), 16); // hexToR
+    var g = parseInt(color.substring(2, 4), 16); // hexToG
+    var b = parseInt(color.substring(4, 6), 16); // hexToB
+    var uicolors = [r / 255, g / 255, b / 255];
+    var c = uicolors.map((col) => {
+        if (col <= 0.03928) {
+        return col / 12.92;
+        }
+        return Math.pow((col + 0.055) / 1.055, 2.4);
+    });
+    var L = (0.2126 * c[0]) + (0.7152 * c[1]) + (0.0722 * c[2]);
+    return (L > 0.179) ? '#000' : '#fff';
 }
 
 //#endregion
