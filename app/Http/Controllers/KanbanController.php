@@ -215,4 +215,46 @@ class KanbanController extends Controller
         ]);
 
     }
+
+    public function uninvite(Request $request)
+    {
+        $rules = [
+            "kanbanId" => 'required|numeric',
+            "userId" => "required|numeric",
+        ];
+        // Validate the form with is data
+        $validator = Validator::make($request->all(), $rules);
+        
+        if ($validator->fails())
+        {
+            return response(json_encode(['status' => 'Form not valid ', $validator->errors()]), 400, ['Content-Type' => 'application/json']);
+        }
+
+        $data = $request->only('kanbanId', 'userId'); 
+
+        $kanban = Kanban::find($data['kanbanId']); 
+
+        if(is_null($kanban))
+            return response(json_encode(['status' => 'Kanban not found']), 400, ['Content-Type' => 'application/json']);
+        if(!checkIfKanbanAllow($kanban, true))
+            return response(json_encode(['status' => 'You\'re not allowed to do that']), 403, ['Content-Type' => 'application/json']);
+    
+        $user = User::find($data['userId']);
+        if(is_null($user))
+            return response(json_encode(['status' => 'User not found']), 400, ['Content-Type' => 'application/json']);
+        
+        if($user->id == $kanban->ownerUserId)
+            return response(json_encode(['status' => 'You can\'t invite yourself']), 400, ['Content-Type' => 'application/json']); 
+
+        Invitation::query()
+            ->where('userId', '=', $user->id)
+            ->where('kanbanId', '=', $data['kanbanId'])
+            ->first()
+            ->delete();
+
+        return response()->json([
+            'status' => 'Invitation deleted successfully', 
+        ]);
+
+    }
 }

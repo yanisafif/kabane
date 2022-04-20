@@ -64,6 +64,11 @@ function setUpSettingsConsole() {
         $('#settings-modal').modal('show')
     })
 
+    // Wire univite person btns
+    for(const el of document.getElementsByClassName('setting-person-uninvite')) {
+        wirePersonUninvite(el)
+    }
+
     $('#settings-invite-btn').click(() => {
         $('#settings-invite-error-message').text('')
 
@@ -91,7 +96,9 @@ function setUpSettingsConsole() {
                 <div class="setting-person-name">${json.username}</div>
                 <img class="setting-person-uninvite" data-id="${json.userId}" src="${window.location.protocol +'//'+ window.location.hostname}/assets/svg/trash.svg">
             `
+            
             document.getElementById('settings-people-list-container').appendChild(settingFormEl);
+            wirePersonUninvite(settingFormEl.querySelector('.setting-person-uninvite'))
 
             window.people.push({ 
                 id: json.userId, 
@@ -105,8 +112,32 @@ function setUpSettingsConsole() {
             document.getElementById('select-people-creation').appendChild(itemFormEl)
             document.getElementById('edit-form-select-people').appendChild(itemFormEl.cloneNode(true))
         })
-
     })
+}
+
+function wirePersonUninvite(deleteBtn) {
+
+    deleteBtn.onclick = () => {
+        
+        const userId = parseInt(deleteBtn.dataset.id)
+        
+        window.httpRequest('/kanban/uninvite', 'DELETE', {
+            userId, 
+            kanbanId: window.kanbanId
+        })
+        .then((res) => {
+            
+            if(!res.ok) {
+                return
+            }
+            
+            $('#edit-form-select-people').find(`option[value='${userId}']`).remove()
+            $('#select-people-creation').find(`option[value='${userId}']`).remove()
+
+            const userEl = deleteBtn.parentNode
+            userEl.parentNode.removeChild(userEl)
+        })
+    }
 }
 
 function wireColDeleteBtn(deleteBtn) {

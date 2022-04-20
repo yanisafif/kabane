@@ -38,6 +38,9 @@ Route::prefix('kanban')
         Route::post('invite', 'KanbanController@invite')
             ->name('invite');
 
+        Route::delete('uninvite', 'KanbanController@uninvite')
+            ->name('uninvite');
+
         Route::get('todo/{id?}', function () {
             return view('app.todo');
         })->name('todo');
