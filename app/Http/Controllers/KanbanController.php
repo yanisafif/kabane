@@ -261,6 +261,35 @@ class KanbanController extends Controller
         return response()->json([
             'status' => 'Invitation deleted successfully', 
         ]);
+    }
 
+    public function selfUninvite(Request $request)
+    {
+        $rules = [
+            "kanbanId" => 'required|numeric',
+        ];
+        // Validate the form with is data
+        $validator = Validator::make($request->all(), $rules);
+        
+        if ($validator->fails())
+        {
+            return response(json_encode(['status' => 'Form not valid ', $validator->errors()]), 400, ['Content-Type' => 'application/json']);
+        }
+
+        $data = $request->only('kanbanId'); 
+
+        $inviteToDelete = Invitation::query()
+            ->where('userId', '=', \Auth::user()->id)
+            ->where('kanbanId', '=', $data['kanbanId'])
+            ->first();
+        
+        if(is_null($inviteToDelete))
+            return response(json_encode(['status' => 'Error']), 400, ['Content-Type' => 'application/json']); 
+
+        $inviteToDelete->delete();
+
+        return response()->json([
+            'status' => 'Invitation deleted successfully', 
+        ]);
     }
 }

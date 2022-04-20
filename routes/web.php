@@ -41,6 +41,9 @@ Route::prefix('kanban')
         Route::delete('uninvite', 'KanbanController@uninvite')
             ->name('uninvite');
 
+        Route::delete('self-uninvite', 'KanbanController@selfUninvite')
+            ->name('selfUninvite');
+
         Route::get('todo/{id?}', function () {
             return view('app.todo');
         })->name('todo');
