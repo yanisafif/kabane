@@ -33,7 +33,7 @@ if (!function_exists('getLayoutData'))
                 'id',
                 App\Models\Invitation::query()
                     ->where('userId', '=', $userId)
-                    ->select('userId')
+                    ->select('kanbanId')
                     ->get()
             )
             ->select('id', 'name', 'isActive', 'ownerUserId')
@@ -43,7 +43,7 @@ if (!function_exists('getLayoutData'))
             ->where('ownerUserId', '=', $userId)
             ->select('id', 'name', 'isActive', 'ownerUserId')
             ->get();
-    
+
         return $data;
     }
 }
