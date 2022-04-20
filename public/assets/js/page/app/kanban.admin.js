@@ -25,7 +25,7 @@ function setUpAddCol() {
                     colorHexa: dataToSend.colorHexa, 
                     name: dataToSend.colName,
                     id: json.itemId, 
-                    txtColor: window.figureTextColor(dataToSend.colorHexa),
+                    txtColor: '#fff',
                     items: new Array()
                 }
 
@@ -71,12 +71,12 @@ function setUpSettingsConsole() {
     $('#settings-invite-btn').click(() => {
         $('#settings-invite-error-message').text('')
 
-        const usernameInvitation = $('#settings-name-field').val()
-        console.log('Send invite', usernameInvitation)
+        const nameOrEmail = $('#settings-name-field').val()
+        console.log('Send invite', nameOrEmail)
         
         window.httpRequest('/kanban/invite', 'POST', {
             kanbanId: window.kanbanId, 
-            username: usernameInvitation
+            nameOrEmail
         }).then(async (res) => {
             
             const json = await res.json()

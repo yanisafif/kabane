@@ -139,8 +139,8 @@ class KanbanController extends Controller
             }
 
             $user = User::query()
-                ->where('name', '=', $item)
-                ->orWhere('email', '=', $item)
+                ->where('name', 'LIKE', $item)
+                ->orWhere('email', 'LIKE', $item)
                 ->select('id')
                 ->first();
 
@@ -161,7 +161,7 @@ class KanbanController extends Controller
     {
         $rules = [
             "kanbanId" => 'required|numeric',
-            "username" => "required|max:50",
+            "nameOrEmail" => "required|max:50",
         ];
         // Validate the form with is data
         $validator = Validator::make($request->all(), $rules);
@@ -171,7 +171,7 @@ class KanbanController extends Controller
             return response(json_encode(['status' => 'Form not valid ', $validator->errors()]), 400, ['Content-Type' => 'application/json']);
         }
 
-        $data = $request->only('kanbanId', 'username'); 
+        $data = $request->only('kanbanId', 'nameOrEmail'); 
 
         $kanban = Kanban::find($data['kanbanId']); 
 
@@ -180,9 +180,11 @@ class KanbanController extends Controller
         if(!checkIfKanbanAllow($kanban, true))
             return response(json_encode(['status' => 'You\'re not allowed to do that']), 403, ['Content-Type' => 'application/json']);
     
+
         $user = User::query()
-                ->where('name', 'LIKE', $data['username'])
-                ->first();
+            ->where('name', 'LIKE', $data['nameOrEmail'])
+            ->orWhere('email', 'LIKE', $data['nameOrEmail'])
+            ->first();
 
         if(is_null($user))
             return response(json_encode(['status' => 'User not found']), 400, ['Content-Type' => 'application/json']);

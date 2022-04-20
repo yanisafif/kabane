@@ -158,7 +158,6 @@
                                                 <span id="settings-invite-error-message" class="text-danger"> </span>
                                                 <div class="small-group setting-invite d-flex">
                                                     <div class="input-group">
-                                                        <span class="input-group-text">Name</span>
                                                         <input class="form-control" onkeyup="event.keyCode === 13 && $('#settings-invite-btn').click()" id="settings-name-field" type="text" maxlength="50" name="name"/>
                                                     </div>
                                                 </div>
