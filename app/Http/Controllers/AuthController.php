@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ResetPassword;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use App\Models\PasswordResets;
 
 class AuthController extends Controller
 {
@@ -38,7 +41,7 @@ class AuthController extends Controller
     }
 
     public function postRegistration(Request $request)
-    { $this->resetPassword('afifyanis@gmail.com');
+    {
         // Array of rules
         $rules = [
             'name' => 'required|unique:users',
@@ -89,11 +92,49 @@ class AuthController extends Controller
         return redirect()->route('index.international')->with('success', 'You have been logged out successfully');
     }
 
-    public function resetPassword($email) {
-        $uuid = url('reset/password', ['UUID123456789']);
+    public function resetPassword(Request $request) {
+        // Array of rules
+        $rules = [
+            'emailPassword' => 'required|email'
+        ];
 
-        Mail::to($email)
-            ->queue(new ResetPassword($uuid));
+        // Validate the form with is data
+        $validator = Validator::make($request->all(), $rules);
+
+        // If data dont respect the validation rules, redirect on same page with error
+        if ($validator->fails())
+        {
+            return redirect()->route('user.password.register')->with('danger', 'Email is not valid.');
+        }
+
+        $email = $request->all()['emailPassword'];
+        $query = DB::table('users')
+            ->where(['email' => $email])
+            ->first();
+
+        if (!empty($query)){
+            $uuid = Str::uuid();
+            $uuidLink = url('reset/password', $uuid);
+
+            $query = DB::table('password_resets')
+                ->where(['email' => $email]);
+
+            if(!empty($query)){
+                $query->delete();
+            }
+
+            $reset = new PasswordResets;
+            $reset->email = $email;
+            $reset->token = $uuid;
+            date_default_timezone_set("Europe/Paris");
+            $reset->created_at = time();
+            $reset->save();
+
+            Mail::to($email)
+                ->queue(new ResetPassword($uuidLink));
+
+            return redirect()->route('user.login')->with('success', 'Email has been sent successfully.');
+        }
+        return redirect()->route('user.password.register')->with('danger', 'This email does not exist in our database.');
     }
-
 }

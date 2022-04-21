@@ -40,7 +40,7 @@
 	                        </div>
 
 	                    </div>
-                        <p class="text-start"><a class="link" href="#">Forgot password?</a></p>
+                        <p class="text-start"><a class="link" href="{{route('user.password.reset')}}">Forgot password?</a></p>
 	                    <div class="form-group">
 	                        <button class="btn btn-primary btn-block" type="submit">Sign in</button>
 	                    </div>

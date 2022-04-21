@@ -70,6 +70,12 @@ Route::prefix('user')
 
         Route::get('logout', [AuthController::class, 'logOut'])->name('logout')->middleware('auth');
 
+        Route::get('/password-reset', function () {
+            return view('user.password-reset');
+        })->name('password.reset')->middleware('guest');
+        
+        Route::post('post-register', [AuthController::class, 'resetPassword'])->name('reset.password')->middleware('guest');
+
         Route::get('/profile/{name}', [UserController::class, 'getUser'])
         ->name('user.profile')->middleware('auth');
 
