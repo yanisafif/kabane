@@ -70,11 +70,16 @@ Route::prefix('user')
 
         Route::get('logout', [AuthController::class, 'logOut'])->name('logout')->middleware('auth');
 
-        Route::get('/password-reset', function () {
-            return view('user.password-reset');
+        Route::get('/send-mail', function () {
+            return view('user.send-mail-password');
         })->name('password.reset')->middleware('guest');
-        
-        Route::post('post-register', [AuthController::class, 'resetPassword'])->name('reset.password')->middleware('guest');
+
+        Route::post('post-reset', [AuthController::class, 'resetPassword'])->name('reset.password')->middleware('guest');
+
+        Route::get('/reset/password/{uuid}', [AuthController::class, 'getResetPasswordWithUuid'])
+            ->name('password.reset.uuid')->middleware('guest');
+
+        Route::post('post-reset-uuid', [AuthController::class, 'postResetPasswordWithUuid'])->name('reset.password.uuid')->middleware('guest');
 
         Route::get('/profile/{name}', [UserController::class, 'getUser'])
         ->name('user.profile')->middleware('auth');

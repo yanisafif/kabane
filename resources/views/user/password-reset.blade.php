@@ -14,19 +14,35 @@
 	            <div class="col-12 p-0">
 	                <div class="login-card">
 	                    <div class="login-main">
-	                        <form class="theme-form login-form" method="POST" action="{{ route('user.reset.password')}}">
+	                        <form class="theme-form login-form" method="POST" action="{{ route('user.reset.password.uuid')}}">
                                 @csrf
 	                            <h4 class="mb-3">Reset Your Password</h4>
-                                <small>Please enter a valid email so that we can send you an email to be able to reset your password.</small>
 	                            <div class="form-group">
 	                                <label class="mt-4">Enter Your Mail</label>
 	                                <div class="row">
 	                                    <div class="col-12 col-sm-12">
-	                                        <input class="form-control" name="emailPassword" type="email" placeholder="email@gmail.com" />
+	                                        <input class="form-control" name="email" type="email" placeholder="email@gmail.com" />
+	                                    </div>
+	                                </div>
+                                    <div class="row">
+                                        <label class="mt-4">New Password</label>
+	                                    <div class="col-12 col-sm-12">
+	                                        <input class="form-control" name="password" type="password" placeholder="******" />
+	                                    </div>
+	                                </div>
+                                    <div class="row">
+                                        <label class="mt-4">Repeat New Password</label>
+	                                    <div class="col-12 col-sm-12">
+	                                        <input class="form-control" name="password_confirmation" type="password" placeholder="******" />
+	                                    </div>
+	                                </div>
+                                    <div class="row">
+	                                    <div class="col-12 col-sm-12">
+	                                        <input class="form-control" name="uuid" type="hidden" value="{{$uuid}}" />
 	                                    </div>
 	                                </div>
                                     <div class="form-group">
-                                        <button class="btn btn-primary btn-block mt-4 col-12 col-sm-12" type="submit">Send</button>
+                                        <button class="btn btn-primary btn-block mt-4 col-12 col-sm-12" type="submit">Change password</button>
                                     </div>
 	                            </div>
 
