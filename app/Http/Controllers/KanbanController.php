@@ -23,7 +23,7 @@ class KanbanController extends Controller
      */
     public function __construct()
     {
-        //$this->middleware('auth');
+        $this->middleware('auth');
     }
 
     public function board($id = null)
@@ -41,7 +41,7 @@ class KanbanController extends Controller
                ->select('id', 'name', 'isActive', 'created_at', 'ownerUserId')
                ->first();
 
-            if(!is_null($data['kanban']) && $this->checkIfKanbanAllow($data['kanban']))
+            if(!is_null($data['kanban']) && checkIfKanbanAllow($data['kanban']))
             {
                $cols = Col::query()
                    ->where('kanbanId', '=', $id)
@@ -56,30 +56,37 @@ class KanbanController extends Controller
                         ->orderBy('colId')
                         ->leftJoin('users AS assignedUser', 'assignedUser.id' , '=',  'items.assignedUserId' )
                         ->join('users AS ownerUser', 'items.ownerUserId' , '=', 'ownerUser.id')
-                        ->select('items.id as item_id', 'items.name as item_name', 'description', 'items.created_at', 'items.updated_at', 'itemOrder',
+                        ->select('items.id as item_id', 'items.name as item_name', 'description', 'items.created_at', 'items.updated_at', 'itemOrder', 'deadline',
                             'assignedUser.name as assignedUser_name', 'assignedUser.email as assignedUser_email', 'assignedUser.id as assignedUser_id',
                             'ownerUser.name as ownerUser_name', 'ownerUser.email as ownerUser_email', 'ownerUser.id as ownerUser_id'
                         )
                         ->get();
                 }
                 $data['cols'] = $cols;
-                
+
                 $peopleAccessBoard = Invitation::query()
                     ->where('kanbanId', '=', $id)
                     ->join('users', 'users.id', '=', 'invitations.userId')
                     ->select('users.name', 'users.id')
                     ->get();
 
-                $peopleAccessBoard->add(
-                    User::query()
+                $kanbanOwner = User::query()
                         ->join('kanbans', 'kanbans.ownerUserId', '=', 'users.id')
                         ->where('kanbans.id', '=', $id)
                         ->select('users.name', 'users.id')
-                        ->first()
-                );
-               
-                $data['people'] = $peopleAccessBoard;
+                        ->first();
+    
+                $peopleAccessBoard->add($kanbanOwner);
 
+                $currentUserId = \Auth::user()->id;
+
+                foreach($peopleAccessBoard as $person) 
+                {
+                    $person['isCurrentUser'] = ($currentUserId == $person['id']);
+                }
+
+                $data['people'] = $peopleAccessBoard;
+                $data['isOwner'] = ($kanbanOwner->id == $currentUserId);
             }
             else
             {
@@ -87,14 +94,12 @@ class KanbanController extends Controller
             }
 
         }
-        $kanbans = $this->getLayoutData();
-        return view('app.kanban', compact('kanbans', 'data'));
+        return view('app.kanban', compact('data'));
     }
 
     public function create()
     {
-        $kanbans = $this->getLayoutData();
-        return view('app.create-kanban', compact('kanbans'));
+        return view('app.create-kanban');
     }
 
     public function store(Request $request)
@@ -134,8 +139,8 @@ class KanbanController extends Controller
             }
 
             $user = User::query()
-                ->where('name', '=', $item)
-                ->orWhere('email', '=', $item)
+                ->where('name', 'LIKE', $item)
+                ->orWhere('email', 'LIKE', $item)
                 ->select('id')
                 ->first();
 
@@ -149,87 +154,142 @@ class KanbanController extends Controller
             $invite->kanbanId = $kanban->id;
             $invite->save();
         }
-        return redirect(route('kanban.board'));
+        return redirect(route('kanban.board') . '/' . $kanban->id);
     }
 
-    public function storeItem(Request $request)
+    public function invite(Request $request)
     {
         $rules = [
-            "name" => "required|max:50",
-            "description" => "required",
-            "colId" => "required|numeric", 
-            "assign" => "required|numeric"
+            "kanbanId" => 'required|numeric',
+            "nameOrEmail" => "required|max:50",
         ];
-
         // Validate the form with is data
         $validator = Validator::make($request->all(), $rules);
-
-        // If data dont respect the validation rules, redirect on same page with error
+        
         if ($validator->fails())
         {
-            return response(json_encode(['status' => 'Form not valid ']), 400, ['Content-Type' => 'application/json']);
+            return response(json_encode(['status' => 'Form not valid ', $validator->errors()]), 400, ['Content-Type' => 'application/json']);
         }
-        
-        $data = $request->only('name', 'description', 'colId', "assign");
-        
-        $kanban = Kanban::query()
-            ->join('cols', 'cols.kanbanId', '=', 'kanbans.id')
-            ->where('cols.id', '=', $data['colId'])
-            ->first();
+
+        $data = $request->only('kanbanId', 'nameOrEmail'); 
+
+        $kanban = Kanban::find($data['kanbanId']); 
 
         if(is_null($kanban))
             return response(json_encode(['status' => 'Kanban not found']), 400, ['Content-Type' => 'application/json']);
-        if(!$this->checkIfKanbanAllow($kanban))
+        if(!checkIfKanbanAllow($kanban, true))
             return response(json_encode(['status' => 'You\'re not allowed to do that']), 403, ['Content-Type' => 'application/json']);
+    
 
-        $item = new Item;
-        $item->name = $data['name'];
-        $item->description = $data['description'];
-        $item->colId = $data['colId'];
-        $item->ownerUserId = \Auth::user()->id;
-        $item->assignedUserId = ($data['assign'] > 0 ? $data['assign'] : NULL);
-        $item->itemOrder = 1;
-        $item->save();
-
-        return response()->json(['status' => 'Item saved successfully', 'itemId' => $item->id]);
-    }
-
-    protected function checkIfKanbanAllow($kanban)
-    {
-        $userId = \Auth::user()->id;
-
-        if($kanban->ownerUserId == $userId)
-            return true;
-
-        $res = Invitation::query()
-            ->where('userId', '=', $userId)
-            ->where('kanbanId', '=', $kanban->id)
+        $user = User::query()
+            ->where('name', 'LIKE', $data['nameOrEmail'])
+            ->orWhere('email', 'LIKE', $data['nameOrEmail'])
             ->first();
 
-        return !is_null($res);
+        if(is_null($user))
+            return response(json_encode(['status' => 'User not found']), 400, ['Content-Type' => 'application/json']);
+        
+        if($user->id == $kanban->ownerUserId)
+            return response(json_encode(['status' => 'You can\'t invite yourself']), 400, ['Content-Type' => 'application/json']); 
+
+        if(
+            !is_null(
+                Invitation::query()
+                    ->where('userId', '=', $user->id)
+                    ->where('kanbanId', '=', $data['kanbanId'])
+                    ->first()
+            )
+        )
+        {
+            return response(json_encode(['status' => 'User already invited']), 400, ['Content-Type' => 'application/json']); 
+        }
+
+        
+        $invitationRecord = new Invitation; 
+        $invitationRecord->userId = $user->id;
+        $invitationRecord->kanbanId = $kanban->id;
+        $invitationRecord->save();
+
+        return response()->json([
+            'status' => 'Invitation created successfully', 
+            'userId' => $user->id, 
+            'username' => $user->name
+        ]);
+
     }
 
-    protected function getLayoutData()
+    public function uninvite(Request $request)
     {
-        $userId = \Auth::user()->id;
-        $data = [];
+        $rules = [
+            "kanbanId" => 'required|numeric',
+            "userId" => "required|numeric",
+        ];
+        // Validate the form with is data
+        $validator = Validator::make($request->all(), $rules);
+        
+        if ($validator->fails())
+        {
+            return response(json_encode(['status' => 'Form not valid ', $validator->errors()]), 400, ['Content-Type' => 'application/json']);
+        }
 
-        $data['invitedKanban'] = Kanban::query()
-            ->whereIn(
-                'id',
-                Invitation::query()
-                    ->where('userId', '=', $userId)
-                    ->select('userId')
-                    ->get()
-            )
-            ->select('id', 'name', 'isActive', 'ownerUserId')
-            ->get();
-                
-        $data['ownedKanban'] = Kanban::query()
-            ->where('ownerUserId', '=', $userId)
-            ->select('id', 'name', 'isActive', 'ownerUserId')
-            ->get();
+        $data = $request->only('kanbanId', 'userId'); 
 
-        return $data;
+        $kanban = Kanban::find($data['kanbanId']); 
+
+        if(is_null($kanban))
+            return response(json_encode(['status' => 'Kanban not found']), 400, ['Content-Type' => 'application/json']);
+        if(!checkIfKanbanAllow($kanban, true))
+            return response(json_encode(['status' => 'You\'re not allowed to do that']), 403, ['Content-Type' => 'application/json']);
+    
+        $user = User::find($data['userId']);
+        if(is_null($user))
+            return response(json_encode(['status' => 'User not found']), 400, ['Content-Type' => 'application/json']);
+        
+        if($user->id == $kanban->ownerUserId)
+            return response(json_encode(['status' => 'You can\'t uninvite yourself']), 400, ['Content-Type' => 'application/json']); 
+
+        $inviteToDelete = Invitation::query()
+            ->where('userId', '=', $user->id)
+            ->where('kanbanId', '=', $data['kanbanId'])
+            ->first();
+        
+        if(is_null($inviteToDelete))
+            return response(json_encode(['status' => 'Error']), 400, ['Content-Type' => 'application/json']); 
+
+        $inviteToDelete->delete();
+
+        return response()->json([
+            'status' => 'Invitation deleted successfully', 
+        ]);
+    }
+
+    public function selfUninvite(Request $request)
+    {
+        $rules = [
+            "kanbanId" => 'required|numeric',
+        ];
+        // Validate the form with is data
+        $validator = Validator::make($request->all(), $rules);
+        
+        if ($validator->fails())
+        {
+            return response(json_encode(['status' => 'Form not valid ', $validator->errors()]), 400, ['Content-Type' => 'application/json']);
+        }
+
+        $data = $request->only('kanbanId'); 
+
+        $inviteToDelete = Invitation::query()
+            ->where('userId', '=', \Auth::user()->id)
+            ->where('kanbanId', '=', $data['kanbanId'])
+            ->first();
+        
+        if(is_null($inviteToDelete))
+            return response(json_encode(['status' => 'Error']), 400, ['Content-Type' => 'application/json']); 
+
+        $inviteToDelete->delete();
+
+        return response()->json([
+            'status' => 'Invitation deleted successfully', 
+        ]);
     }
 }

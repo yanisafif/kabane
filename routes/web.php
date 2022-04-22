@@ -35,8 +35,14 @@ Route::prefix('kanban')
         Route::post('store', 'KanbanController@store')
             ->name('store');
 
-        Route::post('store-item', 'KanbanController@storeItem')
-            ->name('store-item');
+        Route::post('invite', 'KanbanController@invite')
+            ->name('invite');
+
+        Route::delete('uninvite', 'KanbanController@uninvite')
+            ->name('uninvite');
+
+        Route::delete('self-uninvite', 'KanbanController@selfUninvite')
+            ->name('selfUninvite');
 
         Route::get('todo/{id?}', function () {
             return view('app.todo');
@@ -49,6 +55,39 @@ Route::prefix('kanban')
         })->name('chat');
 
     });
+
+Route::prefix('item')
+    ->as('item.')
+    ->group(function (){
+        Route::post('store', 'ItemController@store')
+            ->name('store');
+
+        Route::delete('delete', 'ItemController@delete')
+            ->name('delete');
+
+        Route::put('update', 'ItemController@update')
+            ->name('update');
+
+        Route::put('move', 'ItemController@move')
+            ->name('move');
+    });
+
+Route::prefix('col')
+    ->as('col.')
+    ->group(function (){
+        Route::post('add', 'ColController@add')
+            ->name('add');
+
+        Route::put('edit', 'ColController@edit')
+            ->name('edit');
+
+        Route::put('move', 'ColController@move')
+            ->name('move');
+
+        Route::delete('delete', 'ColController@delete')
+            ->name('delete');
+    });
+
 
 Route::prefix('user')
     ->as('user.')
