@@ -9,7 +9,7 @@
 @section('content')
     <div class="container-fluid">
 	    <div class="row">
-	        <div class="col-xl-5"><img class="bg-img-cover bg-center" src="{{ asset('assets/images/login/3.jpg') }}" alt="looginpage" /></div>
+	        <div class="col-xl-5"><img class="bg-img-cover bg-center" src="{{ asset('assets/images/login.png') }}" alt="looginpage" /></div>
 	        <div class="col-xl-7 p-0">
 	            <div class="login-card">
 	                <form class="theme-form login-form needs-validation" novalidate="" method="POST" action="{{ route('user.login.post')}}">

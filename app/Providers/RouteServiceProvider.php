@@ -21,7 +21,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    public const HOMELOGED = '/kanban';
+    public const HOMELOGED = '/kanban/board';
 
     /**
      * Define your route model bindings, pattern filters, etc.

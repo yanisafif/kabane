@@ -17,7 +17,7 @@ use App\Http\Controllers\AdminController;
 
 Route::get('/', function () {
     return view('welcome');
-})->name('index.international');
+})->name('index.international')->middleware('guest');
 // Route::get('/kanban', function () {
 //     return view('app.kanban');
 // });
