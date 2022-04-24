@@ -241,6 +241,10 @@
             @else
                 <script src="{{asset('assets/js/page/app/kanban.invite.js')}}"></script>
             @endif
+            @if(count($data['people']) > 1)
+                <script src="{{asset('assets/js/laravel-echo.js')}}"></script>
+                <script src="{{asset('assets/js/page/app/kanban.event.js')}}"></script>
+            @endif
         @endpush
 
     @elseif($data['kanbanNotSelected'])

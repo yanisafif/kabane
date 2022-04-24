@@ -71,7 +71,7 @@ class ItemController extends Controller
         $item->save();
 
         event(new NewItem($item, $kanban->id));
-
+        
         return response()->json(['status' => 'Item saved successfully', 'item_id' => $item->id]);
     }
 

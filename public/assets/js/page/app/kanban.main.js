@@ -1,7 +1,7 @@
 //#region Global tools
 
 window.httpRequest = function(url, method, data) {
-    return fetch(url, {method, headers: {'Content-Type': 'application/json','X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}, body: JSON.stringify(data)});
+    return fetch(url, {method, headers: {'Content-Type': 'application/json','accept': 'application/json','X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}, body: JSON.stringify(data)});
 }
 
 // Create render board element
@@ -40,6 +40,27 @@ window.createBoard = function(col) {
         `,
         class: 'col-header-' + col.id,
         item: new Array()
+    }
+}
+// Create render item element. Called on init, item add and item edit 
+window.createItem = function (item, colId) {
+    return {
+        id: `item-${item.item_id}`,
+        title: `<a id="item-${item.item_id}-${colId}" class="kanban-box overflow-hidden"style="max-height: 150px" href="#">
+            <div class="row">
+                <div class="col">
+                    <span >${getDateToDisplay(item.created_at)}</span>
+                    <h6>${item.item_name}</h6>
+                </div>
+                <div class="col text-end">
+                    ${item.assignedUser_name ? 'Assigned to: ' + item.assignedUser_name : 'Unassigned'}
+                </div>
+            </div>
+            <div class="d-flex mt-2 overflow-hidden">
+                ${item.description  ?? ''}
+            </div>
+        </a>
+        `
     }
 }
 
@@ -479,28 +500,6 @@ function moveBoard(colEl) {
 
 
 //#region Tools
-
-// Create render item element. Called on init, item add and item edit
-function createItem(item, colId) {
-    return {
-        id: `item-${item.item_id}`,
-        title: `<a id="item-${item.item_id}-${colId}" class="kanban-box overflow-hidden"style="max-height: 150px" href="#">
-            <div class="row">
-                <div class="col">
-                    <span >${getDateToDisplay(item.created_at)}</span>
-                    <h6>${item.item_name}</h6>
-                </div>
-                <div class="col text-end">
-                    ${item.assignedUser_name ? 'Assigned to: ' + item.assignedUser_name : 'Unassigned'}
-                </div>
-            </div>
-            <div class="d-flex mt-2 overflow-hidden">
-                ${item.description  ?? ''}
-            </div>
-        </a>
-        `
-    }
-}
 
 function getDateToDisplay(dateString) {
     return new Date(Date.parse(dateString))
