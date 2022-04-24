@@ -14,6 +14,7 @@ use View;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Arr;
+use App\Events\NewItem;
 
 class ItemController extends Controller
 {
@@ -51,6 +52,7 @@ class ItemController extends Controller
         $kanban = Kanban::query()
             ->join('cols', 'cols.kanbanId', '=', 'kanbans.id')
             ->where('cols.id', '=', $data['colId'])
+            ->select('kanbans.id', 'kanbans.ownerUserId')
             ->first();
 
         if(is_null($kanban))
@@ -67,6 +69,8 @@ class ItemController extends Controller
         $item->deadline = (!is_null($data['deadline']) ? $data['deadline'] : NULL);
         $item->itemOrder = 1;
         $item->save();
+
+        event(new NewItem($item, $kanban->id));
 
         return response()->json(['status' => 'Item saved successfully', 'item_id' => $item->id]);
     }
@@ -185,6 +189,7 @@ class ItemController extends Controller
             ->join('cols', 'kanbans.id', 'cols.kanbanId')
             ->join('items', 'items.colId', 'cols.id')
             ->where('items.id', '=', $itemId)
+            ->select('kanbans.id', 'kanbans.ownerUserId', 'kanbanId')
             ->first();
     }
 
