@@ -182,6 +182,7 @@ let isowner
             displayCreateModal(boardId)
         },
         click: (el) => {
+            console.log(el)
             displayItemDetailsModal(el)
         },
         dropEl: (el, target, source) => {
@@ -338,6 +339,7 @@ function displayCreateModal(colId) {
 }
 
 function displayItemDetailsModal(el) {
+
 
     // Get ids for html id. Pattern: 'item-$itemId-$colId
     const htmlId = el.getElementsByClassName('kanban-box')[0].id 

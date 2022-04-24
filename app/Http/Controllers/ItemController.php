@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Arr;
 use App\Events\NewItem;
+use App\Events\UpdatedItem;
 
 class ItemController extends Controller
 {
@@ -109,6 +110,8 @@ class ItemController extends Controller
             $itemRecord->description = $data['description'];
         
         $itemRecord->save(); 
+
+        event(new UpdatedItem($itemRecord, $kanban->id));
 
         return response()->json(['status' => 'Succeed']);
     }
