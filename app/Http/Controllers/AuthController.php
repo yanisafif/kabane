@@ -232,7 +232,7 @@ class AuthController extends Controller
                     $resetTable = DB::table('password_resets')
                         ->where(['id' => $resetTable->id,])
                         ->delete();
-                    
+
                     return redirect()->route('user.login')->with('danger', 'You have wasted too much time, the link has expired.');
                 }
             }

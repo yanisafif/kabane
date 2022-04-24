@@ -52,7 +52,7 @@
                                             <tbody>
                                                 <tr>
                                                     <td>
-                                                        <a href="index.html"><img class="img-fluid" src="{{url('assets/images/logo/logo.png')}}" alt="KANBAN" /></a>
+                                                        <a href="{{url('/')}}"><img class="img-fluid" src="{{asset('assets/images/logo/logo.png')}}" alt="KANBAN" /></a>
                                                     </td>
                                                     <td style="text-align: right; color: #999;"><span>Kanban ? For teams that don't want to waste time.</span></td>
                                                 </tr>
