@@ -1,4 +1,4 @@
-@extends('layout.master',  ['kanbans' => $kanbans])
+@extends('layout.master')
 
 @section('title')Create Kanban
 @endsection
