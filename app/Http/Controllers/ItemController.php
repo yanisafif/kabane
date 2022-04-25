@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Arr;
 use App\Events\NewItem;
 use App\Events\UpdatedItem;
+use App\Events\DeletedItem;
 
 class ItemController extends Controller
 {
@@ -140,7 +141,10 @@ class ItemController extends Controller
         if(!checkIfKanbanAllow($kanban))
             return response(json_encode(['status' => 'You\'re not allowed to do that']), 403, ['Content-Type' => 'application/json']);
 
-        Item::find($itemId)->delete();
+        $item = Item::find($itemId);
+        $item->delete();
+
+        event(new DeletedItem($itemId, $item->colId, $kanban->id));
 
         return response()->json(['status' => 'Succeed']);
     }

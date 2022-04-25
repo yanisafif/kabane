@@ -11,11 +11,12 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Item;
 
-class UpdatedItem implements ShouldBroadcast
+class DeletedItem implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public Item $item; 
+    public $itemId; 
+    public $colId;
     public $kanbanId;
 
     /**
@@ -23,9 +24,10 @@ class UpdatedItem implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct(Item $item, $kanbanId)
+    public function __construct($itemId, $colId, $kanbanId)
     {
-        $this->item = $item; 
+        $this->itemId = $itemId; 
+        $this->colId = $colId;
         $this->kanbanId = $kanbanId;
     }
 
@@ -42,15 +44,8 @@ class UpdatedItem implements ShouldBroadcast
     public function broadcastWith()
     {
         return array(
-            'name' => $this->item->name, 
-            'description' => $this->item->description, 
-            'colId' => $this->item->colId, 
-            'ownerUserId' => $this->item->ownerUserId, 
-            'assignedUserId' => $this->item->assignedUserId, 
-            'deadline' => $this->item->deadline,
-            'created_at' => $this->item->created_at,
-            'updated_at' => $this->item->updated_at,
-            'item_id' => $this->item->id, 
+            'item_id' => $this->itemId, 
+            'colId' => $this->colId, 
             'actionMadeByUserId' => \Auth::user()->id
         );
     }

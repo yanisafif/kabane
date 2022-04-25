@@ -50,7 +50,8 @@ class NewItem implements ShouldBroadcast
             'deadline' => $this->item->deadline,
             'created_at' => $this->item->created_at,
             'updated_at' => $this->item->updated_at,
-            'item_id' => $this->item->id
+            'item_id' => $this->item->id, 
+            'actionMadeByUserId' => \Auth::user()->id
         );
     }
 }

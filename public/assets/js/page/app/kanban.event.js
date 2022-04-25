@@ -2,8 +2,14 @@ setUpEvent()
 
 
 function setUpEvent() {
+    
+    const currentUserId = window.people.find(f => f.isCurrentUser).id;
+
     window.Echo.private('kanban.' + window.kanbanId)
         .listen('NewItem', res => {
+            if(res.actionMadeByUserId === currentUserId) {
+                return
+            }
             
             const col = window.data.find(f => f.id === res.colId)
 
@@ -13,7 +19,10 @@ function setUpEvent() {
             col.items.push(newItem)
         })
         .listen('UpdatedItem', res => {
-
+            if(res.actionMadeByUserId === currentUserId) {
+                return
+            }
+            
             const col = window.data.find(f => f.id === res.colId)
             const item = col.items.find(f => f.item_id === res.item_id) 
 
@@ -27,6 +36,17 @@ function setUpEvent() {
     
             window.kanban.replaceElement(`item-${item.item_id}`, window.createItem(item, col.id))
         })
+        .listen('DeletedItem', res =>  {
+            if(res.actionMadeByUserId === currentUserId) {
+                return
+            }
+
+            $(`div[data-eid=item-${res.item_id}]`).remove()
+
+            const col = window.data.find(f => f.id === res.colId)
+            const itemToDel = col.items.find(f => f.item_id === res.item_id)
+            col.items.splice(col.items.indexOf(itemToDel))
+        }) 
     
 } 
 
