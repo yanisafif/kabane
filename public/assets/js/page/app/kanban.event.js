@@ -64,7 +64,25 @@ function setUpEvent() {
             $(`div[data-eid=item-${res.item_id}]`).remove()
 
             window.kanban.addElement('_col' + res.colIdTo, window.createItem(item, res.colIdTo))
+        })
+        .listen('UpdatedCol', res => {
+            console.log(res)
+            if(res.actionMadeByUserId === currentUserId) {
+                return
+            }
 
+            // Update in data object
+            const col = window.data.find(f => f.id === res.colId)
+            col.name = res.colName
+            col.colorHexa = res.colColor
+
+            const colHtml = $(`header.col-header-1`)
+            console.log(colHtml)
+
+            colHtml.css('background-color', col.colorHexa)
+            colHtml.css('color', window.figureTextColor(col.colorHexa))
+
+            colHtml.find('input.title-col').val(col.name)
         })
         
 } 
