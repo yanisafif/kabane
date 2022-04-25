@@ -46,8 +46,27 @@ function setUpEvent() {
             const col = window.data.find(f => f.id === res.colId)
             const itemToDel = col.items.find(f => f.item_id === res.item_id)
             col.items.splice(col.items.indexOf(itemToDel))
-        }) 
-    
+        })
+        .listen('MovedItem', res => {
+            console.log(res)
+            if(res.actionMadeByUserId === currentUserId) {
+                return
+            }
+
+            // Move in data object
+            const colFrom = window.data.find(f => f.id === res.colIdFrom)
+            const item = colFrom.items.find(f => f.item_id === res.item_id)
+            colFrom.items.splice(colFrom.items.indexOf(item))
+
+            window.data.find(f => f.id === res.colIdTo).items.push(item)
+
+            // Move html
+            $(`div[data-eid=item-${res.item_id}]`).remove()
+
+            window.kanban.addElement('_col' + res.colIdTo, window.createItem(item, res.colIdTo))
+
+        })
+        
 } 
 
 function parseItem(res) {

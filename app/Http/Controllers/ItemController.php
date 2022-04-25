@@ -17,6 +17,7 @@ use Illuminate\Support\Arr;
 use App\Events\NewItem;
 use App\Events\UpdatedItem;
 use App\Events\DeletedItem;
+use App\Events\MovedItem;
 
 class ItemController extends Controller
 {
@@ -186,6 +187,8 @@ class ItemController extends Controller
         $item->colId = $data['targetCol']; 
         $item->save();
 
+        event(new MovedItem($item->id, $kanbanFromSource->id, $kanbanFromSource->colId, $data['targetCol']));
+
         return response()->json(['status' => 'Succeed']);
         
     }
@@ -196,7 +199,7 @@ class ItemController extends Controller
             ->join('cols', 'kanbans.id', 'cols.kanbanId')
             ->join('items', 'items.colId', 'cols.id')
             ->where('items.id', '=', $itemId)
-            ->select('kanbans.id', 'kanbans.ownerUserId', 'kanbanId')
+            ->select('kanbans.id', 'kanbans.ownerUserId', 'kanbanId', 'cols.id as colId')
             ->first();
     }
 
