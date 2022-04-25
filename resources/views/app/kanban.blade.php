@@ -93,11 +93,11 @@
                                 <div>
                                     <span class="text-danger" id="form-edit-error-label"></span>
                                 </div>
-                                <span class="date">Created: 
-                                    <span id="edit-form-created" class="edit-form-date"></span> 
+                                <span class="date">Created:
+                                    <span id="edit-form-created" class="edit-form-date"></span>
                                 </span>
-                                <span class="date d-inline-block" style="padding-inline: 10px"> Modified: 
-                                    <span id="edit-form-modified" class="edit-form-date"></span> 
+                                <span class="date d-inline-block" style="padding-inline: 10px"> Modified:
+                                    <span id="edit-form-modified" class="edit-form-date"></span>
                                 </span>
                                 <div class="mb-3">
                                     <label class="col-form-label" for="assignedUser_id">Assigned:</label>
@@ -150,7 +150,7 @@
                                                     @endif
                                                 @endforeach
                                             @endif
-                                            <span id="settings-noinvited-message" class="{{ count($data['people']) > 1 ? 'd-none': ''}}"> 
+                                            <span id="settings-noinvited-message" class="{{ count($data['people']) > 1 ? 'd-none': ''}}">
                                                 No one is invited to your kanban yet.
                                             </span>
                                         </div>
@@ -198,7 +198,7 @@
                         </div>
                     </div>
                 </div>
-            @else 
+            @else
             <div class="modal" id="uninvite-self-modal" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -219,7 +219,7 @@
                 </div>
             </div>
             @endif
-        </div>      
+        </div>
 
 
         <div class="d-none" id="dataCols">
@@ -227,7 +227,7 @@
         </div>
 
         <div class="d-none" id="dataKanbanId" data-kanbanid="{{ $data['kanban']['id'] }}"></div>
-        
+
         <div class='d-none' id="dataPeople" data-isowner="{{ $data['isOwner'] ? 'true' : 'false'}}">
             @json($data['people'])
         </div>
@@ -248,8 +248,16 @@
         @endpush
 
     @elseif($data['kanbanNotSelected'])
-        <div class="text-center mt-5">
-            <h1>Select a kanban or create one! </h1>
+        <div class="text-center">
+            <div class="row justify-content-center">
+                <h1>Welcome back to Kabane</h1>
+                <h3>Select your favorite Kanban or create a brand new one.</h3>
+                <div class="col-sm-6 align-items-center">
+                   <figure>
+                    <img class="img-fluid" src=" {{ asset('assets/svg/main.svg') }}">
+                   </figure
+                </div>
+            </div>
         </div>
     @elseif(is_null($data['kanban']))
         <div class="text-center mt-5">

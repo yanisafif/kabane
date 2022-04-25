@@ -283,10 +283,10 @@ $('.show-hide').parent().find('input[name="login[password]"]').attr('type', 'pas
 //landing header //
 $(".toggle-menu").click(function(){
     $('.landing-menu').toggleClass('open');
-});   
+});
 $(".menu-back").click(function(){
     $('.landing-menu').toggleClass('open');
-});    
+});
 
 $('.product-size ul li ').on('click', function(e) {
     $(".product-size ul li ").removeClass("active");
@@ -294,19 +294,41 @@ $('.product-size ul li ').on('click', function(e) {
 });
 
 $('.email-sidebar .email-aside-toggle ').on('click', function(e) {
-    $(".email-sidebar .email-left-aside ").toggleClass("open");   
+    $(".email-sidebar .email-left-aside ").toggleClass("open");
 });
 
 
 $('.job-sidebar .job-toggle ').on('click', function(e) {
-    $(".job-sidebar .job-left-aside ").toggleClass("open");   
+    $(".job-sidebar .job-left-aside ").toggleClass("open");
 });
 
 
 $(".mode").on("click", function () {
-        $('.mode i').toggleClass("fa-moon-o").toggleClass("fa-lightbulb-o");
-        // $('.mode-sun').toggleClass("show")
-        $('body').toggleClass("dark-only");
-        var color = $(this).attr("data-attr");
-        localStorage.setItem('body', 'dark-only');
+
+        let icon = $('.mode i').attr('class');
+
+        if(icon == "fa fa-moon-o"){
+            $('.mode i').attr('class', 'fa fa-lightbulb-o');
+            $('body').attr('class', "dark-only");
+            document.cookie = "body=dark-only;path=/;SameSite=Strict"
+        }else{
+            $('.mode i').attr('class', 'fa fa-moon-o');
+            $('body').attr('class', "");
+            document.cookie = "body=white-only;path=/;SameSite=Strict"
+        }
     });
+
+$(window).on("load", function () {
+    let local = document.cookie;
+    let arrayLocal = local.split(/\s+|\;/).filter(word => word === 'body=dark-only')
+
+    if(arrayLocal.length > 0){
+        $('body').attr('class', "dark-only");
+        $('.mode i').attr('class', 'fa fa-lightbulb-o');
+    }else{
+        $('body').attr('class', "");
+        $('.mode i').attr('class', 'fa fa-moon-o');
+    }
+});
+
+
