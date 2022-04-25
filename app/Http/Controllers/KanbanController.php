@@ -56,7 +56,7 @@ class KanbanController extends Controller
                         ->orderBy('colId')
                         ->leftJoin('users AS assignedUser', 'assignedUser.id' , '=',  'items.assignedUserId' )
                         ->join('users AS ownerUser', 'items.ownerUserId' , '=', 'ownerUser.id')
-                        ->select('items.id as item_id', 'items.name as item_name', 'description', 'items.created_at', 'items.updated_at', 'itemOrder', 'deadline',
+                        ->select('items.id as item_id', 'items.name as item_name', 'items.created_at', 'items.updated_at', 'itemOrder', 'deadline',
                             'assignedUser.name as assignedUser_name', 'assignedUser.email as assignedUser_email', 'assignedUser.id as assignedUser_id',
                             'ownerUser.name as ownerUser_name', 'ownerUser.email as ownerUser_email', 'ownerUser.id as ownerUser_id'
                         )
@@ -75,12 +75,12 @@ class KanbanController extends Controller
                         ->where('kanbans.id', '=', $id)
                         ->select('users.name', 'users.id')
                         ->first();
-    
+
                 $peopleAccessBoard->add($kanbanOwner);
 
                 $currentUserId = \Auth::user()->id;
 
-                foreach($peopleAccessBoard as $person) 
+                foreach($peopleAccessBoard as $person)
                 {
                     $person['isCurrentUser'] = ($currentUserId == $person['id']);
                 }
@@ -165,21 +165,21 @@ class KanbanController extends Controller
         ];
         // Validate the form with is data
         $validator = Validator::make($request->all(), $rules);
-        
+
         if ($validator->fails())
         {
             return response(json_encode(['status' => 'Form not valid ', $validator->errors()]), 400, ['Content-Type' => 'application/json']);
         }
 
-        $data = $request->only('kanbanId', 'nameOrEmail'); 
+        $data = $request->only('kanbanId', 'nameOrEmail');
 
-        $kanban = Kanban::find($data['kanbanId']); 
+        $kanban = Kanban::find($data['kanbanId']);
 
         if(is_null($kanban))
             return response(json_encode(['status' => 'Kanban not found']), 400, ['Content-Type' => 'application/json']);
         if(!checkIfKanbanAllow($kanban, true))
             return response(json_encode(['status' => 'You\'re not allowed to do that']), 403, ['Content-Type' => 'application/json']);
-    
+
 
         $user = User::query()
             ->where('name', 'LIKE', $data['nameOrEmail'])
@@ -188,9 +188,9 @@ class KanbanController extends Controller
 
         if(is_null($user))
             return response(json_encode(['status' => 'User not found']), 400, ['Content-Type' => 'application/json']);
-        
+
         if($user->id == $kanban->ownerUserId)
-            return response(json_encode(['status' => 'You can\'t invite yourself']), 400, ['Content-Type' => 'application/json']); 
+            return response(json_encode(['status' => 'You can\'t invite yourself']), 400, ['Content-Type' => 'application/json']);
 
         if(
             !is_null(
@@ -201,18 +201,18 @@ class KanbanController extends Controller
             )
         )
         {
-            return response(json_encode(['status' => 'User already invited']), 400, ['Content-Type' => 'application/json']); 
+            return response(json_encode(['status' => 'User already invited']), 400, ['Content-Type' => 'application/json']);
         }
 
-        
-        $invitationRecord = new Invitation; 
+
+        $invitationRecord = new Invitation;
         $invitationRecord->userId = $user->id;
         $invitationRecord->kanbanId = $kanban->id;
         $invitationRecord->save();
 
         return response()->json([
-            'status' => 'Invitation created successfully', 
-            'userId' => $user->id, 
+            'status' => 'Invitation created successfully',
+            'userId' => $user->id,
             'username' => $user->name
         ]);
 
@@ -226,40 +226,40 @@ class KanbanController extends Controller
         ];
         // Validate the form with is data
         $validator = Validator::make($request->all(), $rules);
-        
+
         if ($validator->fails())
         {
             return response(json_encode(['status' => 'Form not valid ', $validator->errors()]), 400, ['Content-Type' => 'application/json']);
         }
 
-        $data = $request->only('kanbanId', 'userId'); 
+        $data = $request->only('kanbanId', 'userId');
 
-        $kanban = Kanban::find($data['kanbanId']); 
+        $kanban = Kanban::find($data['kanbanId']);
 
         if(is_null($kanban))
             return response(json_encode(['status' => 'Kanban not found']), 400, ['Content-Type' => 'application/json']);
         if(!checkIfKanbanAllow($kanban, true))
             return response(json_encode(['status' => 'You\'re not allowed to do that']), 403, ['Content-Type' => 'application/json']);
-    
+
         $user = User::find($data['userId']);
         if(is_null($user))
             return response(json_encode(['status' => 'User not found']), 400, ['Content-Type' => 'application/json']);
-        
+
         if($user->id == $kanban->ownerUserId)
-            return response(json_encode(['status' => 'You can\'t uninvite yourself']), 400, ['Content-Type' => 'application/json']); 
+            return response(json_encode(['status' => 'You can\'t uninvite yourself']), 400, ['Content-Type' => 'application/json']);
 
         $inviteToDelete = Invitation::query()
             ->where('userId', '=', $user->id)
             ->where('kanbanId', '=', $data['kanbanId'])
             ->first();
-        
+
         if(is_null($inviteToDelete))
-            return response(json_encode(['status' => 'Error']), 400, ['Content-Type' => 'application/json']); 
+            return response(json_encode(['status' => 'Error']), 400, ['Content-Type' => 'application/json']);
 
         $inviteToDelete->delete();
 
         return response()->json([
-            'status' => 'Invitation deleted successfully', 
+            'status' => 'Invitation deleted successfully',
         ]);
     }
 
@@ -270,26 +270,26 @@ class KanbanController extends Controller
         ];
         // Validate the form with is data
         $validator = Validator::make($request->all(), $rules);
-        
+
         if ($validator->fails())
         {
             return response(json_encode(['status' => 'Form not valid ', $validator->errors()]), 400, ['Content-Type' => 'application/json']);
         }
 
-        $data = $request->only('kanbanId'); 
+        $data = $request->only('kanbanId');
 
         $inviteToDelete = Invitation::query()
             ->where('userId', '=', \Auth::user()->id)
             ->where('kanbanId', '=', $data['kanbanId'])
             ->first();
-        
+
         if(is_null($inviteToDelete))
-            return response(json_encode(['status' => 'Error']), 400, ['Content-Type' => 'application/json']); 
+            return response(json_encode(['status' => 'Error']), 400, ['Content-Type' => 'application/json']);
 
         $inviteToDelete->delete();
 
         return response()->json([
-            'status' => 'Invitation deleted successfully', 
+            'status' => 'Invitation deleted successfully',
         ]);
     }
 }

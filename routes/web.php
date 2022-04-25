@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\AdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,7 +17,7 @@ use App\Http\Controllers\AuthController;
 
 Route::get('/', function () {
     return view('welcome');
-})->name('index.international');
+})->name('index.international')->middleware('guest');
 // Route::get('/kanban', function () {
 //     return view('app.kanban');
 // });
@@ -52,7 +54,7 @@ Route::prefix('kanban')
         })->name('callendar');
         Route::get('chat/{id?}', function () {
             return view('app.chat');
-        })->name('chat');
+        })->name('chat')->middleware('auth');
 
     });
 
@@ -95,15 +97,50 @@ Route::prefix('user')
 
         Route::get('/login', function () {
             return view('user.login');
-        })->name('login');
+        })->name('login')->middleware('guest');
 
-        Route::post('post-login', [AuthController::class, 'postLogin'])->name('login.post');
+        Route::post('post-login', [AuthController::class, 'postLogin'])->name('login.post')->middleware('guest');
 
         Route::get('/sign-up', function () {
             return view('user.sign-up');
-        })->name('sign.up');
+        })->name('sign.up')->middleware('guest');
 
-        Route::post('post-register', [AuthController::class, 'postRegistration'])->name('register.post');
+        Route::post('post-register', [AuthController::class, 'postRegistration'])->name('register.post')->middleware('guest');
 
-        Route::get('logout', [AuthController::class, 'logOut'])->name('logout');
+        Route::get('logout', [AuthController::class, 'logOut'])->name('logout')->middleware('auth');
+
+        Route::get('/send-mail', function () {
+            return view('user.send-mail-password');
+        })->name('password.reset')->middleware('guest');
+
+        Route::post('post-reset', [AuthController::class, 'resetPassword'])->name('reset.password')->middleware('guest');
+
+        Route::get('/reset/password/{uuid}', [AuthController::class, 'getResetPasswordWithUuid'])
+            ->name('password.reset.uuid')->middleware('guest');
+
+        Route::post('post-reset-uuid', [AuthController::class, 'postResetPasswordWithUuid'])->name('reset.password.uuid')->middleware('guest');
+
+        Route::get('/profile/{name}', [UserController::class, 'getUser'])
+        ->name('user.profile')->middleware('auth');
+
+        Route::get('/profile/update/{id}', [UserController::class, 'getUpdateUser'])
+        ->name('user.update')->middleware('auth');
+        Route::get('/profile/delete/avatar/{id}', [UserController::class, 'getDeleteAvatar'])
+        ->name('delete.avatar')->middleware('auth');
+
+        Route::post('post-update-avatar', [UserController::class, 'postUpdateAvatar'])->name('update.avatar')->middleware('auth');
+        Route::post('post-update-name', [UserController::class, 'postEditUserName'])->name('update.name')->middleware('auth');
+        Route::post('post-update-email', [UserController::class, 'postEditEmail'])->name('update.email')->middleware('auth');
+        Route::post('post-update-link', [UserController::class, 'postEditUserLinkInformation'])->name('update.link')->middleware('auth');
+        Route::post('post-update-information', [UserController::class, 'postEditUserSecondaryInformation'])->name('update.information')->middleware('auth');
+        Route::post('post-update-password', [UserController::class, 'postEditUserPassword'])->name('update.password')->middleware('auth');
+
+
+    });
+
+Route::prefix('admin')
+    ->as('admin.')
+    ->group(function (){
+        Route::get('/panel', [AdminController::class, 'panel'])
+            ->name('panel')->middleware('auth');
     });

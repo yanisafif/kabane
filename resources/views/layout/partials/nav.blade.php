@@ -56,6 +56,12 @@
             <li>
                 <div class="mode"><i class="fa fa-moon-o"></i></div>
             </li>
+            @if (auth()->user()->is_admin)
+                <li class="onhover-dropdown p-0">
+                    <a href="{{route('admin.panel')}}"><button class="btn btn-primary-light" type="button"><i data-feather="log-out"></i>Admin panel</button></a>
+                </li>
+            @endif
+
             <li class="onhover-dropdown p-0">
                 <a href="{{route('user.logout')}}"><button class="btn btn-primary-light" type="button"><i data-feather="log-out"></i>Log out</button></a>
             </li>
