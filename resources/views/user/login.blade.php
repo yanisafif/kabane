@@ -12,7 +12,7 @@
 	        <div class="col-xl-5"><img class="bg-img-cover bg-center" src="{{ asset('assets/images/login.png') }}" alt="looginpage" /></div>
 	        <div class="col-xl-7 p-0">
 	            <div class="login-card">
-	                <form class="theme-form login-form needs-validation" novalidate="" method="POST" action="{{ route('user.login.post')}}">
+	                <form id="sign-in" class="theme-form login-form needs-validation" novalidate="" method="POST" action="{{ route('user.login.post')}}">
                         @csrf
 	                    <h4>Login</h4>
 	                    <h6>Welcome back to kabane! Log in to your account.</h6>
@@ -42,7 +42,10 @@
 	                    </div>
                         <p class="text-start"><a class="link" href="{{route('user.password.reset')}}">Forgot password?</a></p>
 	                    <div class="form-group">
-	                        <button class="btn btn-primary btn-block" type="submit">Sign in</button>
+                            {!! NoCaptcha::displaySubmit(
+                                'sign-in', 'Sign In',
+                                ['class' => 'btn btn-primary btn-block'])
+                            !!}
 	                    </div>
 	                    <div class="login-social-title">
 	                        <h5>Sign up</h5>

@@ -24,6 +24,7 @@ class AuthController extends Controller
         $request->validate([
             'email' => 'required',
             'password' => 'required',
+            'g-recaptcha-response'=>'required|captcha'
         ]);
 
         // Get credentials from request
@@ -48,7 +49,8 @@ class AuthController extends Controller
             'name' => 'required|unique:users',
             'email' => 'required|email|unique:users',
             'password' => 'required|confirmed|min:6',
-            'policy' => 'required'
+            'policy' => 'required',
+            'g-recaptcha-response'=>'required|captcha'
         ];
 
         // Validate the form with is data
@@ -96,7 +98,8 @@ class AuthController extends Controller
     public function resetPassword(Request $request) {
         // Array of rules
         $rules = [
-            'emailPassword' => 'required|email'
+            'emailPassword' => 'required|email',
+            'g-recaptcha-response'=>'required|captcha'
         ];
 
         // Validate the form with is data
@@ -177,7 +180,8 @@ class AuthController extends Controller
         $rules = [
             'email' => 'required|email',
             'password' => 'required|confirmed|min:6',
-            'uuid' => 'required'
+            'uuid' => 'required',
+            'g-recaptcha-response'=>'required|captcha'
 
         ];
 

@@ -14,7 +14,7 @@
 	            <div class="col-12 p-0">
 	                <div class="login-card">
 	                    <div class="login-main">
-	                        <form class="theme-form login-form" method="POST" action="{{ route('user.reset.password.uuid')}}">
+	                        <form id="change-password" class="theme-form login-form" method="POST" action="{{ route('user.reset.password.uuid')}}">
                                 @csrf
 	                            <h4 class="mb-3">Reset Your Password</h4>
 	                            <div class="form-group">
@@ -42,7 +42,10 @@
 	                                    </div>
 	                                </div>
                                     <div class="form-group">
-                                        <button class="btn btn-primary btn-block mt-4 col-12 col-sm-12" type="submit">Change password</button>
+                                        {!! NoCaptcha::displaySubmit(
+                                            'change-password', 'Change Password',
+                                            ['class' => 'btn btn-primary btn-block mt-4 col-12 col-sm-12'])
+                                        !!}
                                     </div>
 	                            </div>
 

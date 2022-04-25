@@ -13,7 +13,7 @@
 	        <div class="row m-0">
 	            <div class="col-12 p-0">
 	                <div class="login-card">
-	                    <form class="theme-form login-form needs-validation" method="POST" action="{{ route('user.register.post')}}">
+	                    <form id="sign-up" class="theme-form login-form needs-validation" method="POST" action="{{ route('user.register.post')}}">
                             @csrf
 	                        <h4>Create your account</h4>
 	                        <h6>Enter your personal details to create account</h6>
@@ -56,7 +56,10 @@
 	                            </div>
 	                        </div>
 	                        <div class="form-group">
-	                            <button class="btn btn-primary btn-block" type="submit">Create Account</button>
+                                {!! NoCaptcha::displaySubmit(
+                                    'sign-up', 'Create Account',
+                                    ['class' => 'btn btn-primary btn-block'])
+                                !!}
 	                        </div>
 	                        <div class="login-social-title">
 	                            <h5>Sign in</h5>
