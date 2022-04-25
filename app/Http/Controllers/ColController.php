@@ -108,7 +108,7 @@ class ColController extends Controller
 
         $col->save();
 
-        event(new UpdatedCol($col, $kanban->id));
+        broadcast(new UpdatedCol($col, $kanban->id))->toOthers();
 
         return response()->json(['status' => 'Column renamed successfully']);
     }

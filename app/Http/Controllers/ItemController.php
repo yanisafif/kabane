@@ -73,7 +73,7 @@ class ItemController extends Controller
         $item->itemOrder = 1;
         $item->save();
 
-        event(new NewItem($item, $kanban->id));
+        broadcast(new NewItem($item, $kanban->id))->toOthers();
         
         return response()->json(['status' => 'Item saved successfully', 'item_id' => $item->id]);
     }
@@ -113,8 +113,8 @@ class ItemController extends Controller
         
         $itemRecord->save(); 
 
-        event(new UpdatedItem($itemRecord, $kanban->id));
-
+        broadcast(new UpdatedItem($itemRecord, $kanban->id))->toOthers();
+        
         return response()->json(['status' => 'Succeed']);
     }
 
@@ -145,7 +145,7 @@ class ItemController extends Controller
         $item = Item::find($itemId);
         $item->delete();
 
-        event(new DeletedItem($itemId, $item->colId, $kanban->id));
+        broadcast(new DeletedItem($itemId, $item->colId, $kanban->id))->toOthers();
 
         return response()->json(['status' => 'Succeed']);
     }
@@ -187,7 +187,7 @@ class ItemController extends Controller
         $item->colId = $data['targetCol']; 
         $item->save();
 
-        event(new MovedItem($item->id, $kanbanFromSource->id, $kanbanFromSource->colId, $data['targetCol']));
+        broadcast(new MovedItem($item->id, $kanbanFromSource->id, $kanbanFromSource->colId, $data['targetCol']))->toOthers();
 
         return response()->json(['status' => 'Succeed']);
         
