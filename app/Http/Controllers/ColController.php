@@ -14,6 +14,7 @@ use View;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Arr;
+use App\Events\UpdatedCol;
 
 class ColController extends Controller
 {
@@ -106,6 +107,8 @@ class ColController extends Controller
             $col->colorHexa = $data['colorHexa'];
 
         $col->save();
+
+        event(new UpdatedCol($col, $kanban->id));
 
         return response()->json(['status' => 'Column renamed successfully']);
     }
