@@ -48,9 +48,10 @@ class MessageController extends Controller
                 $data['messages'] = Message::query()
                     ->join('users', 'users.id', '=', 'messages.userId')
                     ->where('kanbanId', '=', $id)
-                    ->select('content', 'userId', 'users.created_at', 'users.name AS username', 'users.path_image')
-                    ->orderBy('created_at')
+                    ->select('content', 'userId', 'messages.created_at', 'users.name AS username', 'users.path_image')
+                    ->orderBy('messages.created_at')
                     ->get();
+                
 
                 $currentUserId = \Auth::user()->id;
 
@@ -73,13 +74,14 @@ class MessageController extends Controller
 
                 $peopleAccessBoard->add($kanbanOwner);
                 
-
                 foreach($peopleAccessBoard as $person)
                 {
                     $person['isCurrentUser'] = ($currentUserId == $person['id']);
                 }
                 
                 $data['people'] = $peopleAccessBoard;
+                $data['currentUserId'] = $currentUserId;
+                $data['kanbanId'] = $id;
             }
             else
             {
@@ -90,4 +92,39 @@ class MessageController extends Controller
         return view('app.chat', compact('data'));
     }
 
+    public function add(Request $request)
+    {
+        $rules = [
+            "kanbanId" => "required|numeric",
+            "content" => "required"
+        ];
+
+        // Validate the form with is data
+        $validator = Validator::make($request->all(), $rules);
+
+        // If data dont respect the validation rules, redirect on same page with error
+        if ($validator->fails())
+        {
+            return response(json_encode(['status' => 'Form not valid ', $validator->errors()]), 400, ['Content-Type' => 'application/json']);
+        }
+        
+        $data = $request->only('kanbanId', 'content');
+
+        $kanban = Kanban::find($data['kanbanId'])
+            ->select('kanbans.id', 'kanbans.ownerUserId')
+            ->first();
+
+        if(is_null($kanban))
+            return response(json_encode(['status' => 'Chat not found']), 400, ['Content-Type' => 'application/json']);
+        if(!checkIfKanbanAllow($kanban))
+            return response(json_encode(['status' => 'You\'re not allowed to do that']), 403, ['Content-Type' => 'application/json']);
+    
+        $messageRecord = new Message; 
+        $messageRecord->content = $data['content'];
+        $messageRecord->userId = \Auth::user()->id;
+        $messageRecord->kanbanId = $data['kanbanId'];
+        $messageRecord->save();
+
+        return response()->json(['status' => 'Succeed']);
+    }
 }

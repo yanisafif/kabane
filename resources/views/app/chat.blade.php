@@ -20,8 +20,8 @@
 	                        <div class="col chat-right-aside">
 	                            <!-- chat start-->
 	                            <div class="chat">
-	                                <div class="mb-0 chat-history chat-msg-box custom-scrollbar">
-										<ul>
+	                                <div id="scroll-container" class="mb-0 chat-history chat-msg-box custom-scrollbar">
+										<ul id="message-container">
 											@foreach($data['messages'] as $message)
 												<li class="clearfix">
 													<div class="message {{ $message['isCurrentUser'] ? 'my-message' : 'other-message pull-right' }}">
@@ -34,7 +34,11 @@
 															@endif
 															<strong style="margin-right: 10px"> {{ $message['username'] }} </strong>
 															<i class="message-data-time "> 
-																{{ date('j F, Y H:i:s', strtotime($message['created_at'])) }} 
+																@php
+																	$dt = new DateTime($message['created_at'], new DateTimeZone('UTC'));
+																	$dt->setTimezone(new DateTimeZone('Europe/Paris'));
+																	echo $dt->format('Y-m-d H:i:s');
+																@endphp		
 															</i>
 														</div>
 														{{ $message['content']}}
@@ -47,10 +51,11 @@
 	                            </div>
 								<div class="chat-message clearfix">
 									<div class="row">
+										<span class="text-danger d-none" id="message-error"></span>
 										<div class="d-flex" style="height: 50px">
 											<div class="input-group text-box">
-												<input class="form-control input-txt-bx" id="message-to-send" type="text" name="message-to-send" placeholder="Type a message......" />
-												<button class="btn btn-primary input-group-text" type="button">SEND</button>
+												<input onkeyup="event.keyCode === 13 && $('#message-send-btn').click()" class="form-control input-txt-bx" id="message-to-send" type="text" name="message-to-send" placeholder="Type a message......" />
+												<button class="btn btn-primary input-group-text" id="message-send-btn" type="button">SEND</button>
 											</div>
 										</div>
 									</div>
@@ -61,6 +66,9 @@
 	            </div>
 	        </div>
 	    </div>
+	</div>
+	<div id="dataset" class="d-none" data-kanbanid="{{$data['kanbanId']}}" data-userid="{{ $data['currentUserId'] }}">
+		@json($data['people'])
 	</div>
     @elseif($data['kanbanNotSelected'])
         <div class="text-center">
@@ -82,7 +90,8 @@
 
 
 	@push('scripts')
-	<script src="{{asset('assets/js/fullscreen.js')}}"></script>
+		<script src="{{asset('assets/js/fullscreen.js')}}"></script>
+		<script src="{{asset('assets/js/page/app/chat.js')}}"></script>
 	@endpush
 
 @endsection

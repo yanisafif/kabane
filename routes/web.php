@@ -83,6 +83,13 @@ Route::prefix('col')
             ->name('delete');
     });
 
+Route::prefix('message')
+    ->as('message.')
+    ->group(function (){
+        Route::post('add', 'MessageController@add')
+            ->name('add');
+    });
+
 
 Route::prefix('user')
     ->as('user.')
