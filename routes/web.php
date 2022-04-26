@@ -46,15 +46,8 @@ Route::prefix('kanban')
         Route::delete('self-uninvite', 'KanbanController@selfUninvite')
             ->name('selfUninvite');
 
-        Route::get('todo/{id?}', function () {
-            return view('app.todo');
-        })->name('todo');
-        Route::get('callendar/{id?}', function () {
-            return view('app.callendar');
-        })->name('callendar');
-        Route::get('chat/{id?}', function () {
-            return view('app.chat');
-        })->name('chat')->middleware('auth');
+        Route::get('chat/{id?}', 'MessageController@index')
+            ->name('chat');
 
     });
 
