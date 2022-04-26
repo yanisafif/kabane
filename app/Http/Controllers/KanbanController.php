@@ -90,7 +90,7 @@ class KanbanController extends Controller
             }
             else
             {
-                $data['kanban'] = null;
+                return redirect()->route('kanban.board')->with('danger', 'Sorry, this kanban couldn\'t be found.');
             }
 
         }
