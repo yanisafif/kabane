@@ -57,8 +57,7 @@ class KanbanController extends Controller
                         ->leftJoin('users AS assignedUser', 'assignedUser.id' , '=',  'items.assignedUserId' )
                         ->join('users AS ownerUser', 'items.ownerUserId' , '=', 'ownerUser.id')
                         ->select('items.id as item_id', 'items.name as item_name', 'items.created_at', 'items.updated_at', 'itemOrder', 'deadline',
-                            'assignedUser.name as assignedUser_name', 'assignedUser.email as assignedUser_email', 'assignedUser.id as assignedUser_id',
-                            'ownerUser.name as ownerUser_name', 'ownerUser.email as ownerUser_email', 'ownerUser.id as ownerUser_id'
+                            'items.description AS description', 'assignedUser.id as assignedUser_id',  'ownerUser.id as ownerUser_id'
                         )
                         ->get();
                 }
@@ -67,13 +66,13 @@ class KanbanController extends Controller
                 $peopleAccessBoard = Invitation::query()
                     ->where('kanbanId', '=', $id)
                     ->join('users', 'users.id', '=', 'invitations.userId')
-                    ->select('users.name', 'users.id')
+                    ->select('users.name', 'users.id', 'users.path_image')
                     ->get();
 
                 $kanbanOwner = User::query()
                         ->join('kanbans', 'kanbans.ownerUserId', '=', 'users.id')
                         ->where('kanbans.id', '=', $id)
-                        ->select('users.name', 'users.id')
+                        ->select('users.name', 'users.id', 'users.path_image')
                         ->first();
 
                 $peopleAccessBoard->add($kanbanOwner);
@@ -213,7 +212,8 @@ class KanbanController extends Controller
         return response()->json([
             'status' => 'Invitation created successfully',
             'userId' => $user->id,
-            'username' => $user->name
+            'username' => $user->name, 
+            'path_image' => $user->path_image
         ]);
 
     }

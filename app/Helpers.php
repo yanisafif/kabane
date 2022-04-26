@@ -21,6 +21,14 @@ if (!function_exists('checkIfKanbanAllow'))
     }
 }
 
+if (!function_exists('getKanbanFromId')) 
+{
+    function getKanbanFromId($id)
+    {
+        return  App\Models\Kanban::find($id);
+    }
+}
+
 if (!function_exists('getLayoutData')) 
 {
     function getLayoutData()

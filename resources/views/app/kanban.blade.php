@@ -93,12 +93,17 @@
                                 <div>
                                     <span class="text-danger" id="form-edit-error-label"></span>
                                 </div>
-                                <span class="date">Created:
-                                    <span id="edit-form-created" class="edit-form-date"></span>
-                                </span>
-                                <span class="date d-inline-block" style="padding-inline: 10px"> Modified:
-                                    <span id="edit-form-modified" class="edit-form-date"></span>
-                                </span>
+                                <div>
+                                    <span class="date">Created:
+                                        <span id="edit-form-created" class="edit-form-date"></span>
+                                    </span>
+                                    <span class="date d-inline-block" style="padding-inline: 10px"> Modified:
+                                        <span id="edit-form-modified" class="edit-form-date"></span>
+                                    </span>
+                                </div>
+                                <div>
+                                    <span> Created by: <span id="edit-form-owner"></span>
+                                </div>
                                 <div class="mb-3">
                                     <label class="col-form-label" for="assignedUser_id">Assigned:</label>
                                     <select class="form-select" name="assignedUser_id" id="edit-form-select-people" aria-label="Select a person to assign">
@@ -141,11 +146,18 @@
                                     <div class="mb-3">
                                         <div id="settings-people-list-container" class="mb-1">
                                             @if(count($data['people']) > 1)
-                                                @foreach($data['people'] as $people)
-                                                    @if(!$people['isCurrentUser'])
+                                                @foreach($data['people'] as $person)
+                                                    @if(!$person['isCurrentUser'])
                                                         <div class="p-2 settings-person-container d-flex">
-                                                            <div class="setting-person-name">{{ $people['name'] }} </div>
-                                                            <img class="setting-person-uninvite" data-id="{{ $people['id'] }}" src=" {{ asset('assets/svg/trash.svg') }}">
+                                                            <div class="setting-person-name">
+                                                                @if(is_null($person['path_image']))
+                                                                    <img src="{{asset('/assets/images/dashboard/1.png')}}" style="height: 20px; width: 20px" class="rounded-circle">
+                                                                @else
+                                                                    <img src="{{asset('/assets/avatars/' . $person['path_image'] )}}" style="height: 20px; width: 20px" class="rounded-circle">
+                                                                @endif
+                                                                <span> {{ $person['name'] }} <span>
+                                                            </div>
+                                                            <img class="setting-person-uninvite" data-id="{{ $person['id'] }}" src=" {{ asset('assets/svg/trash.svg') }}">
                                                         </div>
                                                     @endif
                                                 @endforeach
@@ -241,6 +253,10 @@
             @else
                 <script src="{{asset('assets/js/page/app/kanban.invite.js')}}"></script>
             @endif
+            @if(count($data['people']) > 1)
+                <script src="{{asset('assets/js/laravel-echo.js')}}"></script>
+                <script src="{{asset('assets/js/page/app/kanban.event.js')}}"></script>
+            @endif
         @endpush
 
     @elseif($data['kanbanNotSelected'])
@@ -251,7 +267,7 @@
                 <div class="col-sm-6 align-items-center">
                    <figure>
                     <img class="img-fluid" src=" {{ asset('assets/svg/main.svg') }}">
-                   </figure
+                   </figure>
                 </div>
             </div>
         </div>

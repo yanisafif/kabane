@@ -1,7 +1,7 @@
 //#region Global tools
 
 window.httpRequest = function(url, method, data) {
-    return fetch(url, {method, headers: {'Content-Type': 'application/json','X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}, body: JSON.stringify(data)});
+    return fetch(url, {method, headers: {'Content-Type': 'application/json','accept': 'application/json','X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}, body: JSON.stringify(data)});
 }
 
 // Create render board element
@@ -40,6 +40,31 @@ window.createBoard = function(col) {
         `,
         class: 'col-header-' + col.id,
         item: new Array()
+    }
+}
+// Create render item element. Called on init, item add and item edit 
+window.createItem = function (item, colId) {
+
+    const assignedUser = window.people.find(f => f.id === item.assignedUser_id);
+    const assignDisplay  = getUserDisplay(assignedUser)
+
+    return {
+        id: `item-${item.item_id}`,
+        title: `<a id="item-${item.item_id}-${colId}" onclick="displayItemDetailsModal(this.parentNode)" class="kanban-box overflow-hidden"style="max-height: 150px" href="#">
+            <div class="row">
+                <div class="col">
+                    <span >${getDateToDisplay(item.created_at)}</span>
+                    <h6>${item.item_name}</h6>
+                </div>
+                <div class="col text-end">
+                    ${assignDisplay}
+                </div>
+            </div>
+            <div class="d-flex mt-2 overflow-hidden">
+                ${item.description  ?? ''}
+            </div>
+        </a>
+        `
     }
 }
 
@@ -109,6 +134,47 @@ window.updateAndGetColOrder = function() {
     return arrayMap
 }
 
+window.figureTextColor = function (bgColor) {
+    var color = (bgColor.charAt(0) === '#') ? bgColor.substring(1, 7) : bgColor;
+    var r = parseInt(color.substring(0, 2), 16); // hexToR
+    var g = parseInt(color.substring(2, 4), 16); // hexToG
+    var b = parseInt(color.substring(4, 6), 16); // hexToB
+    var uicolors = [r / 255, g / 255, b / 255];
+    var c = uicolors.map((col) => {
+        if (col <= 0.03928) {
+        return col / 12.92;
+        }
+        return Math.pow((col + 0.055) / 1.055, 2.4);
+    });
+    var L = (0.2126 * c[0]) + (0.7152 * c[1]) + (0.0722 * c[2]);
+    return (L > 0.179) ? '#000' : '#fff';
+}
+
+window.getUserDisplay = function(user) {
+    let display
+
+    if(user) {
+        let imgPath = `${window.location.protocol}//${window.location.hostname}/`
+
+        if(user.path_image) {
+            imgPath += `avatars/${user.path_image}`
+        }
+        else {
+            imgPath += 'assets/images/dashboard/1.png'
+        }
+
+        display = `
+            <img src="${imgPath}" style="height: 20px; width: 20px" class="rounded-circle">
+            <span>${user.name} </span>
+        `
+    }
+    else {
+        display = 'Unassigned'
+    }
+
+    return display
+}
+
 //#endregion
 
 
@@ -159,9 +225,6 @@ let isowner
         },
         buttonClick: (el, boardId) => {
             displayCreateModal(boardId)
-        },
-        click: (el) => {
-            displayItemDetailsModal(el)
         },
         dropEl: (el, target, source) => {
             moveItem(el, target, source)
@@ -327,6 +390,7 @@ function displayItemDetailsModal(el) {
     // Gather needed data
     const colData = data.find(f => f.id === colId)
     const itemData = colData.items.find(f => f.item_id === itemId)
+    const owner = window.people.find(f => f.id === itemData.ownerUser_id)
 
     // Set form modal fields
     $('#edit-form-title').val(itemData.item_name)
@@ -335,6 +399,7 @@ function displayItemDetailsModal(el) {
     $('#edit-form-select-people').val(itemData.assignedUser_id ?? -1)
     $('#edit-form-created').text(getDateToDisplay(itemData.created_at))
     $('#edit-form-modified').text(getDateToDisplay(itemData.updated_at))
+    $('#edit-form-owner').html(window.getUserDisplay(owner))
 
     // On delete button click 
     $('#item-delete-btn').click(() => {
@@ -407,7 +472,15 @@ function displayItemDetailsModal(el) {
                     itemData[key] = requestBody[key]
                 }
 
-                kanban.replaceElement(el, createItem(itemData, colData.id))
+                if(itemData.assignedUser_id) {
+                    itemData.assignedUser_name = window.people.find(f => f.id === itemData.assignedUser_id).name
+                }
+                else {
+                    itemData.assignedUser_name = null
+
+                }
+
+                window.kanban.replaceElement(`item-${itemData.item_id}`, createItem(itemData, colData.id))
                 
                 $("#modification-modal").modal('hide')
             })
@@ -480,47 +553,10 @@ function moveBoard(colEl) {
 
 //#region Tools
 
-// Create render item element. Called on init, item add and item edit
-function createItem(item, colId) {
-    return {
-        id: `item-${item.item_id}`,
-        title: `<a id="item-${item.item_id}-${colId}" class="kanban-box overflow-hidden"style="max-height: 150px" href="#">
-            <div class="row">
-                <div class="col">
-                    <span >${getDateToDisplay(item.created_at)}</span>
-                    <h6>${item.item_name}</h6>
-                </div>
-                <div class="col text-end">
-                    ${item.assignedUser_name ? 'Assigned to: ' + item.assignedUser_name : 'Unassigned'}
-                </div>
-            </div>
-            <div class="d-flex mt-2 overflow-hidden">
-                ${item.description  ?? ''}
-            </div>
-        </a>
-        `
-    }
-}
-
 function getDateToDisplay(dateString) {
     return new Date(Date.parse(dateString))
         .toLocaleDateString('en-GB', { day: "numeric", month: 'short', year: 'numeric' })
 }
 
-function figureTextColor(bgColor) {
-    var color = (bgColor.charAt(0) === '#') ? bgColor.substring(1, 7) : bgColor;
-    var r = parseInt(color.substring(0, 2), 16); // hexToR
-    var g = parseInt(color.substring(2, 4), 16); // hexToG
-    var b = parseInt(color.substring(4, 6), 16); // hexToB
-    var uicolors = [r / 255, g / 255, b / 255];
-    var c = uicolors.map((col) => {
-        if (col <= 0.03928) {
-        return col / 12.92;
-        }
-        return Math.pow((col + 0.055) / 1.055, 2.4);
-    });
-    var L = (0.2126 * c[0]) + (0.7152 * c[1]) + (0.0722 * c[2]);
-    return (L > 0.179) ? '#000' : '#fff';
-}
 
 //#endregion
