@@ -57,7 +57,7 @@ class KanbanController extends Controller
                         ->leftJoin('users AS assignedUser', 'assignedUser.id' , '=',  'items.assignedUserId' )
                         ->join('users AS ownerUser', 'items.ownerUserId' , '=', 'ownerUser.id')
                         ->select('items.id as item_id', 'items.name as item_name', 'items.created_at', 'items.updated_at', 'itemOrder', 'deadline',
-                            'assignedUser.id as assignedUser_id',  'ownerUser.id as ownerUser_id'
+                            'items.description AS description', 'assignedUser.id as assignedUser_id',  'ownerUser.id as ownerUser_id'
                         )
                         ->get();
                 }
