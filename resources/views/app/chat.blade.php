@@ -33,12 +33,12 @@
 																{{-- <img src="{{asset('/assets/avatars/' . $person['path_image'] )}}" style="height: 20px; width: 20px" class="rounded-circle"> --}}
 															@endif
 															<strong style="margin-right: 10px"> {{ $message['username'] }} </strong>
-															<i class="message-data-time "> 
+															<i class="message-data-time ">
 																@php
 																	$dt = new DateTime($message['created_at'], new DateTimeZone('UTC'));
 																	$dt->setTimezone(new DateTimeZone('Europe/Paris'));
 																	echo $dt->format('Y-m-d H:i:s');
-																@endphp		
+																@endphp
 															</i>
 														</div>
 														{{ $message['content']}}
@@ -81,10 +81,6 @@
                    </figure>
                 </div>
             </div>
-        </div>
-    @elseif($data['kanbanNotFound'])
-        <div class="text-center mt-5">
-            <h1>Sorry, this kanban couldn't be found. </h1>
         </div>
     @endif
 

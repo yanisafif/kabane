@@ -85,7 +85,7 @@ class UserController extends Controller
             // Object file in a variable
             $image = $request->file('file');
             // Name with current time + user id + .jpg or other
-            $imageName = time().'.'.auth()->user()->id.$image->extension();
+            $imageName = time().auth()->user()->id.'.'.$image->extension();
             // We move image in a public dir named avatars for store here img
             $image->move(public_path('avatars'), $imageName);
 
@@ -362,7 +362,7 @@ class UserController extends Controller
             if($data['delete_account'] == "I will come back soon"){
                 $user = User::find(auth()->user()->id);
                 $user->delete();
-                
+
             }
             return back()->with('success', 'Your email has been updated with success.');
         }
