@@ -19,8 +19,8 @@ class CreateInvitationsTable extends Migration
             $table->unsignedBigInteger('kanbanId');
             $table->timestamps();
 
-            $table->foreign('userId')->references('id')->on('users');
-            $table->foreign('kanbanId')->references('id')->on('kanbans');
+            $table->foreign('userId')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('kanbanId')->references('id')->on('kanbans')->onDelete('cascade');
         });
     }
 

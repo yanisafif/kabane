@@ -346,6 +346,26 @@ class UserController extends Controller
         // Delete is personal data
 
         // Delete all is personal kanban
+
+        $rules = [
+            'delete_account' => 'required',
+        ];
+        $data = $request->all();
+        // Validate the form with is data
+        $validator = Validator::make($data, $rules);
+
+        if ($validator->fails())
+        {
+            return back()->with('danger', 'The string is required is this context.');
+
+        }else{
+            if($data['delete_account'] == "I will come back soon"){
+                $user = User::find(auth()->user()->id);
+                $user->delete();
+                
+            }
+            return back()->with('success', 'Your email has been updated with success.');
+        }
     }
 
     /**

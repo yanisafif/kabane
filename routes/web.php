@@ -134,8 +134,7 @@ Route::prefix('user')
         Route::post('post-update-link', [UserController::class, 'postEditUserLinkInformation'])->name('update.link')->middleware('auth');
         Route::post('post-update-information', [UserController::class, 'postEditUserSecondaryInformation'])->name('update.information')->middleware('auth');
         Route::post('post-update-password', [UserController::class, 'postEditUserPassword'])->name('update.password')->middleware('auth');
-
-
+        Route::post('user.delete.user', [UserController::class, 'postDeleteUser'])->name('delete.user')->middleware('auth');
     });
 
 Route::prefix('admin')
