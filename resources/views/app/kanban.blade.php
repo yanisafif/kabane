@@ -267,7 +267,7 @@
                 <div class="col-sm-6 align-items-center">
                    <figure>
                     <img class="img-fluid" src=" {{ asset('assets/svg/main.svg') }}">
-                   </figure
+                   </figure>
                 </div>
             </div>
         </div>
