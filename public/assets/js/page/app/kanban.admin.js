@@ -88,22 +88,25 @@ function setUpSettingsConsole() {
             }
 
             $('#settings-name-field').val('')
+        
+            const person = { 
+                id: json.userId, 
+                name: json.username,
+                path_image: json.path_image,
+                isCurrentUser: false
+            }
+            window.people.push(person)
 
             const settingFormEl = document.createElement('div'); 
             settingFormEl.classList.add('p-2', 'settings-person-container', 'd-flex')
             settingFormEl.innerHTML = `
-                <div class="setting-person-name">${json.username}</div>
+                <div class="setting-person-name">${window.getUserDisplay(person)}</div>
                 <img class="setting-person-uninvite" data-id="${json.userId}" src="${window.location.protocol +'//'+ window.location.hostname}/assets/svg/trash.svg">
             `
-            document.getElementById('settings-people-list-container').appendChild(settingFormEl);
+            document.getElementById('settings-people-list-container').appendChild(settingFormEl)
             wirePersonUninvite(settingFormEl.querySelector('.setting-person-uninvite'))
             
             // Add person to array people
-            window.people.push({ 
-                id: json.userId, 
-                name: json.username,
-                isCurrentUser: false
-            })
             
             if(window.people.length >= 2) {
                 $("#settings-noinvited-message").addClass('d-none')

@@ -44,6 +44,10 @@ window.createBoard = function(col) {
 }
 // Create render item element. Called on init, item add and item edit 
 window.createItem = function (item, colId) {
+
+    const assignedUser = window.people.find(f => f.id === item.assignedUser_id);
+    const assignDisplay  = getUserDisplay(assignedUser)
+
     return {
         id: `item-${item.item_id}`,
         title: `<a id="item-${item.item_id}-${colId}" onclick="displayItemDetailsModal(this.parentNode)" class="kanban-box overflow-hidden"style="max-height: 150px" href="#">
@@ -53,7 +57,7 @@ window.createItem = function (item, colId) {
                     <h6>${item.item_name}</h6>
                 </div>
                 <div class="col text-end">
-                    ${item.assignedUser_name ? 'Assigned to: ' + item.assignedUser_name : 'Unassigned'}
+                    ${assignDisplay}
                 </div>
             </div>
             <div class="d-flex mt-2 overflow-hidden">
@@ -144,6 +148,31 @@ window.figureTextColor = function (bgColor) {
     });
     var L = (0.2126 * c[0]) + (0.7152 * c[1]) + (0.0722 * c[2]);
     return (L > 0.179) ? '#000' : '#fff';
+}
+
+window.getUserDisplay = function(user) {
+    let display
+
+    if(user) {
+        let imgPath = `${window.location.protocol}//${window.location.hostname}/`
+
+        if(user.path_image) {
+            imgPath += `avatars/${user.path_image}`
+        }
+        else {
+            imgPath += 'assets/images/dashboard/1.png'
+        }
+
+        display = `
+            <img src="${imgPath}" style="height: 20px; width: 20px" class="rounded-circle">
+            <span>${user.name} </span>
+        `
+    }
+    else {
+        display = 'Unassigned'
+    }
+
+    return display
 }
 
 //#endregion
@@ -361,6 +390,7 @@ function displayItemDetailsModal(el) {
     // Gather needed data
     const colData = data.find(f => f.id === colId)
     const itemData = colData.items.find(f => f.item_id === itemId)
+    const owner = window.people.find(f => f.id === itemData.ownerUser_id)
 
     // Set form modal fields
     $('#edit-form-title').val(itemData.item_name)
@@ -369,6 +399,7 @@ function displayItemDetailsModal(el) {
     $('#edit-form-select-people').val(itemData.assignedUser_id ?? -1)
     $('#edit-form-created').text(getDateToDisplay(itemData.created_at))
     $('#edit-form-modified').text(getDateToDisplay(itemData.updated_at))
+    $('#edit-form-owner').html(window.getUserDisplay(owner))
 
     // On delete button click 
     $('#item-delete-btn').click(() => {

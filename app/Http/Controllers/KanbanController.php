@@ -57,8 +57,7 @@ class KanbanController extends Controller
                         ->leftJoin('users AS assignedUser', 'assignedUser.id' , '=',  'items.assignedUserId' )
                         ->join('users AS ownerUser', 'items.ownerUserId' , '=', 'ownerUser.id')
                         ->select('items.id as item_id', 'items.name as item_name', 'items.created_at', 'items.updated_at', 'itemOrder', 'deadline',
-                            'assignedUser.name as assignedUser_name', 'assignedUser.path_image as assignedUser_pathImage', 'assignedUser.id as assignedUser_id',
-                            'ownerUser.name as ownerUser_name', 'ownerUser.path_image as ownerUser_pathImage', 'ownerUser.id as ownerUser_id'
+                            'assignedUser.id as assignedUser_id',  'ownerUser.id as ownerUser_id'
                         )
                         ->get();
                 }
@@ -73,7 +72,7 @@ class KanbanController extends Controller
                 $kanbanOwner = User::query()
                         ->join('kanbans', 'kanbans.ownerUserId', '=', 'users.id')
                         ->where('kanbans.id', '=', $id)
-                        ->select('users.name', 'users.id')
+                        ->select('users.name', 'users.id', 'users.path_image')
                         ->first();
 
                 $peopleAccessBoard->add($kanbanOwner);
@@ -213,7 +212,8 @@ class KanbanController extends Controller
         return response()->json([
             'status' => 'Invitation created successfully',
             'userId' => $user->id,
-            'username' => $user->name
+            'username' => $user->name, 
+            'path_image' => $user->path_image
         ]);
 
     }
