@@ -18,6 +18,12 @@ use Datetime;
 class AuthController extends Controller
 {
 
+    /** Log the user in web site kabane et redirect it to the main page
+     *
+     * @method POST
+     * @param Request $request
+     * @return Route kanban.board | fail = user.login
+     */
     public function postLogin(Request $request)
     {
         // Form validate
@@ -42,6 +48,12 @@ class AuthController extends Controller
         return redirect()->route('user.login')->with('danger', 'Login details are not valid.');
     }
 
+    /** Register and log the user in web site kabane et redirect it to the main page
+     *
+     * @method POST
+     * @param Request $request
+     * @return Route kanban.board | fail = user.sign.up
+     */
     public function postRegistration(Request $request)
     {
         // Array of rules
@@ -77,7 +89,13 @@ class AuthController extends Controller
         return redirect()->route('user.sign.up')->with('danger', 'Register details are not valid.');
     }
 
-
+    /** Private function how will create the user in database
+     *  Hash the paswword
+     *
+     * @method POST
+     * @param array $data
+     * @return void
+     */
     private function __create(array $data)
     {
         // Entité USER, insertion des données
@@ -88,6 +106,12 @@ class AuthController extends Controller
         ]);
     }
 
+    /** Logout user from kanban and redirect it to the main page guest
+     *
+     * @method get
+     * @param void
+     * @return Route index.international
+     */
     public function logOut() {
         Session::flush();
         Auth::logout();
@@ -95,6 +119,12 @@ class AuthController extends Controller
         return redirect()->route('index.international')->with('success', 'You have been logged out successfully');
     }
 
+    /** Ask server is email is in our DB and send email with uuid to reset password
+     *
+     * @method POST
+     * @param Request $request
+     * @return Route user.login | fail = user.login
+     */
     public function resetPassword(Request $request) {
         // Array of rules
         $rules = [
@@ -155,7 +185,12 @@ class AuthController extends Controller
         return redirect()->route('user.login')->with('danger', 'This email does not exist in our database.');
     }
 
-
+    /**
+     *_
+     * @method GET
+     * @param string $uuid
+     * @return Route user.password-reset | fail = user.login
+     */
     public function getResetPasswordWithUuid($uuid) {
         // Check if we have uuid send into the page
         if(!empty($uuid)){
