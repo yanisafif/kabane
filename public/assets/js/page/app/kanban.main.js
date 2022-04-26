@@ -46,7 +46,7 @@ window.createBoard = function(col) {
 window.createItem = function (item, colId) {
     return {
         id: `item-${item.item_id}`,
-        title: `<a id="item-${item.item_id}-${colId}" class="kanban-box overflow-hidden"style="max-height: 150px" href="#">
+        title: `<a id="item-${item.item_id}-${colId}" onclick="displayItemDetailsModal(this.parentNode)" class="kanban-box overflow-hidden"style="max-height: 150px" href="#">
             <div class="row">
                 <div class="col">
                     <span >${getDateToDisplay(item.created_at)}</span>
@@ -196,10 +196,6 @@ let isowner
         },
         buttonClick: (el, boardId) => {
             displayCreateModal(boardId)
-        },
-        click: (el) => {
-            console.log(el)
-            displayItemDetailsModal(el)
         },
         dropEl: (el, target, source) => {
             moveItem(el, target, source)
@@ -355,7 +351,6 @@ function displayCreateModal(colId) {
 }
 
 function displayItemDetailsModal(el) {
-
 
     // Get ids for html id. Pattern: 'item-$itemId-$colId
     const htmlId = el.getElementsByClassName('kanban-box')[0].id 
