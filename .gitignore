@@ -14,5 +14,5 @@ yarn-error.log
 _ide_helper.php
 /public/avatars
 /public/mix-manifest.json
-resources/js/laravel-echo.js
+public/assets/js/laravel-echo.js
 public/js/
