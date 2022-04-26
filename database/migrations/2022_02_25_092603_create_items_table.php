@@ -26,8 +26,8 @@ class CreateItemsTable extends Migration
             $table->unsignedBigInteger('ownerUserId');
 
             $table->foreign('colId')->references('id')->on('cols');
-            $table->foreign('assignedUserId')->references('id')->on('users');
-            $table->foreign('ownerUserId')->references('id')->on('users');
+            $table->foreign('assignedUserId')->references('id')->on('users')->onDelete('set null');
+            $table->foreign('ownerUserId')->references('id')->on('users')->onDelete('cascade');
 
         });
     }

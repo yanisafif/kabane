@@ -20,8 +20,8 @@ class CreateColsTable extends Migration
             $table->timestamps();
             $table->unsignedBigInteger('colOrder');
 
-            $table->unsignedBigInteger('kanbanId');
-            $table->foreign('kanbanId')->references('id')->on('kanbans');
+            $table->unsignedBigInteger('kanbanId')->onDelete('cascade');
+            $table->foreign('kanbanId')->references('id')->on('kanbans')->onDelete('cascade');
         });
     }
 
