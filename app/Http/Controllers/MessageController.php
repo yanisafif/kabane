@@ -13,8 +13,7 @@ use View;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Arr;
-use App\Events\NewItem;
-use App\Events\UpdatedItem;
+use App\Events\AddedMessage;
 
 class MessageController extends Controller
 {
@@ -125,6 +124,8 @@ class MessageController extends Controller
         $messageRecord->kanbanId = $data['kanbanId'];
         $messageRecord->save();
 
+        broadcast(new AddedMessage($messageRecord))->toOthers();
+        
         return response()->json(['status' => 'Succeed']);
     }
 }

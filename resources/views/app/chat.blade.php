@@ -91,6 +91,7 @@
 
 	@push('scripts')
 		<script src="{{asset('assets/js/fullscreen.js')}}"></script>
+		<script src="{{asset('assets/js/laravel-echo.js')}}"></script>
 		<script src="{{asset('assets/js/page/app/chat.js')}}"></script>
 	@endpush
 
