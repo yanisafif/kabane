@@ -14,6 +14,7 @@ use View;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Arr;
+use App\Events\UpdatedCol;
 
 class ColController extends Controller
 {
@@ -89,6 +90,7 @@ class ColController extends Controller
         $kanban = Kanban::query()
             ->join('cols', 'cols.kanbanId', '=', 'kanbans.id')
             ->where('cols.id', '=', $data['colId'])
+            ->select('kanbans.id', 'kanbans.ownerUserId', 'kanbanId')
             ->first();
 
         if(is_null($kanban))
@@ -105,6 +107,8 @@ class ColController extends Controller
             $col->colorHexa = $data['colorHexa'];
 
         $col->save();
+
+        broadcast(new UpdatedCol($col, $kanban->id))->toOthers();
 
         return response()->json(['status' => 'Column renamed successfully']);
     }
@@ -167,9 +171,11 @@ class ColController extends Controller
             ->where('id', '=', $data['kanbanId'])
             ->first();
 
+        $colToDelete = Col::find($data['deleteColId']);
+
         if(is_null($kanban))
             return response(json_encode(['status' => 'Kanban not found']), 400, ['Content-Type' => 'application/json']);
-        if(!checkIfKanbanAllow($kanban, true))
+        if(!checkIfKanbanAllow($kanban, true) || $kanban->id != $colToDelete->kanbanId)
             return response(json_encode(['status' => 'You\'re not allowed to do that']), 403, ['Content-Type' => 'application/json']);
 
         $items = Item::query()
@@ -184,7 +190,7 @@ class ColController extends Controller
             }
         }
 
-        Col::find($data['deleteColId'])->delete();
+        $colToDelete->delete();
 
         $this->sortCols($data['kanbanId'], $data['cols']);
     }

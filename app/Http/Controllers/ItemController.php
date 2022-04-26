@@ -14,6 +14,10 @@ use View;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Arr;
+use App\Events\NewItem;
+use App\Events\UpdatedItem;
+use App\Events\DeletedItem;
+use App\Events\MovedItem;
 
 class ItemController extends Controller
 {
@@ -51,6 +55,7 @@ class ItemController extends Controller
         $kanban = Kanban::query()
             ->join('cols', 'cols.kanbanId', '=', 'kanbans.id')
             ->where('cols.id', '=', $data['colId'])
+            ->select('kanbans.id', 'kanbans.ownerUserId')
             ->first();
 
         if(is_null($kanban))
@@ -68,6 +73,8 @@ class ItemController extends Controller
         $item->itemOrder = 1;
         $item->save();
 
+        broadcast(new NewItem($item, $kanban->id))->toOthers();
+        
         return response()->json(['status' => 'Item saved successfully', 'item_id' => $item->id]);
     }
 
@@ -106,6 +113,8 @@ class ItemController extends Controller
         
         $itemRecord->save(); 
 
+        broadcast(new UpdatedItem($itemRecord, $kanban->id))->toOthers();
+        
         return response()->json(['status' => 'Succeed']);
     }
 
@@ -133,7 +142,10 @@ class ItemController extends Controller
         if(!checkIfKanbanAllow($kanban))
             return response(json_encode(['status' => 'You\'re not allowed to do that']), 403, ['Content-Type' => 'application/json']);
 
-        Item::find($itemId)->delete();
+        $item = Item::find($itemId);
+        $item->delete();
+
+        broadcast(new DeletedItem($itemId, $item->colId, $kanban->id))->toOthers();
 
         return response()->json(['status' => 'Succeed']);
     }
@@ -175,6 +187,8 @@ class ItemController extends Controller
         $item->colId = $data['targetCol']; 
         $item->save();
 
+        broadcast(new MovedItem($item->id, $kanbanFromSource->id, $kanbanFromSource->colId, $data['targetCol']))->toOthers();
+
         return response()->json(['status' => 'Succeed']);
         
     }
@@ -185,6 +199,7 @@ class ItemController extends Controller
             ->join('cols', 'kanbans.id', 'cols.kanbanId')
             ->join('items', 'items.colId', 'cols.id')
             ->where('items.id', '=', $itemId)
+            ->select('kanbans.id', 'kanbans.ownerUserId', 'kanbanId', 'cols.id as colId')
             ->first();
     }
 
