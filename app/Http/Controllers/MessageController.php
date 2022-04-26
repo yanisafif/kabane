@@ -46,10 +46,18 @@ class MessageController extends Controller
             if(!is_null($kanban) && checkIfKanbanAllow($kanban))
             {
                 $data['messages'] = Message::query()
+                    ->join('users', 'users.id', '=', 'messages.userId')
                     ->where('kanbanId', '=', $id)
-                    ->select('id', 'content', 'userId', 'created_at')
+                    ->select('content', 'userId', 'users.created_at', 'users.name AS username', 'users.path_image')
                     ->orderBy('created_at')
                     ->get();
+
+                $currentUserId = \Auth::user()->id;
+
+                foreach($data['messages'] as $message)
+                {
+                    $message['isCurrentUser'] = ($currentUserId === $message['userId']);
+                }
 
                 $peopleAccessBoard = Invitation::query()
                     ->where('kanbanId', '=', $id)
@@ -64,8 +72,7 @@ class MessageController extends Controller
                         ->first();
 
                 $peopleAccessBoard->add($kanbanOwner);
-
-                $currentUserId = \Auth::user()->id;
+                
 
                 foreach($peopleAccessBoard as $person)
                 {
