@@ -32,8 +32,6 @@
                             <ul class="nav-submenu menu-content" style="display:  prefixBlock('/dashboard') ;">
                                 <li><a href="{{route('kanban.board') . '/' . $kanban['id']}}" class="routeActive('index')">Kanban</a></li>
                                 <li><a href="{{route('kanban.chat') . '/' . $kanban['id'] }}" class="routeActive('dashboard-02')">Chat & collab</a></li>
-                                <li><a href="{{route('kanban.callendar') . '/' . $kanban['id']}}" class="routeActive('dashboard-02')">Callendar</a></li>
-                                <li><a href="{{route('kanban.todo') . '/' . $kanban['id'] }}" class="routeActive('dashboard-02')">To do</a></li>
                             </ul>
                         </li>
                     @endforeach
@@ -49,8 +47,6 @@
                             <ul class="nav-submenu menu-content" style="display:  prefixBlock('/dashboard') ;">
                                 <li><a href="{{route('kanban.board') . '/' . $kanban['id']}}" class="routeActive('index')">Kanban</a></li>
                                 <li><a href="{{route('kanban.chat') . '/' . $kanban['id'] }}" class="routeActive('dashboard-02')">Chat & collab</a></li>
-                                <li><a href="{{route('kanban.callendar') . '/' . $kanban['id']}}" class="routeActive('dashboard-02')">Callendar</a></li>
-                                <li><a href="{{route('kanban.todo') . '/' . $kanban['id'] }}" class="routeActive('dashboard-02')">To do</a></li>
                             </ul>
                         </li>
                     @endforeach
