@@ -1,8 +1,7 @@
 
 (function() {
     const datasetDiv = document.getElementById('dataset')
-    window.userId = datasetDiv.dataset.userid
-    window.kanbanId = datasetDiv.dataset.kanbanid
+    window.kanbanId = parseInt(datasetDiv.dataset.kanbanid)
     window.people = JSON.parse(datasetDiv.textContent)
 
     datasetDiv.parentElement.removeChild(datasetDiv)
