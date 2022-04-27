@@ -37,8 +37,8 @@
 																@php
 																	$dt = new DateTime($message['created_at'], new DateTimeZone('UTC'));
 																	$dt->setTimezone(new DateTimeZone('Europe/Paris'));
-																	echo $dt->format('Y-m-d H:i:s');
-																@endphp		
+																	echo $dt->format('d M Y H:i:s');
+																@endphp
 															</i>
 														</div>
 														{{ $message['content']}}
