@@ -109,10 +109,11 @@ class MessageController extends Controller
 
         $data = $request->only('kanbanId', 'content');
 
-        $kanban = Kanban::find($data['kanbanId'])
-            ->select('kanbans.id', 'kanbans.ownerUserId')
+        $kanban = Kanban::query()
+            ->where('id', '=', $data['kanbanId'])
+            ->select('id', 'name', 'isActive', 'created_at', 'ownerUserId')
             ->first();
-
+        
         if(is_null($kanban))
             return response(json_encode(['status' => 'Chat not found']), 400, ['Content-Type' => 'application/json']);
         if(!checkIfKanbanAllow($kanban))
