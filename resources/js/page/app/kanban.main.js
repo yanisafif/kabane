@@ -428,7 +428,7 @@ window.displayItemDetailsModal = function (el) {
         const dataForm = {}
         
         // Get data from modal form
-        for(input of $('#edit-form').serializeArray()) {
+        for(const input of $('#edit-form').serializeArray()) {
             dataForm[input.name] = input.value || null
         }
     
