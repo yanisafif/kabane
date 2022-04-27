@@ -18,9 +18,6 @@
   <link href="{{asset('assets/main/vendor/glightbox/css/glightbox.min.css')}}" rel="stylesheet">
   <link href="{{asset('assets/main/vendor/swiper/swiper-bundle.min.css')}}" rel="stylesheet">
 
-  <!-- Template Main CSS File -->
-  <link href="{{asset('assets/main/css/style.css')}}" rel="stylesheet">
-
 </head>
 
 <body>
