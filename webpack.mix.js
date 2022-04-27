@@ -13,3 +13,20 @@ const mix = require('laravel-mix');
 
 mix.js('resources/js/app.js', 'public/js')
     .sass('resources/sass/app.scss', 'public/css').version();
+
+mix.js('resources/js/laravel-echo.js', 'public/assets/js/');
+// mix.scripts('resources/js/page/app/*.js', 'public/test')
+
+let fs = require('fs');
+
+let getFiles = function (dir) {
+    // get all 'files' in this directory
+    // filter directories
+    return fs.readdirSync(dir).filter(file => {
+        return fs.statSync(`${dir}/${file}`).isFile();
+    });
+};
+
+getFiles('./resources/js/page/app/').forEach(function (filepath) {
+    mix.js('resources/js/page/app/' + filepath, 'public/assets/js/page/app/' + filepath);
+});

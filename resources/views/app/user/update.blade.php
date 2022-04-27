@@ -216,7 +216,8 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col">
-                                <form>
+                                <form method="POST" action="{{ route('user.delete.user')}}">
+                                    @csrf
                                     <div class="mb-3 m-form__group">
                                         <label class="form-label">Type this to delete your account : "<span class="fw-bold">I will come back soon</span>"</label>
                                         <div class="input-group">

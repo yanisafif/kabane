@@ -8,6 +8,8 @@
         <title>@yield('title')</title>
         <!-- Google font-->
         @includeIf('user.partials.css')
+
+        {!! NoCaptcha::renderJs() !!}
     </head>
     <body>
         <!-- Loader starts-->

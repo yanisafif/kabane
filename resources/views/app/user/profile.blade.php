@@ -74,15 +74,15 @@
 	                            <div class="follow">
 	                                <ul class="follow-list">
 	                                    <li>
-	                                        <div class="follow-num counter">2</div>
+	                                        <div class="follow-num counter">{{$countKanban}}</div>
 	                                        <span>Kanban</span>
 	                                    </li>
 	                                    <li>
-	                                        <div class="follow-num counter">4</div>
+	                                        <div class="follow-num counter">{{$countCollaborative}}</div>
 	                                        <span>Collaborative</span>
 	                                    </li>
 	                                    <li>
-	                                        <div class="follow-num counter">45</div>
+	                                        <div class="follow-num counter">{{$countItemsOwner}}</div>
 	                                        <span>Task</span>
 	                                    </li>
 	                                </ul>

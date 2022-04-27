@@ -9,6 +9,13 @@ use App\Models\User;
 
 class AdminController extends Controller
 {
+    /** access to the admin panel of the web site
+     *  Admin can see all user register in kabane
+     *
+     * @method GET
+     * @param void
+     * @return Route app.admin.panel | fail = kanban.board
+     */
     public function panel(){
         if(auth()->user()->is_admin){
             $users = User::query()
@@ -20,10 +27,13 @@ class AdminController extends Controller
         }
 
         return redirect()->route('kanban.board')->with('danger', 'You do not have access to this page.');
-
-
     }
 
+    /**
+     *
+     * @param void
+     * @return array $data
+     */
     protected function getLayoutData()
     {
         $userId = \Auth::user()->id;

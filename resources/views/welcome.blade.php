@@ -17,8 +17,6 @@
   <link href="{{asset('assets/main/vendor/boxicons/css/boxicons.min.css')}}" rel="stylesheet">
   <link href="{{asset('assets/main/vendor/glightbox/css/glightbox.min.css')}}" rel="stylesheet">
   <link href="{{asset('assets/main/vendor/swiper/swiper-bundle.min.css')}}" rel="stylesheet">
-
-  <!-- Template Main CSS File -->
   <link href="{{asset('assets/main/css/style.css')}}" rel="stylesheet">
 
 </head>
@@ -312,8 +310,8 @@
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
   <!-- Vendor JS Files -->
-  <script src="{{asset('assets/main/assets/vendor/purecounter/purecounter.js')}}"></script>
-  <script src="{{asset('assets/main/assets/vendor/aos/aos.js')}}"></script>
+  <script src="{{asset('assets/main/vendor/purecounter/purecounter.js')}}"></script>
+  <script src="{{asset('assets/main/vendor/aos/aos.js')}}"></script>
   <script src="{{asset('assets/main/vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
   <script src="{{asset('assets/main/vendor/glightbox/js/glightbox.min.js')}}"></script>
   <script src="{{asset('assets/main/vendor/isotope-layout/isotope.pkgd.min.js')}}"></script>

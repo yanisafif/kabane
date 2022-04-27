@@ -262,7 +262,7 @@
     @elseif($data['kanbanNotSelected'])
         <div class="text-center">
             <div class="row justify-content-center">
-                <h1>Welcome back to Kabane</h1>
+                <h1>Welcome to Kabane</h1>
                 <h3>Select your favorite Kanban or create a brand new one.</h3>
                 <div class="col-sm-6 align-items-center">
                    <figure>
@@ -270,10 +270,6 @@
                    </figure>
                 </div>
             </div>
-        </div>
-    @elseif(is_null($data['kanban']))
-        <div class="text-center mt-5">
-            <h1>Sorry, this kanban couldn't be found. </h1>
         </div>
     @endif
 

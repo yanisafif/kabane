@@ -50,7 +50,7 @@ class MessageController extends Controller
                     ->select('content', 'userId', 'messages.created_at', 'users.name AS username', 'users.path_image')
                     ->orderBy('messages.created_at')
                     ->get();
-                
+
 
                 $currentUserId = \Auth::user()->id;
 
@@ -72,19 +72,19 @@ class MessageController extends Controller
                         ->first();
 
                 $peopleAccessBoard->add($kanbanOwner);
-                
+
                 foreach($peopleAccessBoard as $person)
                 {
                     $person['isCurrentUser'] = ($currentUserId == $person['id']);
                 }
-                
+
                 $data['people'] = $peopleAccessBoard;
                 $data['currentUserId'] = $currentUserId;
                 $data['kanbanId'] = $id;
             }
             else
             {
-                $data['kanbanNotFound'] = true;
+                return redirect()->route('kanban.board')->with('danger', 'Sorry, this chat couldn\'t be found.');
             }
         }
 
@@ -106,26 +106,27 @@ class MessageController extends Controller
         {
             return response(json_encode(['status' => 'Form not valid ', $validator->errors()]), 400, ['Content-Type' => 'application/json']);
         }
-        
+
         $data = $request->only('kanbanId', 'content');
 
-        $kanban = Kanban::find($data['kanbanId'])
-            ->select('kanbans.id', 'kanbans.ownerUserId')
+        $kanban = Kanban::query()
+            ->where('id', '=', $data['kanbanId'])
+            ->select('id', 'name', 'isActive', 'created_at', 'ownerUserId')
             ->first();
-
+        
         if(is_null($kanban))
             return response(json_encode(['status' => 'Chat not found']), 400, ['Content-Type' => 'application/json']);
         if(!checkIfKanbanAllow($kanban))
             return response(json_encode(['status' => 'You\'re not allowed to do that']), 403, ['Content-Type' => 'application/json']);
-    
-        $messageRecord = new Message; 
+
+        $messageRecord = new Message;
         $messageRecord->content = $data['content'];
         $messageRecord->userId = \Auth::user()->id;
         $messageRecord->kanbanId = $data['kanbanId'];
         $messageRecord->save();
 
         broadcast(new AddedMessage($messageRecord))->toOthers();
-        
+
         return response()->json(['status' => 'Succeed']);
     }
 }

@@ -20,7 +20,7 @@ class CreateKanbansTable extends Migration
             $table->timestamps();
 
             $table->unsignedBigInteger('ownerUserId');
-            $table->foreign('ownerUserId')->references('id')->on('users');
+            $table->foreign('ownerUserId')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

@@ -31,7 +31,6 @@
 																	<img class="rounded-circle chat-user-img img-30 mr-2" style="vertical-align: bottom" src="{{asset('/assets/images/dashboard/1.png')}}" />
 																@else
 																	<img class="rounded-circle chat-user-img img-30 mr-2" style="vertical-align: bottom; height: 30px" src="{{asset('/avatars/' . $message['path_image'] )}}" />
-																	{{-- <img src="{{asset('/assets/avatars/' . $person['path_image'] )}}" style="height: 20px; width: 20px" class="rounded-circle"> --}}
 																@endif
 																<strong style="margin-right: 10px"> {{ $message['username'] }} </strong>
 															</div>
@@ -83,10 +82,6 @@
                    </figure>
                 </div>
             </div>
-        </div>
-    @elseif($data['kanbanNotFound'])
-        <div class="text-center mt-5">
-            <h1>Sorry, this kanban couldn't be found. </h1>
         </div>
     @endif
 

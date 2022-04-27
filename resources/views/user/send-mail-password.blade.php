@@ -14,7 +14,7 @@
 	            <div class="col-12 p-0">
 	                <div class="login-card">
 	                    <div class="login-main">
-	                        <form class="theme-form login-form" method="POST" action="{{ route('user.reset.password')}}">
+	                        <form id="send-email-password" class="theme-form login-form" method="POST" action="{{ route('user.reset.password')}}">
                                 @csrf
 	                            <h4 class="mb-3">Reset Your Password</h4>
                                 <small>Please enter a valid email so that we can send you an email to be able to reset your password.</small>
@@ -26,7 +26,10 @@
 	                                    </div>
 	                                </div>
                                     <div class="form-group">
-                                        <button class="btn btn-primary btn-block mt-4 col-12 col-sm-12" type="submit">Send</button>
+                                        {!! NoCaptcha::displaySubmit(
+                                            'send-email-password', 'Send',
+                                            ['class' => 'btn btn-primary btn-block mt-4 col-12 col-sm-12'])
+                                        !!}
                                     </div>
 	                            </div>
 
