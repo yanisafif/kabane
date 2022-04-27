@@ -54,10 +54,8 @@ class KanbanController extends Controller
                     $col['items'] = Item::query()
                         ->where('colId', '=', $col['id'])
                         ->orderBy('colId')
-                        ->leftJoin('users AS assignedUser', 'assignedUser.id' , '=',  'items.assignedUserId' )
-                        ->join('users AS ownerUser', 'items.ownerUserId' , '=', 'ownerUser.id')
                         ->select('items.id as item_id', 'items.name as item_name', 'items.created_at', 'items.updated_at', 'itemOrder', 'deadline',
-                            'items.description AS description', 'assignedUser.id as assignedUser_id',  'ownerUser.id as ownerUser_id'
+                            'items.description AS description', 'items.assignedUserId as assignedUser_id',  'items.ownerUserId as ownerUser_id'
                         )
                         ->get();
                 }
