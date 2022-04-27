@@ -275,7 +275,7 @@ let isowner
 //#region Handle title modifications 
 
 // Trigger on cols' input double click
-function onTitleDbClick(thisEl) {
+window.onTitleDbClick = function (thisEl) {
     // Enable modification
     thisEl.readOnly=''; 
     thisEl.style.border = '2px solid'
@@ -287,7 +287,7 @@ function onTitleDbClick(thisEl) {
 }
 
 // Trigger on cols' input focus out 
-function onTileFocusOut(thisEl) {
+window.onTileFocusOut = function (thisEl) {
     thisEl.readOnly = 'true'
     thisEl.style.border = 'none'
     thisEl.style.background = 'transparent'
@@ -379,7 +379,7 @@ function displayCreateModal(colId) {
     $("#creation-modal").modal('show') // Show modal
 }
 
-function displayItemDetailsModal(el) {
+window.displayItemDetailsModal = function (el) {
 
     // Get ids for html id. Pattern: 'item-$itemId-$colId
     const htmlId = el.getElementsByClassName('kanban-box')[0].id 
