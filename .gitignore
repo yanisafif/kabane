@@ -16,3 +16,4 @@ _ide_helper.php
 /public/mix-manifest.json
 public/assets/js/laravel-echo.js
 public/js/
+public/assets/js/page
