@@ -63,9 +63,11 @@ function addRenderMessage(content, user, dateStr, isCurrentUser) {
     messageHtml.innerHTML =   `
         <div class="message ${isCurrentUser ? 'my-message' : 'other-message pull-right' }">
             <div class="message-data">
-                <img class="rounded-circle chat-user-img img-30 mr-2" style="vertical-align: bottom; height: 30px;" 
-                    src="${window.location.protocol}//${window.location.hostname}/${user?.path_image ? '/avatars/' + user.path_image : '/assets/images/dashboard/1.png'}"/>
-                <strong style="margin-right: 10px"> ${user?.name ?? 'John doe'} </strong>
+                <div onclick="window.location.replace('/user/profile/${user?.name}')" style="cursor: pointer;">
+                    <img class="rounded-circle chat-user-img img-30 mr-2" style="vertical-align: bottom; height: 30px;" 
+                        src="${window.location.protocol}//${window.location.hostname}/${user?.path_image ? '/avatars/' + user.path_image : '/assets/images/dashboard/1.png'}"/>
+                    <strong style="margin-right: 10px"> ${user?.name ?? 'John doe'} </strong>
+                </div>
                 <i class="message-data-time"> 
                     ${dateStr}
                 </i>

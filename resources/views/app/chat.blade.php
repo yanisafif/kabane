@@ -26,18 +26,19 @@
 												<li class="clearfix">
 													<div class="message {{ $message['isCurrentUser'] ? 'my-message' : 'other-message pull-right' }}">
 														<div class="message-data">
-															@if(is_null($message['path_image']))
-																<img class="rounded-circle chat-user-img img-30 mr-2" style="vertical-align: bottom" src="{{asset('/assets/images/dashboard/1.png')}}" />
-															@else
-																<img class="rounded-circle chat-user-img img-30 mr-2" style="vertical-align: bottom; height: 30px" src="{{asset('/avatars/' . $message['path_image'] )}}" />
-																{{-- <img src="{{asset('/assets/avatars/' . $person['path_image'] )}}" style="height: 20px; width: 20px" class="rounded-circle"> --}}
-															@endif
-															<strong style="margin-right: 10px"> {{ $message['username'] }} </strong>
-															<i class="message-data-time ">
+															<div onclick="window.location.replace('/user/profile/{{$message['username']}}')" style="cursor: pointer;">
+																@if(is_null($message['path_image']))
+																	<img class="rounded-circle chat-user-img img-30 mr-2" style="vertical-align: bottom" src="{{asset('/assets/images/dashboard/1.png')}}" />
+																@else
+																	<img class="rounded-circle chat-user-img img-30 mr-2" style="vertical-align: bottom; height: 30px" src="{{asset('/avatars/' . $message['path_image'] )}}" />
+																@endif
+																<strong style="margin-right: 10px"> {{ $message['username'] }} </strong>
+															</div>
+															<i class="message-data-time "> 
 																@php
 																	$dt = new DateTime($message['created_at'], new DateTimeZone('UTC'));
 																	$dt->setTimezone(new DateTimeZone('Europe/Paris'));
-																	echo $dt->format('Y-m-d H:i:s');
+																	echo $dt->format('d M Y H:i:s');
 																@endphp
 															</i>
 														</div>
