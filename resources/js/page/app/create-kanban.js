@@ -14,55 +14,54 @@ function createPicker(colorField) {
 }
 
 // Invitation
-let m = 1
-const inviteContainer = document.getElementById("invite-field-container")
-function addInvite() {
+window.inviteNumber = 1
+
+window.addInvite = function() {
     let element = document.createElement('div')
     element.classList.add('small-group', 'mt-2')
-    element.id = 'invite-' + m
+    element.id = 'invite-' + window.inviteNumber
 
     element.innerHTML =
             `
-                <input class="form-control" maxlength="50" name="invite[${m}]" type="text" required />
-                <img style="width: 20px; height: 20px" src="${window.location.protocol +'//'+ window.location.hostname}/assets/svg/close.svg" onclick="deleteInvite(${m})">
+                <input class="form-control" maxlength="50" name="invite[${window.inviteNumber}]" type="text" required />
+                <img style="width: 20px; height: 20px" src="${window.location.protocol +'//'+ window.location.hostname}/assets/svg/close.svg" onclick="onDeleteInvite(${window.inviteNumber})">
             `
-    inviteContainer.appendChild(element)
-    m++
+    document.getElementById("invite-field-container").appendChild(element)
+    window.inviteNumber++
 }
 
-function deleteInvite(id) {
-    inviteContainer.removeChild(document.getElementById('invite-' + id))
+window.onDeleteInvite = function (id) {
+    document.getElementById("invite-field-container").removeChild(document.getElementById('invite-' + id))
 }
 
 
 // Column 
-let n = 2
-const colContainer = document.getElementById("col-fields-container");
-function addCol() {
+window.colNumber = 2
+window.addCol = function () {
     let element = document.createElement('div')
     element.classList.add('small-group', 'mt-1')
-    element.id = 'col-' + n
+    element.id = 'col-' + window.colNumber
 
     element.innerHTML =
             `<div class="input-group">
                 <span class="input-group-text"> Name</span>
-                <input class="form-control" type="text" maxlength="50" name="colname[${n}]" required="" />
+                <input class="form-control" type="text" maxlength="50" name="colname[${window.colNumber}]" required="" />
             </div>
             <div class="input-group color-field">
                 <span class="input-group-text">Color</span>
-                <input class="form-control" type="text" maxlength="9" name="colcolor[${n}]" required="" />
+                <input class="form-control" type="text" maxlength="9" name="colcolor[${window.colNumber}]" required="" />
             </div>
-            <img style="width: 20px; height: 20px" src="${window.location.protocol +'//'+ window.location.hostname}/assets/svg/close.svg" onclick="deleteCol(${n})">
+            <img style="width: 20px; height: 20px" src="${window.location.protocol +'//'+ window.location.hostname}/assets/svg/close.svg" onclick="deleteCol(${window.colNumber})">
             `
-    colContainer.appendChild(element)
+        document.getElementById("col-fields-container").appendChild(element)
     onAddColumn(element)
-    n++
+    window.colNumber++
 }
 
-function onAddColumn(element) {
+window.onAddColumn = function (element) {
     createPicker(element.querySelector('div.color-field'))
 }
 
-function deleteCol(id) {
-    colContainer.removeChild(document.getElementById('col-' + id))
+window.deleteCol = function (id) {
+    document.getElementById("col-fields-container").removeChild(document.getElementById('col-' + id))
 }
