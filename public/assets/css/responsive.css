@@ -1185,9 +1185,6 @@
     left: unset; }
   .bg-sky-blue .main-landing .position-cards .landing-card-5 {
     right: -3%; }
-  .viho-demo-section .gallery_content p,
-  .viho-demo-section .viho-demo-content p {
-    width: 70% !important; }
   .landing_gallery_section_img {
     margin-bottom: -60px; }
     .landing_gallery_section_img .img-gallery-set3,
@@ -1811,12 +1808,6 @@
     width: 40%; }
   .bg-sky-blue .main-landing .position-cards .landing-card-2 {
     right: 44%; }
-  .viho-demo-section .viho-demo-content img,
-  .viho-demo-section .gallery_content img {
-    width: 30px !important; }
-  .viho-demo-section .viho-demo-content p,
-  .viho-demo-section .gallery_content p {
-    width: 100% !important; }
   .and-more {
     top: 40%; }
   .landing-main .section-space {
@@ -2898,9 +2889,6 @@
     font-size: 12px; }
   .and-many-more {
     font-size: 45px; }
-  .viho-demo-section .viho-demo-content p,
-  .viho-demo-section .gallery_content p {
-    font-size: 13px; }
   .and-more {
     font-size: 20px; }
   .gallery-img-blur-div {
