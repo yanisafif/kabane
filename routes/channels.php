@@ -16,7 +16,7 @@ Broadcast::channel('App.User.{id}', function ($user, $id) {
 });
 
 Broadcast::channel('kanban.{id}', function ($user, $id) {
-    return checkIfKanbanAllow(getKanbanFromId($id));
+    return checkIfKanbanAllow(App\Models\Kanban::find($id));
 });
 
 

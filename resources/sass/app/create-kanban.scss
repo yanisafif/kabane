@@ -1,7 +1,5 @@
 .create-kanban-card {
     background-color: rgba(36, 105, 92, 0.1);
-    /* height: 100vh; */
-    /* min-height: 100%; */
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -13,4 +11,8 @@
     justify-content: center;
     margin: 0 auto;
     padding: 30px 12px;
+}
+
+.cursor-pointer {
+    cursor: pointer;
 }

@@ -10,12 +10,11 @@
 @section('content')
 
 <section>
-	    <div class="container-fluid p-0" style="margin: 0 auto;">
+	    <div class="container-fluid p-0">
 	        <div class="row m-0">
-	            {{-- <div class="col-xl-7 p-0"><img class="bg-img-cover bg-center" src="{{ asset('assets/images/login/1.jpg') }}" alt="looginpage" /></div> --}}
 	            <div class=" p-0">
 	                <div class="create-kanban-card">
-	                    <form class="theme-form login-form" method="POST" action="{{ route('kanban.store')}}">
+	                    <form class="login-form" method="POST" action="{{ route('kanban.store')}}">
                             @csrf
 	                        <h4>Create a kanban</h4>
 	                        <div class="form-group">
@@ -31,7 +30,7 @@
 									<input class="form-control m-r-20" maxlength="50" name="invite[0]" type="text"/>
 								</div>
 	                        </div>
-                            <div class="pointer text-end mt-2" style="cursor: pointer">
+                            <div class="cursor-pointer text-end mt-2">
                                 <a class="link text-underline" onclick="addInvite()" > + Add invite field</a>
                             </div>
 	                        <div class="form-group mb-1">
@@ -60,7 +59,7 @@
                                 </div>
 
                             </div>
-                            <div class=" pointer text-end mt-2" style="cursor: pointer">
+                            <div class="cursor-pointer text-end mt-2">
                                 <a class="link text-underline" onclick="addCol()" > + Add a column</a>
                             </div>
 	                        <div class="form-group mt-4">
