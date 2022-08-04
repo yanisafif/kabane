@@ -18,22 +18,12 @@ class NewItem implements ShouldBroadcast
     public Item $item; 
     public $kanbanId;
 
-    /**
-     * Create a new event instance.
-     *
-     * @return void
-     */
     public function __construct(Item $item, $kanbanId)
     {
         $this->item = $item; 
         $this->kanbanId = $kanbanId;
     }
 
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return \Illuminate\Broadcasting\Channel|array
-     */
     public function broadcastOn()
     {
         return new PrivateChannel('kanban.' . $this->kanbanId);

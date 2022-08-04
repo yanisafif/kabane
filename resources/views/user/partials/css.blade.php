@@ -18,8 +18,6 @@
 <!-- Bootstrap css-->
 <link rel="stylesheet" type="text/css" href="{{asset('assets/css/bootstrap.css')}}" />
 <!-- App css-->
-<link id="color" rel="stylesheet" href="{{asset('assets/css/color-1.css')}}" media="screen" />
+<link id="color" rel="stylesheet" href="{{asset('css/main.css')}}" media="screen" />
 <!-- Responsive css-->
-<link rel="stylesheet" type="text/css" href="{{asset('assets/css/responsive.css')}}" />
 <link href="{{asset('assets/main/css/style.css')}}" rel="stylesheet">
-<link rel="stylesheet" type="text/css" href="{{asset('assets/css/style.css')}}" />

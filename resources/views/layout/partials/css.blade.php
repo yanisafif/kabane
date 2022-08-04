@@ -5,17 +5,11 @@
 <link rel="stylesheet" type="text/css" href="{{asset('assets/css/themify.css')}}">
 <!-- Flag icon-->
 <link rel="stylesheet" type="text/css" href="{{asset('assets/css/flag-icon.css')}}">
-<!-- Feather icon-->
-<link rel="stylesheet" type="text/css" href="{{asset('assets/css/feather-icon.css')}}">
-<!-- Plugins css start-->
 @stack('css')
-<!-- Plugins css Ends-->
+
 <!-- Bootstrap css-->
 <link rel="stylesheet" type="text/css" href="{{asset('assets/css/bootstrap.css')}}">
+<!-- Theme css-->
+<link id="color" rel="stylesheet" href="{{asset('assets/css/main.css')}}" media="screen">
 <!-- App css-->
-<link id="color" rel="stylesheet" href="{{asset('assets/css/color-1.css')}}" media="screen">
-<!-- Responsive css-->
-<link rel="stylesheet" type="text/css" href="{{asset('assets/css/responsive.css')}}">
-
-<link rel="stylesheet" type="text/css" href="{{ asset('css/app.css') }} ">
-<link rel="stylesheet" type="text/css" href="{{asset('assets/css/style.css')}}" />
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/css/app.css') }} ">

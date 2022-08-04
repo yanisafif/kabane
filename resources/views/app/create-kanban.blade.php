@@ -14,9 +14,9 @@
 	        <div class="row m-0">
 	            <div class=" p-0">
 	                <div class="create-kanban-card">
-	                    <form class="login-form" method="POST" action="{{ route('kanban.store')}}">
+	                    <form class="kanban-form" method="POST" action="{{ route('kanban.store')}}">
                             @csrf
-	                        <h4>Create a kanban</h4>
+	                        <h4>Create A Kanban</h4>
 	                        <div class="form-group">
 	                            <label>Name</label>
 								<div class="input-group">
@@ -30,7 +30,7 @@
 									<input class="form-control m-r-20" maxlength="50" name="invite[0]" type="text"/>
 								</div>
 	                        </div>
-                            <div class="cursor-pointer text-end mt-2">
+                            <div class="text-end mt-2">
                                 <a class="link text-underline" onclick="addInvite()" > + Add invite field</a>
                             </div>
 	                        <div class="form-group mb-1">
@@ -59,11 +59,11 @@
                                 </div>
 
                             </div>
-                            <div class="cursor-pointer text-end mt-2">
+                            <div class="text-end mt-2">
                                 <a class="link text-underline" onclick="addCol()" > + Add a column</a>
                             </div>
 	                        <div class="form-group mt-4">
-	                            <button class="btn btn-primary btn-block" type="submit">Create Kanban</button>
+	                            <button class="btn btn-primary" type="submit">CREATE KANBAN</button>
 	                        </div>
 	                    </form>
 	                </div>

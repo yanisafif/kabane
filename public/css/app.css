@@ -1,0 +1,130 @@
+.create-kanban-card {
+  background-color: #e6edef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  padding: 30px;
+}
+
+.create-kanban-card form {
+  padding: 30px;
+  width: 450px;
+  background-color: #fff;
+  justify-content: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.create-kanban-card form h4 {
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.create-kanban-card form a {
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.create-kanban-card form .btn {
+  font-weight: 700;
+  margin-left: auto;
+  display: block;
+}
+
+.create-kanban-card form .form-group {
+  position: relative;
+}
+
+.create-kanban-card form .form-group label {
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.create-kanban-card form .form-group .input-group-text {
+  background-color: rgba(22, 142, 234, 0.1);
+  border: none;
+  color: #168eea;
+}
+
+.create-kanban-card form .form-group .form-control::-moz-placeholder {
+  font-weight: 400;
+}
+
+.create-kanban-card form .form-group .form-control:-ms-input-placeholder {
+  font-weight: 400;
+}
+
+.create-kanban-card form .form-group .form-control::placeholder {
+  font-weight: 400;
+}
+
+.create-kanban-card form .form-group .form-control:focus {
+  box-shadow: none;
+}
+
+.create-kanban-card form .form-group a {
+  float: right;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.create-kanban-card form .form-group .small-group {
+  display: flex;
+  align-items: center;
+}
+
+.create-kanban-card form .form-group .small-group .input-group:nth-child(n+2) {
+  margin-left: 10px;
+}
+
+.title-col {
+  font-weight: 600;
+  font-size: 1.15em;
+  color: inherit;
+}
+
+.kanban-board {
+  overflow: visible;
+}
+
+.col-header-input {
+  flex-grow: 1;
+  margin-right: 10px;
+}
+
+.col-header-color-btn,
+.col-header-delete-btn {
+  cursor: pointer;
+}
+
+.col-header-delete-btn {
+  margin-right: 10px;
+}
+
+.settings-col-container {
+  border-radius: 5px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.setting-person-name {
+  flex: 1;
+  padding-left: 5px;
+}
+
+.setting-person-uninvite {
+  height: 20px;
+  width: 20px;
+}
+
+.setting-invite .input-group-text {
+  background-color: rgba(36, 105, 92, 0.1);
+  color: #24695c;
+}
+
+.settings-person-container {
+  border: #e6edef solid 1px;
+  border-radius: 5px;
+}
+

@@ -15,6 +15,6 @@ _ide_helper.php
 /public/avatars
 /public/mix-manifest.json
 public/assets/js/laravel-echo.js
-public/js
-public/css
+public/assets/js
+public/assets/css
 public/assets/js/page

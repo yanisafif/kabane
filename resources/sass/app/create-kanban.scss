@@ -1,18 +1,75 @@
+@import '../variables';
+
 .create-kanban-card {
-    background-color: rgba(36, 105, 92, 0.1);
-    display: -webkit-box;
-    display: -ms-flexbox;
+    background-color: $light-gray;
     display: flex;
-    -webkit-box-align: center;
-    -ms-flex-align: center;
     align-items: center;
-    -webkit-box-pack: center;
-    -ms-flex-pack: center;
     justify-content: center;
     margin: 0 auto;
-    padding: 30px 12px;
-}
+    padding: $card-padding;
 
-.cursor-pointer {
-    cursor: pointer;
+    form {
+        padding: $card-padding;
+        width: 450px;
+        background-color: $white;
+        justify-content: center;
+        margin-left: auto;
+        margin-right: auto;
+
+        h4 {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        a {
+            font-weight: 500;
+            cursor: pointer
+        }
+
+        .btn {
+            font-weight: 700;
+            margin-left: auto;
+            display: block;
+        }
+
+        .form-group {
+            position:relative;
+
+            label {
+                font-weight: 600;
+                text-transform: capitalize;
+            }
+
+            .input-group-text {
+                background-color: rgba($primary-color, 0.1);
+                border: none;
+                color: $primary-color;
+            }
+
+            .form-control {
+                &::placeholder {
+                    font-weight: 400;
+                }
+                &:focus {
+                    box-shadow: none;
+                }
+            }
+
+            a {
+                float: right;
+                font-weight: 500;
+                cursor: pointer
+            }
+    
+            .small-group {
+                display:flex;
+                align-items:center;
+                .input-group{
+                    &:nth-child(n+2){
+                        margin-left:10px;
+                    }
+                }
+            }
+        }
+    }
 }
